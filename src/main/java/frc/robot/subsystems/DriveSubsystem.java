@@ -55,7 +55,7 @@ public class DriveSubsystem extends PIDSubsystem {
    */
   public DriveSubsystem(double kP, double kD, double period, double tolerance, double turn_scalar, double deadband) {
       // The PIDController used by the subsystem
-      super(new PIDController(kP, 0, kD));
+      super(new PIDController(kP, 0, kD, period));
 
       // Make mid and rear left motor controllers follow left master
       LEFT_REAR_SLAVE.set(ControlMode.Follower, LEFT_MASTER_MOTOR.getDeviceID());
