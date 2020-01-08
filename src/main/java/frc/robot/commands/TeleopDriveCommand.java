@@ -22,6 +22,8 @@ public class TeleopDriveCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    // Enable/start DriveSubsystem PID loop
+    RobotContainer.driveSubsystem.enable();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
