@@ -54,39 +54,38 @@ public class DriveSubsystem extends PIDSubsystem {
    * @param deadband Deadzone for joystick
    */
   public DriveSubsystem(double kP, double kD, double period, double tolerance, double turn_scalar, double deadband) {
-    super(
-        // The PIDController used by the subsystem
-        new PIDController(kP, 0, kD));
+      // The PIDController used by the subsystem
+      super(new PIDController(kP, 0, kD));
 
-        // Make mid and rear left motor controllers follow left master
-        LEFT_REAR_SLAVE.set(ControlMode.Follower, LEFT_MASTER_MOTOR.getDeviceID());
+      // Make mid and rear left motor controllers follow left master
+      LEFT_REAR_SLAVE.set(ControlMode.Follower, LEFT_MASTER_MOTOR.getDeviceID());
 
-        // Make mid and rear right motor controllers follow right master
-        RIGHT_REAR_SLAVE.set(ControlMode.Follower, RIGHT_MASTER_MOTOR.getDeviceID());
+      // Make mid and rear right motor controllers follow right master
+      RIGHT_REAR_SLAVE.set(ControlMode.Follower, RIGHT_MASTER_MOTOR.getDeviceID());
 
-        // Wait for Robot init before finishing DriveSubsystem init
-        try { Thread.sleep(15000); }
-        catch (Exception e) { e.printStackTrace(); }
+      // Wait for Robot init before finishing DriveSubsystem init
+      try { Thread.sleep(15000); }
+      catch (Exception e) { e.printStackTrace(); }
 
-        // Initialise PID subsystem setpoint and input
-        this.resetAngle();
-        this.setSetpoint(0);
+      // Initialise PID subsystem setpoint and input
+      this.resetAngle();
+      this.setSetpoint(0);
 
-        // Set drive PID tolerance, minimum is 1 degree
-        if (tolerance < this.MIN_TOLERANCE) tolerance = this.MIN_TOLERANCE;
-        this.getController().setTolerance(tolerance);
+      // Set drive PID tolerance, minimum is 1 degree
+      if (tolerance < this.MIN_TOLERANCE) tolerance = this.MIN_TOLERANCE;
+      this.getController().setTolerance(tolerance);
 
-        // Instantiate drive object
-        this.drivetrain = new DifferentialDrive(LEFT_MASTER_MOTOR, RIGHT_MASTER_MOTOR);
+      // Instantiate drive object
+      this.drivetrain = new DifferentialDrive(LEFT_MASTER_MOTOR, RIGHT_MASTER_MOTOR);
 
-        // Disable built in deadband application
-        this.drivetrain.setDeadband(0);
+      // Disable built in deadband application
+      this.drivetrain.setDeadband(0);
 
-        // The TeleopDriveCommand will run by default
-        this.setDefaultCommand(new TeleopDriveCommand());
+      // The TeleopDriveCommand will run by default
+      this.setDefaultCommand(new TeleopDriveCommand());
 
-        this.turn_scalar = turn_scalar;
-        this.deadband = deadband;
+      this.turn_scalar = turn_scalar;
+      this.deadband = deadband;
   }
 
   @Override
@@ -104,8 +103,8 @@ public class DriveSubsystem extends PIDSubsystem {
 
   /**
    * Call this repeatedly to drive using PID during teleoperation
-   * @param speed Desired speed
-   * @param turn_request Turn input
+   * @param speed Desired speed from -1.0 to 1.0
+   * @param turn_request Turn input from -1.0 to 1.0
    */
   public void teleopPID(double speed, double turn_request) {
     // Set drive speed if it is more than the deadband
@@ -130,7 +129,7 @@ public class DriveSubsystem extends PIDSubsystem {
 
   /**
    * Set DriveSubsystem speed
-   * @param speed
+   * @param speed Desired speed from -1.0 to 1.0
    */
   public void setSpeed(double speed) {
     this.speed = speed;
