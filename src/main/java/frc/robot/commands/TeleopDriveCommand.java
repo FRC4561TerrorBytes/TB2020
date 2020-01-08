@@ -28,7 +28,7 @@ public class TeleopDriveCommand extends CommandBase {
   @Override
   public void execute() {
     // Drive PID using speed and turn input from controller for testing
-    RobotContainer.driveSubsystem.teleopPID(RobotContainer.getXboxController().getY(Hand.kLeft), RobotContainer.getXboxController().getX(Hand.kRight));
+    RobotContainer.driveSubsystem.teleopPID(RobotContainer.XBOX_CONTROLLER.getY(Hand.kLeft), RobotContainer.XBOX_CONTROLLER.getX(Hand.kRight));
   }
 
   // Called once the command ends or is interrupted.
