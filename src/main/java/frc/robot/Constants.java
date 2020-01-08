@@ -24,8 +24,8 @@ public final class Constants {
     public static final int DRIVE_TOLERANCE = 0;
     public static final int DRIVE_TURN_SCALAR = 0;
     
-    // Default DifferentialDrive deadband value
-    public static final double DEADBAND = 0.1;
+    // Analog stick deadband value
+    public static final double DEADBAND = 0.02;
     
     // Joystick Ports
     public static final int RIGHT_JOYSTICK_PORT = 1;
