@@ -33,7 +33,7 @@ public class DriveSubsystem extends PIDSubsystem {
   private final AHRS NAVX = new AHRS(SPI.Port.kMXP);
 
   private double speed = 0.0;
-  private double turn_scalar = 1.0; // Change for increasing/decreasing sensitivity
+  private double turn_scalar = 1.0;
   private double deadband = 0.0; 
 
   private boolean was_turning = false;

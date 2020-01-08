@@ -23,7 +23,7 @@ public class RobotContainer {
   
   public static DriveSubsystem driveSubsystem = new DriveSubsystem(Constants.DRIVE_kP,
                                                               Constants.DRIVE_kD, 
-                                                              Constants.DRIVE_PERIOD,
+                                                              Constants.DRIVE_PERIOD_SECONDS,
                                                               Constants.DRIVE_TOLERANCE,
                                                               Constants.DRIVE_TURN_SCALAR,
                                                               Constants.DEADBAND);
