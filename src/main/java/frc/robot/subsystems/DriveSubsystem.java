@@ -78,9 +78,6 @@ public class DriveSubsystem extends PIDSubsystem {
       // Disable built in deadband application
       this.drivetrain.setDeadband(0);
 
-      // The TeleopDriveCommand will run by default
-      this.setDefaultCommand(new TeleopDriveCommand());
-
       this.turn_scalar = turn_scalar;
       this.deadband = deadband;
   }
