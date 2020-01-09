@@ -38,9 +38,6 @@ public class DriveSubsystem extends PIDSubsystem {
 
   private boolean was_turning = false;
 
-  private double setpoint = 0.0; // setpoint of robot orientation
-
-  
   /**
    * Create an instance of DriveSubsystem
    * <p>
@@ -113,9 +110,8 @@ public class DriveSubsystem extends PIDSubsystem {
     
     // Start turning if input is greater than deadband
     if (Math.abs(turn_request) > this.deadband) {
-      // Add delta to setpoint variable scaled by factor
-      this.setpoint += turn_request * this.turn_scalar;
-      this.setSetpoint(this.setpoint);
+      // Add delta to setpoint scaled by factor
+      this.setSetpoint(this.getController().getSetpoint() + (turn_request * this.turn_scalar));
       this.was_turning = true;
     } else { 
       // When turning is complete, reset angle, set setpoint to 0
@@ -172,4 +168,5 @@ public class DriveSubsystem extends PIDSubsystem {
   public void resetAngle() {
     NAVX.reset();
   }
+
 }
