@@ -22,13 +22,15 @@ public class TeleopDriveCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    // Enable/start DriveSubsystem PID loop
+    RobotContainer.driveSubsystem.enable();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     // Drive PID using speed and turn input from controller for testing
-    RobotContainer.driveSubsystem.teleopPID(RobotContainer.getXboxController().getY(Hand.kLeft), RobotContainer.getXboxController().getX(Hand.kRight));
+    RobotContainer.driveSubsystem.teleopPID(RobotContainer.XBOX_CONTROLLER.getY(Hand.kLeft), RobotContainer.XBOX_CONTROLLER.getX(Hand.kRight));
   }
 
   // Called once the command ends or is interrupted.
