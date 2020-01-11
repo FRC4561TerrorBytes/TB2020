@@ -113,8 +113,7 @@ public class DriveSubsystem extends PIDSubsystem {
     } else { 
       // When turning is complete, reset angle, set setpoint to 0
       if (this.was_turning) {
-        this.resetAngle();
-        this.setSetpoint(0);
+        this.setSetpoint(this.getAngle());
         this.was_turning = false;
       }
     }
