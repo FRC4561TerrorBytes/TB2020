@@ -18,9 +18,9 @@ package frc.robot;
 public final class Constants {
     
     // Drive PID values
-    public static final double DRIVE_kP = 0.05;
-    public static final double DRIVE_kD = 0.0003;
-    public static final double DRIVE_PERIOD_SECONDS = 0.01667;
+    public static final double DRIVE_kP = 0.15;
+    public static final double DRIVE_kD = 0.0025;
+    public static final double DRIVE_PERIOD_SECONDS = 0.0041675;
     public static final double DRIVE_TURN_SCALAR = 10.0;
     public static final double DRIVE_TOLERANCE = 1.0;
 
