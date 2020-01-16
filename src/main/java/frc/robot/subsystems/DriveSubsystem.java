@@ -14,9 +14,12 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.robot.Constants;
-import frc.robot.commands.TeleopDriveCommand;
 
 public class DriveSubsystem extends PIDSubsystem {
 
@@ -35,8 +38,12 @@ public class DriveSubsystem extends PIDSubsystem {
   private double speed = 0.0;
   private double turn_scalar = 1.0;
   private double deadband = 0.0; 
+  private double auto_speed = 0.0;
 
   private boolean was_turning = false;
+
+  // Odometry class for tracking robot pose
+  private final DifferentialDriveOdometry odometry;
 
   /**
    * Create an instance of DriveSubsystem
@@ -50,7 +57,7 @@ public class DriveSubsystem extends PIDSubsystem {
    * @param turn_scalar Turn sensitivity
    * @param deadband Deadzone for joystick
    */
-  public DriveSubsystem(double kP, double kD, double period, double tolerance, double turn_scalar, double deadband) {
+  public DriveSubsystem(double kP, double kD, double period, double tolerance, double turn_scalar, double deadband, double auto_speed) {
       // The PIDController used by the subsystem
       super(new PIDController(kP, 0, kD, period));
 
@@ -78,8 +85,11 @@ public class DriveSubsystem extends PIDSubsystem {
       // Disable built in deadband application
       this.drivetrain.setDeadband(0);
 
+      odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+
       this.turn_scalar = turn_scalar;
       this.deadband = deadband;
+      this.auto_speed = auto_speed;
   }
 
   @Override
@@ -93,6 +103,24 @@ public class DriveSubsystem extends PIDSubsystem {
   public double getMeasurement() {
     // Return the process variable measurement here
     return this.getAngle();
+  }
+
+  @Override
+  public void periodic() {
+    // Update the odometry in the periodic block
+    odometry.update(Rotation2d.fromDegrees(getHeading()), LEFT_MASTER_MOTOR.getSelectedSensorPosition() * Constants.kTicksToMeters,
+    RIGHT_MASTER_MOTOR.getSelectedSensorPosition() * Constants.kTicksToMeters);
+  }
+
+  /**
+   * Controls the left and right sides of the drive directly with voltages.
+   *
+   * @param leftVolts  the commanded left output
+   * @param rightVolts the commanded right output
+   */
+  public void tankDriveVolts(double leftVolts, double rightVolts) {
+    LEFT_MASTER_MOTOR.setVoltage(leftVolts);
+    RIGHT_MASTER_MOTOR.setVoltage(-rightVolts);
   }
 
   /**
@@ -120,11 +148,89 @@ public class DriveSubsystem extends PIDSubsystem {
   }
 
   /**
+   * Returns the current wheel speeds of the robot.
+   *
+   * @return The current wheel speeds.
+   */
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    return new DifferentialDriveWheelSpeeds(LEFT_MASTER_MOTOR.getSelectedSensorVelocity(), RIGHT_MASTER_MOTOR.getSelectedSensorVelocity());
+  }
+
+  /**
+   * Resets the odometry to the specified pose.
+   *
+   * @param pose The pose to which to set the odometry.
+   */
+  public void resetOdometry(Pose2d pose) {
+    LEFT_MASTER_MOTOR.setSelectedSensorPosition(0);
+    RIGHT_MASTER_MOTOR.setSelectedSensorPosition(0);
+    odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
+  }
+
+  /**
    * Set DriveSubsystem speed
    * @param speed Desired speed from -1.0 to 1.0
    */
   public void setSpeed(double speed) {
     this.speed = speed;
+  }
+
+  public Pose2d getPose() {
+    return odometry.getPoseMeters();
+  }
+
+  /**
+   * Drives the robot straight for a given
+   * @param distance distance to travel in inches
+   */
+  public void driveStraight(double distance) {
+    // Convert meters to ticks
+    double rotation = distance * Constants.kMetersToTicks;
+    
+    // Reset encoder, angle, and setpoint
+    LEFT_MASTER_MOTOR.setSelectedSensorPosition(0);
+    this.resetAngle();
+    this.setSetpoint(0);
+
+    // Sets the speed as long as Sensor Position is less than distance
+    while(LEFT_MASTER_MOTOR.getSelectedSensorPosition() < rotation) this.setSpeed(this.auto_speed);
+    
+    // Stop the motor at the end of the command 
+    this.stop();
+  }
+
+  /**
+   * Returns the heading of the robot.
+   * @return the robot's heading in degrees, from 180 to 180
+   */
+  public double getHeading() {
+    return Math.IEEEremainder(NAVX.getAngle(), 360) * (Constants.kGyroReversed ? -1.0 : 1.0);
+  }
+
+  /**
+   * Returns the turn rate of the robot.
+   * @return The turn rate of the robot, in degrees per second
+   */
+  public double getTurnRate() {
+    return NAVX.getRate() * (Constants.kGyroReversed ? -1.0 : 1.0);
+  }
+
+  /**
+   * Converts encoder position to meters
+   * @param ticks Encoder position
+   * @return Return distance in meters
+   */
+  public double getDistance(double ticks) {
+    return ticks * Constants.kTicksToMeters;
+  }
+
+  /**
+   * Gets the average distance of the two encoders.
+   *
+   * @return the average of the two encoder readings
+   */
+  public double getAverageEncoderDistance() {
+    return ((LEFT_MASTER_MOTOR.getSelectedSensorPosition() * Constants.kTicksToMeters) + (LEFT_MASTER_MOTOR.getSelectedSensorPosition() * Constants.kTicksToMeters) / 2);
   }
 
   /**

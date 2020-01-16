@@ -28,7 +28,8 @@ public class RobotContainer {
                                                                             Constants.DRIVE_PERIOD_SECONDS,
                                                                             Constants.DRIVE_TOLERANCE,
                                                                             Constants.DRIVE_TURN_SCALAR,
-                                                                            Constants.DEADBAND);
+                                                                            Constants.DEADBAND,
+                                                                            Constants.AUTO_SPEED);
   
   private static final XboxController XBOX_CONTROLLER = new XboxController(Constants.XBOX_CONTROLLER_PORT);
 
@@ -63,6 +64,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return null;
+    return new RunCommand(() -> DRIVE_SUBSYSTEM.driveStraight(30), DRIVE_SUBSYSTEM);
   }
+
+  
 }
