@@ -42,7 +42,7 @@ public class RobotContainer {
     // Enable PID on drive subsytem
     DRIVE_SUBSYSTEM.enable();
     // Set default command
-    DRIVE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> DRIVE_SUBSYSTEM.teleopPID(XBOX_CONTROLLER.getY(Hand.kLeft), XBOX_CONTROLLER.getY(Hand.kRight)), DRIVE_SUBSYSTEM));
+    DRIVE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> DRIVE_SUBSYSTEM.falconManual(XBOX_CONTROLLER.getY(Hand.kLeft)), DRIVE_SUBSYSTEM));
     // Alternative way of setting default command using command class
     // DRIVE_SUBSYSTEM.setDefaultCommand(new TeleopDriveCommand(DRIVE_SUBSYSTEM, () -> XBOX_CONTROLLER.getY(Hand.kLeft), () -> XBOX_CONTROLLER.getY(Hand.kRight)));
   }
@@ -54,6 +54,7 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    
   }
 
 

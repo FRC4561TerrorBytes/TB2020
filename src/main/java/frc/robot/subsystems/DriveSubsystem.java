@@ -27,6 +27,8 @@ public class DriveSubsystem extends PIDSubsystem {
 
   private final WPI_TalonFX RIGHT_MASTER_MOTOR = new WPI_TalonFX(Constants.FRONT_RIGHT_MOTOR_PORT);
   private final WPI_TalonFX RIGHT_REAR_SLAVE = new WPI_TalonFX(Constants.REAR_RIGHT_MOTOR_PORT);
+  
+  private final WPI_TalonFX FALCON_TEST = new WPI_TalonFX(4);
 
   private final double MIN_TOLERANCE = 1.0;
 
@@ -93,6 +95,10 @@ public class DriveSubsystem extends PIDSubsystem {
   public double getMeasurement() {
     // Return the process variable measurement here
     return this.getAngle();
+  }
+
+  public void falconManual(double power) {
+    FALCON_TEST.set(power);
   }
 
   /**
