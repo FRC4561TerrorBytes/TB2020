@@ -18,14 +18,14 @@ package frc.robot;
 public final class Constants {
     
     // Drive PID values
-    public static final double DRIVE_kP = 0.15;
-    public static final double DRIVE_kD = 0.0025;
-    public static final double DRIVE_PERIOD_SECONDS = 0.0041667; // 240Hz
+    public static final double DRIVE_kP = 0.010;
+    public static final double DRIVE_kD = 0.0005;
+    public static final double DRIVE_PERIOD_SECONDS = 0.01667; // 60Hz
     public static final double DRIVE_TURN_SCALAR = 10.0;
     public static final double DRIVE_TOLERANCE = 1.0;
 
     // Analog stick deadband value
-    public static final double DEADBAND = 0.02;
+    public static final double DEADBAND = 0.005;
     
     // Joystick Ports
     public static final int RIGHT_JOYSTICK_PORT = 1;
