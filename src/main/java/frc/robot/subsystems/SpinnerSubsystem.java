@@ -95,7 +95,7 @@ public class SpinnerSubsystem extends SubsystemBase {
    * Does nothing. (for now)
    */
   public void encoderSpin() {
-
+    
   }
 
   /**
@@ -116,6 +116,11 @@ public class SpinnerSubsystem extends SubsystemBase {
     } else return 0;
   }
 
+  /**
+   * Checks to see if the color that the sensor sees is correct.
+   * @param targetColorString 
+   * @return True if detect color equals target color else false.
+   */
   public boolean checkCorrectColor(String targetColorString) {
     Color targetColor = controlPanelMap.get(targetColorString.toLowerCase());
     if (getColorMatch(getDetectedColor()).color.equals(targetColor)) {
