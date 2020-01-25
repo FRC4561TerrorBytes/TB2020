@@ -41,4 +41,13 @@ public final class Constants {
     public static final int FRONT_RIGHT_MOTOR_PORT = 2;
     public static final int REAR_RIGHT_MOTOR_PORT = 3;
 
+    // Climber Motor Ports
+    public static final int CLIMBER_LIFT_MOTOR_PORT = 12;
+    public static final int CLIMBER_HOOK_MOTOR_PORT = 11;
+    public static final int CLIMBER_BALANCE_MOTOR_PORT = 10;
+
+    // Climber Movement Constants
+    public static final double CLIMBER_LIFT_CONSTANT = 0.5;
+    public static final double CLIMBER_HOOK_CONSTANT = 0.69;
+
 }

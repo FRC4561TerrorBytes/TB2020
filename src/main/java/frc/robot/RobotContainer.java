@@ -15,7 +15,9 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
+
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -25,6 +27,8 @@ import frc.robot.subsystems.DriveSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+
+
   
   private final DriveSubsystem DRIVE_SUBSYSTEM = new DriveSubsystem(Constants.DRIVE_kP,
                                                                             Constants.DRIVE_kD, 
@@ -32,9 +36,11 @@ public class RobotContainer {
                                                                             Constants.DRIVE_TOLERANCE,
                                                                             Constants.DRIVE_TURN_SCALAR,
                                                                             Constants.DEADBAND);
+
+  private static final ClimberSubsystem CLIMBER_SUBSYSTEM = new ClimberSubsystem();
   
   private static final XboxController XBOX_CONTROLLER = new XboxController(Constants.XBOX_CONTROLLER_PORT);
-
+  
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
@@ -58,7 +64,15 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     new JoystickButton(XBOX_CONTROLLER, Button.kA.value)
-        .whenPressed(new InstantCommand(() -> DRIVE_SUBSYSTEM.setSetpoint(180), DRIVE_SUBSYSTEM));
+        .whileHeld(new RunCommand(() -> DRIVE_SUBSYSTEM.setSetpoint(180), DRIVE_SUBSYSTEM));
+
+    // Moves climber lift at 0.5 speed when X button is pressed
+    new JoystickButton(XBOX_CONTROLLER, Button.kX.value)
+        .whileHeld(new RunCommand(() -> CLIMBER_SUBSYSTEM.liftManual(Constants.CLIMBER_LIFT_CONSTANT), CLIMBER_SUBSYSTEM));
+    
+    // Moves climber hook at 0.5 speed when Y button is pressed
+    new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
+        .whileHeld(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(Constants.CLIMBER_HOOK_CONSTANT), CLIMBER_SUBSYSTEM));
   }
 
 
