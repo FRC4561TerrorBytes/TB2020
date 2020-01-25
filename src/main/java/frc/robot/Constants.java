@@ -41,4 +41,8 @@ public final class Constants {
     public static final int FRONT_RIGHT_MOTOR_PORT = 2;
     public static final int REAR_RIGHT_MOTOR_PORT = 3;
 
+    // Spinner Subsystem
+    public static final int SPINNER_MOTOR_PORT = 4;
+    public static final double COLOR_THRESHOLD = 0.92;
+
 }

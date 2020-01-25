@@ -15,7 +15,9 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.commands.GoToColorCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.SpinnerSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -32,7 +34,7 @@ public class RobotContainer {
                                                                             Constants.DRIVE_TOLERANCE,
                                                                             Constants.DRIVE_TURN_SCALAR,
                                                                             Constants.DEADBAND);
-  
+  private final SpinnerSubsystem SPINNER_SUBSYSTEM = new SpinnerSubsystem(Constants.COLOR_THRESHOLD);
   private static final XboxController XBOX_CONTROLLER = new XboxController(Constants.XBOX_CONTROLLER_PORT);
 
   /**
@@ -59,6 +61,10 @@ public class RobotContainer {
   private void configureButtonBindings() {
     new JoystickButton(XBOX_CONTROLLER, Button.kA.value)
         .whenPressed(new InstantCommand(() -> DRIVE_SUBSYSTEM.setSetpoint(180), DRIVE_SUBSYSTEM));
+    
+    // Controller 'B' button runs goToColorCommand
+    new JoystickButton(XBOX_CONTROLLER, Button.kB.value)
+        .whenPressed(new GoToColorCommand(SPINNER_SUBSYSTEM));
   }
 
 
@@ -78,5 +84,9 @@ public class RobotContainer {
    */
   public DriveSubsystem getDriveSubsystem() {
     return DRIVE_SUBSYSTEM;
+  }
+
+  public SpinnerSubsystem getSpinnerSubsystem() {
+    return SPINNER_SUBSYSTEM;
   }
 }
