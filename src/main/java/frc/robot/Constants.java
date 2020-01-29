@@ -50,4 +50,7 @@ public final class Constants {
     public static final double CLIMBER_LIFT_CONSTANT = 0.5;
     public static final double CLIMBER_HOOK_CONSTANT = 0.69;
 
+    //Magazine Motor Port
+    public static final int MAGAZINE_MOTOR_PORT = 13;
+
 }
