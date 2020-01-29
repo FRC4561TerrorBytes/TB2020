@@ -28,6 +28,10 @@ public class MagazineSubsystem extends SubsystemBase {
     MAGAZINE_MOTOR.set(speed);
   }
 
+  public void MagazineMotorStop() {
+    MAGAZINE_MOTOR.set(0);
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
