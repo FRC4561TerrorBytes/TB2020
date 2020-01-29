@@ -30,7 +30,7 @@ public class AutoTrajectory extends CommandBase {
   /**
    * Creates a new AutoTrajectory.
    */
-  public AutoTrajectory(DriveSubsystem subsystem, Pose2d startPosition, Pose2d endPosition, List<Translation2d> interiorWaypoints) {
+  public AutoTrajectory(DriveSubsystem subsystem, Pose2d startPosition, Pose2d endPosition /*,List<Translation2d> interiorWaypoints*/ ) {
     this.subsystem = subsystem;
     addRequirements(this.subsystem);
 
@@ -57,7 +57,7 @@ public class AutoTrajectory extends CommandBase {
 
       startPosition, // syntax: new Pose2d(#, #, new Rotation2d(#))
       
-      interiorWaypoints, // syntax: new Translation2d(#, #)
+      /*interiorWaypoints,*/ // syntax: new Translation2d(#, #) COMMENTED OUT. WAYPOINTS MAY BE NEEDED
       
       endPosition, // syntax: new Pose2d(#, #, new Rotation2d(#))
 
@@ -108,4 +108,5 @@ public class AutoTrajectory extends CommandBase {
   public boolean isFinished() {
     return ramseteCommand.isFinished();
   }
+
 }

@@ -22,9 +22,9 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 public final class Constants {
     
     // Drive PID values
-    public static final double DRIVE_kP = 0.15;
-    public static final double DRIVE_kD = 0.0025;
-    public static final double DRIVE_PERIOD_SECONDS = 0.0041675;
+    public static final double DRIVE_kP = 0.010;
+    public static final double DRIVE_kD = 0.0005;
+    public static final double DRIVE_PERIOD_SECONDS = 0.01667; // 60Hz
     public static final double DRIVE_TURN_SCALAR = 10.0;
     public static final double DRIVE_TOLERANCE = 1.0;
 
@@ -33,7 +33,7 @@ public final class Constants {
     public static final double AUTO_SPEED = 0.5;
     
     // Analog stick deadband value
-    public static final double DEADBAND = 0.02;
+    public static final double DEADBAND = 0.005;
     
     // Joystick Ports
     public static final int RIGHT_JOYSTICK_PORT = 1;
@@ -43,11 +43,14 @@ public final class Constants {
     public static final int XBOX_CONTROLLER_PORT = 2;    
 
     // Drive Motor Ports 
-    public static final int FRONT_LEFT_MOTOR_PORT = 3;
-    public static final int REAR_LEFT_MOTOR_PORT = 5;
+    public static final int FRONT_LEFT_MOTOR_PORT = 0;
+    public static final int REAR_LEFT_MOTOR_PORT = 1;
 
-    public static final int FRONT_RIGHT_MOTOR_PORT = 0;
-    public static final int REAR_RIGHT_MOTOR_PORT = 8;
+    public static final int FRONT_RIGHT_MOTOR_PORT = 2;
+    public static final int REAR_RIGHT_MOTOR_PORT = 3;
+    
+    //Motor ports for lowering and raising intake arm
+    public static final int ARM_EXAMPLE_MOTOR1_PORT = 4; //TODO:Change these to actual safe values
 
     /**
      * TODO: ADD COMMENTS ONCE FINISHED

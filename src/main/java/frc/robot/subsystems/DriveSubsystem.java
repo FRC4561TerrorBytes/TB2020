@@ -68,7 +68,7 @@ public class DriveSubsystem extends PIDSubsystem {
       RIGHT_REAR_SLAVE.set(ControlMode.Follower, RIGHT_MASTER_MOTOR.getDeviceID());
 
       // Wait for Robot init before finishing DriveSubsystem init
-      try { Thread.sleep(15000); }
+      try { Thread.sleep(10000); }
       catch (Exception e) { e.printStackTrace(); }
 
       // Initialise PID subsystem setpoint and input
@@ -95,8 +95,7 @@ public class DriveSubsystem extends PIDSubsystem {
   @Override
   public void useOutput(double output, double setpoint) {
     // Use the output here
-
-    this.drivetrain.arcadeDrive(this.speed, output);
+    this.drivetrain.arcadeDrive(this.speed, -output);
   }
 
   @Override
@@ -130,16 +129,16 @@ public class DriveSubsystem extends PIDSubsystem {
    */
   public void teleopPID(double speed, double turn_request) {
     // Set drive speed if it is more than the deadband
-    if (Math.abs(speed) > this.deadband) this.setSpeed(speed);
+    if (Math.abs(speed) >= this.deadband) this.setSpeed(speed);
     else this.stop();
     
     // Start turning if input is greater than deadband
-    if (Math.abs(turn_request) > this.deadband) {
+    if (Math.abs(turn_request) >= this.deadband) {
       // Add delta to setpoint scaled by factor
       this.setSetpoint(this.getController().getSetpoint() + (turn_request * this.turn_scalar));
       this.was_turning = true;
     } else { 
-      // When turning is complete, reset angle, set setpoint to 0
+      // When turning is complete, set setpoint to current angle
       if (this.was_turning) {
         this.setSetpoint(this.getAngle());
         this.was_turning = false;
@@ -253,7 +252,17 @@ public class DriveSubsystem extends PIDSubsystem {
    * @return Total accumulated yaw angle
    */
   public double getAngle() {
-    return NAVX.getAngle();
+    // Get accumulated yaw angle
+    double raw_angle = NAVX.getAngle();
+
+    // Get fused heading and convert from [0, 360] to [-180, 180]
+    double normalized_heading = ((NAVX.getFusedHeading() - 180) % 360) - 180;
+
+    // Get number of whole rotations in degrees
+    double num_rotations_degrees = Math.copySign(Math.abs(raw_angle) - (Math.abs(raw_angle) % 360), raw_angle);
+
+    // Return the sum of whole rotations and heading
+    return num_rotations_degrees + normalized_heading;
   }
 
   /**
