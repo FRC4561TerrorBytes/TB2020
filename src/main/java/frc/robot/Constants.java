@@ -24,6 +24,32 @@ public final class Constants {
     public static final double DRIVE_TURN_SCALAR = 10.0;
     public static final double DRIVE_TOLERANCE = 1.0;
 
+    // Shooter PID Values
+    //TODO: Set these
+    public static final double FLYWHEEL_kP = 0.0;
+    public static final double FLYWHEEL_kD = 0.0;
+    public static final double FLYWHEEL_kF = 0.0;
+    public static final double FLYWHEEL_TOLERANCE = 0.0;
+    public static final boolean FLYWHEEL_ENCODER_SENSOR_PHASE = true;
+    public static final boolean FLYWHEEL_MOTOR_INVERTED = true;
+    public static final double HOOD_kP = 0.0;
+    public static final double HOOD_kD = 0.0;
+    public static final double HOOD_TOLERANCE = 0.0;
+    public static final boolean HOOD_ENCODER_SENSOR_PHASE = true;
+    public static final boolean HOOD_MOTOR_INVERTED = true;
+    public static final double TURRET_kP = 0.0;
+    public static final double TURRET_kD = 0.0;
+    public static final double TURRET_TOLERANCE = 0.0;
+    public static final boolean TURRET_ENCODER_SENSOR_PHASE = true;
+    public static final boolean TURRET_MOTOR_INVERTED = true;
+    
+    // Shooter Positions
+    public static final int HOOD_BOTTOM_POSITION = 0;
+    public static final int HOOD_TOP_POSITION = 1000; //TODO: set this
+    public static final int TURRET_RIGHT_POSITION = 0;
+    public static final int TURRET_MIDDLE_POSITION = 9626; //TODO: set this
+    public static final int TURRET_LEFT_POSITION = 19251; //TODO: set this
+
     // Analog stick deadband value
     public static final double DEADBAND = 0.02;
     
@@ -40,5 +66,12 @@ public final class Constants {
 
     public static final int FRONT_RIGHT_MOTOR_PORT = 2;
     public static final int REAR_RIGHT_MOTOR_PORT = 3;
+
+    // Shooter Motor Ports
+    public static final int FLYWHEEL_MASTER_MOTOR_PORT = 4;
+    public static final int FLYWHEEL_SLAVE_MOTOR_PORT = 5;
+    public static final int HOOD_MOTOR_PORT = 6;
+    public static final int TURRET_MOTOR_PORT = 7;
+
 
 }

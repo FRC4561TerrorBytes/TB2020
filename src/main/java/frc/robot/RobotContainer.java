@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -29,6 +30,19 @@ public class RobotContainer {
                                                                             Constants.DRIVE_TOLERANCE,
                                                                             Constants.DRIVE_TURN_SCALAR,
                                                                             Constants.DEADBAND);
+
+  private static final ShooterSubsystem SHOOTER_SUBSYSTEM = new ShooterSubsystem(Constants.FLYWHEEL_kP,
+                                                                                  Constants.FLYWHEEL_kD,
+                                                                                  Constants.FLYWHEEL_kF,
+                                                                                  Constants.FLYWHEEL_TOLERANCE,
+                                                                                  Constants.HOOD_kP,
+                                                                                  Constants.HOOD_kD,
+                                                                                  Constants.HOOD_TOLERANCE,
+                                                                                  Constants.HOOD_TOP_POSITION,
+                                                                                  Constants.TURRET_kP,
+                                                                                  Constants.TURRET_kD,
+                                                                                  Constants.TURRET_TOLERANCE,
+                                                                                  Constants.TURRET_LEFT_POSITION);
   
   private static final XboxController XBOX_CONTROLLER = new XboxController(Constants.XBOX_CONTROLLER_PORT);
 
