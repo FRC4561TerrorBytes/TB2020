@@ -22,6 +22,7 @@ public class TalonPIDConfig {
   private static final int PID_SLOT = 0;
 
   private boolean motionMagic = false;
+  private boolean enableLimits = true;
 
   private boolean sensorPhase = false;
   private boolean invertMotor = false;
@@ -34,7 +35,7 @@ public class TalonPIDConfig {
   private double upperLimit = 0.0;
 
   private double velocityRPM = 1.0;
-  private double accelerationRPMPerSec = 1.0;;
+  private double accelerationRPMPerSec = 1.0;
   private int motionSmoothing = 0;
 
   /**
@@ -62,6 +63,33 @@ public class TalonPIDConfig {
     this.tolerance = tolerance;
     this.lowerLimit = lowerLimit;
     this.upperLimit = upperLimit;
+
+    if (this.tolerance < MIN_TOLERANCE) this.tolerance = MIN_TOLERANCE;
+  }
+
+  /**
+   * Create a TalonPIDConfig, without MotionMagic parameters
+   * 
+   * @param sensorPhase set sensor phase of encoder
+   * @param invertMotor invert motor or not
+   * @param kP proportional gain
+   * @param kI integral gain
+   * @param kD derivative gain
+   * @param kF feed-forward gain
+   * @param tolerance tolerance of PID loop
+   */
+  TalonPIDConfig(boolean sensorPhase, boolean invertMotor, 
+                  double kP, double kI, double kD, double kF, 
+                  double tolerance) {
+    this.sensorPhase = sensorPhase;
+    this.invertMotor = invertMotor;
+    this.kP = kP;
+    this.kI = kI;
+    this.kD = kD;
+    this.kF = kF;
+    this.tolerance = tolerance;
+
+    this.enableLimits = false;
 
     if (this.tolerance < MIN_TOLERANCE) this.tolerance = MIN_TOLERANCE;
   }
@@ -118,10 +146,12 @@ public class TalonPIDConfig {
     talon.configSelectedFeedbackSensor(feedbackDevice);
     
     // Configure forward and reverse soft limits
-    talon.configForwardSoftLimitThreshold((int)this.upperLimit);
-    talon.configForwardSoftLimitEnable(true);
-    talon.configReverseSoftLimitThreshold((int)this.lowerLimit);
-    talon.configReverseSoftLimitEnable(true);
+    if (this.enableLimits) {
+      talon.configForwardSoftLimitThreshold((int)this.upperLimit);
+      talon.configForwardSoftLimitEnable(true);
+      talon.configReverseSoftLimitThreshold((int)this.lowerLimit);
+      talon.configReverseSoftLimitEnable(true);
+    }
 
     // Configure forward and reverse limit switches if required
     if (forwardLimitSwitch) 
