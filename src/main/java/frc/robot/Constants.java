@@ -53,4 +53,7 @@ public final class Constants {
     //Magazine Motor Port
     public static final int MAGAZINE_MOTOR_PORT = 13;
 
+    //Intake Motor Port
+    public static final int INTAKE_MOTOR_PORT = 14;
+
 }

@@ -12,17 +12,18 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-
 public class MagazineSubsystem extends SubsystemBase {
 
   // Declaration of motor
   private final WPI_TalonSRX MAGAZINE_MOTOR = new WPI_TalonSRX(Constants.MAGAZINE_MOTOR_PORT);
+  private final WPI_TalonSRX INTAKE_MOTOR = new WPI_TalonSRX(Constants.INTAKE_MOTOR_PORT);
+
   /**
    * Creates a new MagazineSubsystem.
    */
   public MagazineSubsystem() {
-
   }
+ 
   // Makes the motor for the magazine to spin
   public void MagazineMotorSpeed(double speed) {
     MAGAZINE_MOTOR.set(speed);
@@ -36,4 +37,20 @@ public class MagazineSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
   }
+  /**
+   * Makes the intake motor spin
+   * @param speed (double) how fast you want the motor to spin
+   */
+  public void IntakeMotorSpeed(double speed) {
+    INTAKE_MOTOR.set(speed);
+  }
+
+  // Stops the motor
+  public void IntakeMotorStop() {
+    INTAKE_MOTOR.set(0);
+
+    
+  }
+
 }
+
