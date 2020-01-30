@@ -34,18 +34,7 @@ public class RobotContainer {
                                                                             Constants.DRIVE_TURN_SCALAR,
                                                                             Constants.DEADBAND);
 
-  private static final ShooterSubsystem SHOOTER_SUBSYSTEM = new ShooterSubsystem(Constants.FLYWHEEL_kP,
-                                                                                  Constants.FLYWHEEL_kD,
-                                                                                  Constants.FLYWHEEL_kF,
-                                                                                  Constants.FLYWHEEL_TOLERANCE,
-                                                                                  Constants.HOOD_kP,
-                                                                                  Constants.HOOD_kD,
-                                                                                  Constants.HOOD_TOLERANCE,
-                                                                                  Constants.HOOD_TOP_POSITION,
-                                                                                  Constants.TURRET_kP,
-                                                                                  Constants.TURRET_kD,
-                                                                                  Constants.TURRET_TOLERANCE,
-                                                                                  Constants.TURRET_LEFT_POSITION);
+  private static final ShooterSubsystem SHOOTER_SUBSYSTEM = new ShooterSubsystem(Constants.FLYWHEEL_CONFIG, Constants.HOOD_CONFIG, Constants.TURRET_CONFIG);
   
   private static final XboxController XBOX_CONTROLLER = new XboxController(Constants.XBOX_CONTROLLER_PORT);
 

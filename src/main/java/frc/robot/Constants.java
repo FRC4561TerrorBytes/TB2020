@@ -16,6 +16,9 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    // Show Debug
+    public static final boolean SHOOTER_DEBUG = true;
     
     // Drive PID values
     public static final double DRIVE_kP = 0.010;
@@ -26,22 +29,28 @@ public final class Constants {
 
     // Shooter PID Values
     //TODO: Set these
-    public static final double FLYWHEEL_kP = 0.0;
-    public static final double FLYWHEEL_kD = 0.0;
-    public static final double FLYWHEEL_kF = 0.0;
-    public static final double FLYWHEEL_TOLERANCE = 0.0;
-    public static final boolean FLYWHEEL_ENCODER_SENSOR_PHASE = true;
-    public static final boolean FLYWHEEL_MOTOR_INVERTED = true;
-    public static final double HOOD_kP = 0.0;
-    public static final double HOOD_kD = 0.0;
-    public static final double HOOD_TOLERANCE = 0.0;
-    public static final boolean HOOD_ENCODER_SENSOR_PHASE = true;
-    public static final boolean HOOD_MOTOR_INVERTED = true;
-    public static final double TURRET_kP = 0.0;
-    public static final double TURRET_kD = 0.0;
-    public static final double TURRET_TOLERANCE = 0.0;
-    public static final boolean TURRET_ENCODER_SENSOR_PHASE = true;
-    public static final boolean TURRET_MOTOR_INVERTED = true;
+    private static final double FLYWHEEL_kP = 0.0;
+    private static final double FLYWHEEL_kD = 0.0;
+    private static final double FLYWHEEL_kF = 0.0;
+    private static final double FLYWHEEL_TOLERANCE = 0.0;
+    private static final boolean FLYWHEEL_ENCODER_SENSOR_PHASE = true;
+    private static final boolean FLYWHEEL_MOTOR_INVERTED = true;
+    private static final double HOOD_kP = 0.0;
+    private static final double HOOD_kD = 0.0;
+    private static final double HOOD_TOLERANCE = 0.0;
+    private static final double HOOD_VELOCITY_RPM = 0.0;
+    private static final double HOOD_ACCELERATION_RPM_PER_SEC = 0.0;
+    private static final int HOOD_MOTION_SMOOTHING = 0; // between [0, 7]
+    private static final boolean HOOD_ENCODER_SENSOR_PHASE = true;
+    private static final boolean HOOD_MOTOR_INVERTED = true;
+    private static final double TURRET_kP = 0.0;
+    private static final double TURRET_kD = 0.0;
+    private static final double TURRET_TOLERANCE = 0.0;
+    private static final double TURRET_VELOCITY_RPM = 0.0;
+    private static final double TURRET_ACCELERATION_RPM_PER_SEC = 0.0;
+    private static final int TURRET_MOTION_SMOOTHING = 0; // between [0, 7]
+    private static final boolean TURRET_ENCODER_SENSOR_PHASE = true;
+    private static final boolean TURRET_MOTOR_INVERTED = true;
     
     // Shooter Positions
     public static final int HOOD_BOTTOM_POSITION = 0;
@@ -49,6 +58,42 @@ public final class Constants {
     public static final int TURRET_RIGHT_POSITION = 0;
     public static final int TURRET_MIDDLE_POSITION = 9626; //TODO: set this
     public static final int TURRET_LEFT_POSITION = 19251; //TODO: set this
+
+    // Set PID for Flywheel
+    public static final TalonPIDConfig FLYWHEEL_CONFIG = new TalonPIDConfig(FLYWHEEL_ENCODER_SENSOR_PHASE,
+                                                        FLYWHEEL_MOTOR_INVERTED,
+                                                        FLYWHEEL_kP,
+                                                        0,
+                                                        FLYWHEEL_kD,
+                                                        FLYWHEEL_kF,
+                                                        FLYWHEEL_TOLERANCE);
+    // Set PID for Hood
+    public static final TalonPIDConfig HOOD_CONFIG = new TalonPIDConfig(HOOD_ENCODER_SENSOR_PHASE,
+                                                    HOOD_MOTOR_INVERTED,
+                                                    HOOD_kP,
+                                                    0,
+                                                    HOOD_kD,
+                                                    0,
+                                                    HOOD_TOLERANCE,
+                                                    HOOD_BOTTOM_POSITION,
+                                                    HOOD_TOP_POSITION,
+                                                    HOOD_VELOCITY_RPM,
+                                                    HOOD_ACCELERATION_RPM_PER_SEC,
+                                                    HOOD_MOTION_SMOOTHING);
+
+    // Set PID for Turret
+    public static final TalonPIDConfig TURRET_CONFIG = new TalonPIDConfig(TURRET_ENCODER_SENSOR_PHASE,
+                                                        TURRET_MOTOR_INVERTED,
+                                                        TURRET_kP,
+                                                        0,
+                                                        TURRET_kD,
+                                                        0,
+                                                        TURRET_TOLERANCE,
+                                                        TURRET_RIGHT_POSITION,
+                                                        TURRET_LEFT_POSITION,
+                                                        TURRET_VELOCITY_RPM,
+                                                        TURRET_ACCELERATION_RPM_PER_SEC,
+                                                        TURRET_MOTION_SMOOTHING);
 
     // Analog stick deadband value
     public static final double DEADBAND = 0.005;
