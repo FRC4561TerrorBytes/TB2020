@@ -51,6 +51,10 @@ public class MagazineSubsystem extends SubsystemBase {
 
     
   }
-
+   // Detects ball 
+   public boolean BallDetected() {
+    boolean DetectorBall = this.MAGAZINE_MOTOR.getSensorCollection().isFwdLimitSwitchClosed();
+    return DetectorBall;
+   }
 }
 
