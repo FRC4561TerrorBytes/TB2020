@@ -25,11 +25,11 @@ public class MagazineSubsystem extends SubsystemBase {
   }
  
   // Makes the motor for the magazine to spin
-  public void MagazineMotorSpeed(double speed) {
-    MAGAZINE_MOTOR.set(speed);
+  public void magazineMotorSpeed() {
+    MAGAZINE_MOTOR.set(Constants.MagazineMotorSpeed);
   }
 
-  public void MagazineMotorStop() {
+  public void magazineMotorStop() {
     MAGAZINE_MOTOR.set(0);
   }
 
@@ -41,18 +41,16 @@ public class MagazineSubsystem extends SubsystemBase {
    * Makes the intake motor spin
    * @param speed (double) how fast you want the motor to spin
    */
-  public void IntakeMotorSpeed(double speed) {
+  public void intakeMotorSpeed(double speed) {
     INTAKE_MOTOR.set(speed);
   }
 
   // Stops the motor
-  public void IntakeMotorStop() {
+  public void intakeMotorStop() {
     INTAKE_MOTOR.set(0);
-
-    
   }
    // Detects ball 
-   public boolean BallDetected() {
+   public boolean ballDetected() {
     boolean DetectorBall = this.MAGAZINE_MOTOR.getSensorCollection().isFwdLimitSwitchClosed();
     return DetectorBall;
    }

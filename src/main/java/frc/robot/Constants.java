@@ -55,5 +55,7 @@ public final class Constants {
 
     //Intake Motor Port
     public static final int INTAKE_MOTOR_PORT = 14;
-
+      
+    //set Magazine Motor Speed
+    public static final double MagazineMotorSpeed = 0.5;
 }

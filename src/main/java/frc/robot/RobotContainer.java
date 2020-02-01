@@ -11,12 +11,14 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.MagazineSubsystem;
 
 
 /**
@@ -38,8 +40,12 @@ public class RobotContainer {
                                                                             Constants.DEADBAND);
 
   private static final ClimberSubsystem CLIMBER_SUBSYSTEM = new ClimberSubsystem();
+
+  public static final MagazineSubsystem MAGAZINE_SUBSYSTEM = new MagazineSubsystem();
   
   private static final XboxController XBOX_CONTROLLER = new XboxController(Constants.XBOX_CONTROLLER_PORT);
+
+
   
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -73,6 +79,10 @@ public class RobotContainer {
     // Moves climber hook at 0.5 speed when Y button is pressed
     new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
         .whileHeld(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(Constants.CLIMBER_HOOK_CONSTANT), CLIMBER_SUBSYSTEM));
+
+    // When pressed, detects ball and spins motor at 0.5 speed
+    new Trigger(MAGAZINE_SUBSYSTEM::ballDetected)
+        .whenActive(new InstantCommand(() ->  MAGAZINE_SUBSYSTEM.magazineMotorSpeed(), MAGAZINE_SUBSYSTEM));
   }
 
 
@@ -93,4 +103,13 @@ public class RobotContainer {
   public DriveSubsystem getDriveSubsystem() {
     return DRIVE_SUBSYSTEM;
   }
+
+  /**
+   * Get MagazineSubsystem
+   * @return magazinesubsystem
+   */
+
+   public static MagazineSubsystem getMagazineSubsystem() {
+     return MAGAZINE_SUBSYSTEM;
+   }
 }
