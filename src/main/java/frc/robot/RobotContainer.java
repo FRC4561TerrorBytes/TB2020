@@ -33,15 +33,15 @@ public class RobotContainer {
 
   
   private final DriveSubsystem DRIVE_SUBSYSTEM = new DriveSubsystem(Constants.DRIVE_kP,
-                                                                            Constants.DRIVE_kD, 
-                                                                            Constants.DRIVE_PERIOD_SECONDS,
-                                                                            Constants.DRIVE_TOLERANCE,
-                                                                            Constants.DRIVE_TURN_SCALAR,
-                                                                            Constants.DEADBAND);
+                                                                    Constants.DRIVE_kD, 
+                                                                    Constants.DRIVE_PERIOD_SECONDS,
+                                                                    Constants.DRIVE_TOLERANCE,
+                                                                    Constants.DRIVE_TURN_SCALAR,
+                                                                    Constants.DEADBAND);
 
   private static final ClimberSubsystem CLIMBER_SUBSYSTEM = new ClimberSubsystem();
 
-  public static final MagazineSubsystem MAGAZINE_SUBSYSTEM = new MagazineSubsystem();
+  public static final MagazineSubsystem MAGAZINE_SUBSYSTEM = new MagazineSubsystem(Constants.ARM_CONFIG);
   
   private static final XboxController XBOX_CONTROLLER = new XboxController(Constants.XBOX_CONTROLLER_PORT);
 

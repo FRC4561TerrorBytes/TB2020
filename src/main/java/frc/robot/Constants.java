@@ -24,6 +24,38 @@ public final class Constants {
     public static final double DRIVE_TURN_SCALAR = 10.0;
     public static final double DRIVE_TOLERANCE = 1.0;
 
+    // Intake Arm PID config
+    public static final double ARM_kP = 0.0;
+    public static final double ARM_kD = 0.0;
+    public static final double ARM_kF = 0.0;
+    public static final double ARM_TOLERANCE = 0.0;
+    public static final double ARM_LOWER_LIMIT = 0.0;
+    public static final double ARM_UPPER_LIMIT = 0.0;
+    public static final double ARM_VELOCITY_RPM = 0.0;
+    public static final double ARM_ACCELERATION_RPM_PER_SEC = 0.0;
+    public static final int ARM_MOTION_SMOOTHING = 0;
+    public static final boolean ARM_SENSOR_PHASE = false;
+    public static final boolean ARM_INVERT_MOTOR = false;
+
+    // Intake Arm Positions
+    //TODO: Set these
+    public static final double ARM_TOP_POSITION = 0;
+    public static final double ARM_BOTTOM_POSITION = 1000;
+
+    // Arm Config
+    public static final TalonPIDConfig ARM_CONFIG = new TalonPIDConfig(ARM_SENSOR_PHASE,
+                                                                        ARM_INVERT_MOTOR,
+                                                                        ARM_kP,
+                                                                        0.0,
+                                                                        ARM_kD,
+                                                                        ARM_kF,
+                                                                        ARM_TOLERANCE,
+                                                                        ARM_LOWER_LIMIT,
+                                                                        ARM_UPPER_LIMIT,
+                                                                        ARM_VELOCITY_RPM,
+                                                                        ARM_ACCELERATION_RPM_PER_SEC,
+                                                                        ARM_MOTION_SMOOTHING);
+
     // Analog stick deadband value
     public static final double DEADBAND = 0.005;
     
@@ -55,6 +87,7 @@ public final class Constants {
 
     //Intake Motor Port
     public static final int INTAKE_MOTOR_PORT = 14;
+    public static final int ARM_MOTOR_PORT = 15;
       
     //set Magazine Motor Speed
     public static final double MagazineMotorSpeed = 0.5;
