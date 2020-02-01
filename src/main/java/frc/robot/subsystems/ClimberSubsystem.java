@@ -54,24 +54,39 @@ public class ClimberSubsystem extends PIDSubsystem {
     return zAxis[1] * 256 + zAxis[0];
   }
   
-  // Move climber lift with controller button
+  /**
+   * Move climber lift
+   * @param liftSpeed speed at which motor lifts at [-1, 1]
+   */
   public void liftManual(double liftSpeed) {
     CLIMBER_LIFT_MOTOR.set(liftSpeed);
   }
-  // Moves the climber hook with controller button
+
+  /**
+   * Moves the climber hook with controller button
+   * @param hookspeed speed at which the hook moves at [-1, 1]
+   */
   public void hookManual(double hookspeed) {
     CLIMBER_HOOK_MOTOR.set(hookspeed);
   }
 
-  // Stops the lift motor
+  /**
+   * Stops the lift motor
+   */
   public void stopLift() {
     CLIMBER_LIFT_MOTOR.set(0);
   }
-  // Stops the balance motor
+
+  /**
+   * Stops the balance motor
+   */
   public void stopBalance() {
     CLIMBER_BALANCE_MOTOR.set(0);
   }
-  // Stops the hook motor
+
+  /**
+   * Stops the hook motor
+   */
   public void stopHook() {
     CLIMBER_HOOK_MOTOR.set(0);
   }
