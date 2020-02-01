@@ -26,6 +26,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public static final double GEAR_RATIO = 3 / 4;
     private static final WPI_TalonFX MASTER_MOTOR = new WPI_TalonFX(Constants.FLYWHEEL_MASTER_MOTOR_PORT);
     private static final WPI_TalonFX SLAVE_MOTOR = new WPI_TalonFX(Constants.FLYWHEEL_SLAVE_MOTOR_PORT);
+    private static TalonPIDConfig config;
   }
 
   private static class Hood {
@@ -34,6 +35,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final int TICKS_PER_ROTATION = 4096;
     public static final double GEAR_RATIO = 298 / 25;
     private static final WPI_TalonSRX MOTOR = new WPI_TalonSRX(Constants.HOOD_MOTOR_PORT);
+    private static TalonPIDConfig config;
   }
 
   private static class Turret {
@@ -44,6 +46,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public static final int GEAR_RATIO = 94 / 15;
     private static final double TICKS_PER_DEGREE = (TICKS_PER_ROTATION * GEAR_RATIO) / 360;
     private static final WPI_TalonSRX MOTOR = new WPI_TalonSRX(Constants.TURRET_MOTOR_PORT);
+    private static TalonPIDConfig config;
   }
 
   /**
@@ -61,11 +64,15 @@ public class ShooterSubsystem extends SubsystemBase {
    */
   public ShooterSubsystem(TalonPIDConfig flywheelConfig, TalonPIDConfig hoodConfig, TalonPIDConfig turretConfig) {
 
+    Flywheel.config = flywheelConfig;
+    Hood.config = hoodConfig;
+    Turret.config = turretConfig;
+
     Flywheel.SLAVE_MOTOR.set(ControlMode.Follower, Flywheel.MASTER_MOTOR.getDeviceID());
 
-    flywheelConfig.initializeTalonPID(Flywheel.MASTER_MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, false, false);
-    hoodConfig.initializeTalonPID(Hood.MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, false, false);
-    turretConfig.initializeTalonPID(Turret.MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, false, false);
+    Flywheel.config.initializeTalonPID(Flywheel.MASTER_MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, false, false);
+    Hood.config.initializeTalonPID(Hood.MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, false, false);
+    Turret.config.initializeTalonPID(Turret.MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, false, false);
 
     // Reset encoders to 0 on initialisation
     this.resetEncoder(Flywheel.MASTER_MOTOR);
@@ -75,8 +82,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
 		/* Mask out overflows, keep bottom 12 bits */
 		Turret.middlePosition &= 0xFFF;
-		if (turretConfig.getSensorPhase())  Turret.middlePosition *= -1;
-		if (turretConfig.getInvertMotor()) Turret.middlePosition *= -1;
+		if (Turret.config.getSensorPhase())  Turret.middlePosition *= -1;
+		if (Turret.config.getInvertMotor()) Turret.middlePosition *= -1;
 		
 		/* Set the quadrature (relative) sensor to match absolute */
 		Turret.MOTOR.setSelectedSensorPosition(Turret.middlePosition);
@@ -93,7 +100,7 @@ public class ShooterSubsystem extends SubsystemBase {
     else if (setpoint < Hood.bottomPosition) setpoint = Hood.bottomPosition;
 
     // Move hood toward setpoint
-    Hood.MOTOR.set(ControlMode.Position, setpoint);
+    Hood.MOTOR.set(ControlMode.MotionMagic, setpoint);
   }
 
   /**
@@ -106,7 +113,20 @@ public class ShooterSubsystem extends SubsystemBase {
     else if (setpoint < Turret.rightPosition) setpoint = Turret.rightPosition;
 
     // Move turret toward setpoint
-    Turret.MOTOR.set(ControlMode.Position, convertTurretDegreesToTicks(setpoint));
+    Turret.MOTOR.set(ControlMode.MotionMagic, convertTurretDegreesToTicks(setpoint) + Turret.middlePosition);
+  }
+
+  /**
+   * Adds angle to current setpoint
+   * @param setpoint inputs position to move to (in degrees)
+   */
+  public void relativeMoveTurretPID(double setpoint) {
+    // Normalise setpoint
+    if (Turret.MOTOR.getSelectedSensorPosition() + convertTurretDegreesToTicks(setpoint) > Turret.config.getUpperLimit()) setpoint = 0;
+    else if (Turret.MOTOR.getSelectedSensorPosition() + convertTurretDegreesToTicks(setpoint) < Turret.config.getUpperLimit()) setpoint = 0;
+
+    // Move turret toward setpoint
+    Turret.MOTOR.set(ControlMode.MotionMagic, Turret.MOTOR.getClosedLoopTarget() + convertTurretDegreesToTicks(setpoint));
   }
 
   /**
@@ -141,7 +161,7 @@ public class ShooterSubsystem extends SubsystemBase {
    * @return position in ticks
    */
   private double convertTurretDegreesToTicks(double degrees) {
-    return (Turret.TICKS_PER_DEGREE * degrees) + Turret.middlePosition;
+    return (Turret.TICKS_PER_DEGREE * degrees);
   }
 
   /**
