@@ -24,6 +24,10 @@ public final class Constants {
     public static final double DRIVE_TURN_SCALAR = 10.0;
     public static final double DRIVE_TOLERANCE = 1.0;
 
+    // Mouse Droid PID values
+    public static final double MOUSE_kP = 0;
+    public static final double MOUSE_kD = 0;
+
     // Analog stick deadband value
     public static final double DEADBAND = 0.005;
     
@@ -49,5 +53,8 @@ public final class Constants {
     // Climber Movement Constants
     public static final double CLIMBER_LIFT_CONSTANT = 0.5;
     public static final double CLIMBER_HOOK_CONSTANT = 0.69;
+
+    // Climber I2C port
+    public static final int CLIMBER_GYRO_PORT = 2;
 
 }

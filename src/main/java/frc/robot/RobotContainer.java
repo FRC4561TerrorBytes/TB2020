@@ -37,7 +37,7 @@ public class RobotContainer {
                                                                             Constants.DRIVE_TURN_SCALAR,
                                                                             Constants.DEADBAND);
 
-  private static final ClimberSubsystem CLIMBER_SUBSYSTEM = new ClimberSubsystem();
+  private static final ClimberSubsystem CLIMBER_SUBSYSTEM = new ClimberSubsystem(Constants.MOUSE_kP, Constants.MOUSE_kD);
   
   private static final XboxController XBOX_CONTROLLER = new XboxController(Constants.XBOX_CONTROLLER_PORT);
   
