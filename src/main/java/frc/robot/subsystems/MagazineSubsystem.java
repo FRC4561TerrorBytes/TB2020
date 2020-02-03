@@ -24,7 +24,7 @@ public class MagazineSubsystem extends SubsystemBase {
   private final WPI_TalonSRX ARM_MOTOR = new WPI_TalonSRX(Constants.ARM_MOTOR_PORT);
 
   private final double TICKS_PER_ROTATION = 4096;
-  private final double GEAR_RATIO = 1;
+  private final double GEAR_RATIO = 2;
   private final double TICKS_PER_DEGREE = (this.TICKS_PER_DEGREE * this. GEAR_RATIO) / 360;
   private TalonPIDConfig config;
 
