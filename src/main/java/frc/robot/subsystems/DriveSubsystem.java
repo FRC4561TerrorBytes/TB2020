@@ -149,13 +149,15 @@ public class DriveSubsystem extends PIDSubsystem {
     double raw_angle = NAVX.getAngle();
 
     // Get fused heading and convert from [0, 360] to [-180, 180]
-    double normalized_heading = ((NAVX.getFusedHeading() - 180) % 360) - 180;
+    //double normalized_heading = ((NAVX.getFusedHeading() - 180) % 360) - 180;
 
     // Get number of whole rotations in degrees
-    double num_rotations_degrees = Math.copySign(Math.abs(raw_angle) - (Math.abs(raw_angle) % 360), raw_angle);
+    //double num_rotations_degrees = Math.copySign(Math.abs(raw_angle) - (Math.abs(raw_angle) % 360), raw_angle);
 
     // Return the sum of whole rotations and heading
-    return num_rotations_degrees + normalized_heading;
+    //return num_rotations_degrees + normalized_heading;
+    
+    return raw_angle;
   }
 
   /**
