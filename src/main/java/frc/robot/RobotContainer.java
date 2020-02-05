@@ -62,6 +62,16 @@ public class RobotContainer {
   private void configureButtonBindings() {
     new JoystickButton(XBOX_CONTROLLER, Button.kA.value)
         .whenPressed(new InstantCommand(() -> DRIVE_SUBSYSTEM.setSetpoint(180), DRIVE_SUBSYSTEM));
+
+    // When pressed, moves hood to top position
+    
+    new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
+        .whenPressed(new InstantCommand(() -> SHOOTER_SUBSYSTEM.moveHoodPID(Constants.HOOD_TOP_POSITION), SHOOTER_SUBSYSTEM));
+
+        //When pressed, moves hood to bottom position
+
+    new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
+        .whenPressed(new InstantCommand(() -> SHOOTER_SUBSYSTEM.moveHoodPID(Constants.HOOD_BOTTOM_POSITION), SHOOTER_SUBSYSTEM));
   }
 
 
