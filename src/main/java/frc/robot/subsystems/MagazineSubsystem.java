@@ -11,6 +11,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -20,7 +22,7 @@ public class MagazineSubsystem extends SubsystemBase {
 
   // Declaration of motor
   private final WPI_TalonSRX MAGAZINE_MOTOR = new WPI_TalonSRX(Constants.MAGAZINE_MOTOR_PORT);
-  private final WPI_TalonSRX INTAKE_MOTOR = new WPI_TalonSRX(Constants.INTAKE_MOTOR_PORT);
+  private final CANSparkMax INTAKE_MOTOR = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
   private final WPI_TalonSRX ARM_MOTOR = new WPI_TalonSRX(Constants.ARM_MOTOR_PORT);
 
   private final double TICKS_PER_ROTATION = 4096;
