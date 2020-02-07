@@ -14,6 +14,8 @@ import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -48,6 +50,9 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final WPI_TalonSRX MOTOR = new WPI_TalonSRX(Constants.TURRET_MOTOR_PORT);
     private static TalonPIDConfig config;
   }
+
+  // Creates new NetworkTable object
+  public static NetworkTable table = NetworkTableInstance.getDefault().getTable("SmartDashboard");
 
   /**
   * Create an instance of ShooterSubsystem
@@ -114,6 +119,15 @@ public class ShooterSubsystem extends SubsystemBase {
 
     // Move turret toward setpoint
     Turret.MOTOR.set(ControlMode.MotionMagic, convertTurretDegreesToTicks(setpoint) + Turret.middlePosition);
+  }
+
+  /**
+   * Automatically aim at vision target
+   */
+  public void turretVisionPID() {
+    if (table.getEntry("detected?").getBoolean(false)) {
+      moveTurretPID(Turret.MOTOR.getClosedLoopTarget() + table.getEntry("xAngle").getDouble(0.0));
+    }
   }
 
   /**
@@ -208,6 +222,9 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    // Automatically move turret to vision target
+    turretVisionPID();
 
     if (Constants.SHOOTER_DEBUG) {
       SmartDashboard.putNumber("Flywheel Motor Output", Flywheel.MASTER_MOTOR.getMotorOutputPercent());
