@@ -61,6 +61,6 @@ public final class Constants {
     public static final double CLIMBER_HOOK_CONSTANT = 0.69;
 
     // Climber I2C port
-    public static final int CLIMBER_GYRO_PORT = 2;
+    public static final int CLIMBER_GYRO_PORT = 0x6B;
 
 }

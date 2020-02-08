@@ -22,9 +22,14 @@ public class ClimberSubsystem extends PIDSubsystem {
   private final WPI_TalonSRX CLIMBER_HOOK_MOTOR = new WPI_TalonSRX(Constants.CLIMBER_HOOK_MOTOR_PORT);
   private final WPI_TalonSRX CLIMBER_BALANCE_MOTOR = new WPI_TalonSRX(Constants.CLIMBER_BALANCE_MOTOR_PORT);
   private final I2C gyro = new I2C(I2C.Port.kOnboard, Constants.CLIMBER_GYRO_PORT);
-  private double levelTarget = 0.0;
-  private static int gyroAddress = 0x1c;
-  private static double zAxisPosition = 0;
+  private final double GYRO_SENSITIVITY = 0.00875;
+  private final int ENABLE_GYRO_REG = 0x10;
+  private final int ENABLE_GYRO_VALUE = 0x20;
+  private final int GYRO_ADDRESS = 0x1C;
+  private long previousTime = 0;
+  private double zAxisVelocity = 0;
+  private double zAxisPosition = 0;
+  private byte[] zAxisVelocityBytes = new byte[2];
 
 
   public ClimberSubsystem(double kP, double kD) {
@@ -33,12 +38,9 @@ public class ClimberSubsystem extends PIDSubsystem {
         // The PIDController used by the subsystem
         new PIDController(kP, 0, kD));
 
-    byte[] zAxis = new byte[2];
-    if(!gyro.read(0x2C, 2, zAxis)) {
-        this.levelTarget = zAxis[1] * 256 + zAxis[0];
-        setSetpoint(this.levelTarget);
-    }
+    gyro.write(ENABLE_GYRO_REG, ENABLE_GYRO_VALUE);
 
+    this.setSetpoint(0);
   }
 
   @Override
@@ -50,11 +52,16 @@ public class ClimberSubsystem extends PIDSubsystem {
   @Override
   public double getMeasurement() {
     // Return the process variable measurement here
-    byte[] zAxisVelocityBytes = new byte[2];
-    double zAxisVelocity = 0;
-    if (!gyro.read(gyroAddress, 2, zAxisVelocityBytes)) {
-      zAxisVelocity = zAxisVelocityBytes[1] << 8 | zAxisVelocityBytes[0];
-      return this.zAxisPosition += zAxisVelocity / 60 * Constants.ROBOT_TICK_RATE;
+    
+    if (!gyro.read(this.GYRO_ADDRESS, 2, this.zAxisVelocityBytes)) {
+      long currentTime = System.currentTimeMillis();
+      zAxisVelocity = this.zAxisVelocityBytes[1] << 8 | this.zAxisVelocityBytes[0];
+      zAxisVelocity *= this.GYRO_SENSITIVITY;
+      if (Math.abs(zAxisVelocity) < 0.25) zAxisVelocity = 0;
+      System.out.println(zAxisVelocity);
+      long timeDelta = (this.previousTime == 0) ? 0 : currentTime - this.previousTime;
+      this.previousTime = currentTime;
+      return this.zAxisPosition += zAxisVelocity * (timeDelta / 1000);
     } else return zAxisPosition;
   }
 
@@ -106,6 +113,7 @@ public class ClimberSubsystem extends PIDSubsystem {
   public void periodic() {
     // This method will be called once per scheduler run
 
+    getMeasurement();
     if(Constants.CLIMBER_SUBSYSTEM_DEBUG) {
       SmartDashboard.putNumber("Mouse Droid Angle", zAxisPosition);
     }
