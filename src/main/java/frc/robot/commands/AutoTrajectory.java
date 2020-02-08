@@ -7,16 +7,18 @@
 
 package frc.robot.commands;
 
-import java.util.List;
+import java.io.IOException;
+import java.nio.file.Path;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.geometry.Transform2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -27,10 +29,10 @@ public class AutoTrajectory extends CommandBase {
   DriveSubsystem subsystem;
   RamseteCommand ramseteCommand;
 
-  /**
-   * Creates a new AutoTrajectory.
+  /*
+   Creates a new AutoTrajectory.
    */
-  public AutoTrajectory(DriveSubsystem subsystem, Pose2d startPosition, Pose2d endPosition /*,List<Translation2d> interiorWaypoints*/ ) {
+  public AutoTrajectory(DriveSubsystem subsystem, String trajectoryJSON){
     this.subsystem = subsystem;
     addRequirements(this.subsystem);
 
@@ -51,23 +53,37 @@ public class AutoTrajectory extends CommandBase {
             .setKinematics(Constants.kDriveKinematics)
             // Apply the voltage constraint
             .addConstraint(autoVoltageConstraint);
+    
+            
+            
 
     // An example trajectory to follow.  All units in meters.
-    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
+    
+    //trajectoryJSON is defined in each automode and is defined there so that the trajectoryJSON has no value here.
+    Trajectory AMtrajectory = null; //
+     
+    try { /*tries to get the .json file from the trajectoryJSON string, then converts it to the computer system path
+            then gets the trajectory and puts it together from the x,y points from the .json files*/
+      Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);// Trajectory path converted from trajectoryJSON
+       AMtrajectory= TrajectoryUtil.fromPathweaverJson(trajectoryPath); // Creates the trajectory from the trajectoryPath
+    } catch (IOException ex) { /*  catches error if trajectory cannot be found, generated, etc.
+      writes error message on driver station if caught*/
+      DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+    } 
 
-      startPosition, // syntax: new Pose2d(#, #, new Rotation2d(#))
+      /* This below Transforms the starting position of the trajectory to match the starting position of the actual 
+      roboto. Prevents robot from moving itself to the starting point of the trajectory first, and then following the
+      correct Auto Mode. (Basically starts trajectory from where the robot currently is, not first XY point in file) */
+      Transform2d transform = subsystem.getPose().minus(AMtrajectory.getInitialPose());
+      Trajectory transformedTrajectory = AMtrajectory.transformBy(transform);
       
-      /*interiorWaypoints,*/ // syntax: new Translation2d(#, #) COMMENTED OUT. WAYPOINTS MAY BE NEEDED
-      
-      endPosition, // syntax: new Pose2d(#, #, new Rotation2d(#))
 
-      // Pass config
-      config
-    );
 
-    // This is a method used to calculate the trajectory from given points
+    /* This is a method used to calculate the trajectory from given points and follows it using robot characterization
+      that is defined above*/
     ramseteCommand = new RamseteCommand(
-        trajectory,
+        transformedTrajectory, /* This had been changed to be the transformed trajecotry so that it calculates trajectory 
+                                from final (transformed) trajectory*/
         subsystem::getPose,
         new RamseteController(Constants.kRamseteB, Constants.kRamseteZeta),
         new SimpleMotorFeedforward(Constants.ksVolts,
@@ -80,8 +96,12 @@ public class AutoTrajectory extends CommandBase {
         // RamseteCommand passes volts to the callback
         subsystem::tankDriveVolts,
         subsystem
+        
     );
   }
+
+
+
 
   // Called when the command is initially scheduled.
   @Override

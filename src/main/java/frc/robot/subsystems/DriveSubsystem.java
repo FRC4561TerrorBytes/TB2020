@@ -174,7 +174,7 @@ public class DriveSubsystem extends PIDSubsystem {
     this.speed = speed;
   }
 
-  public Pose2d getPose() {
+  public  Pose2d getPose() {
     return odometry.getPoseMeters();
   }
 

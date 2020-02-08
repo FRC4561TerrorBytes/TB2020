@@ -50,7 +50,7 @@ public final class Constants {
     public static final int REAR_RIGHT_MOTOR_PORT = 3;
     
     //Motor ports for lowering and raising intake arm
-    public static final int ARM_EXAMPLE_MOTOR1_PORT = 4; //TODO:Change these to actual safe values
+    public static final int MAGAZINE_MOTOR_PORT = 13; //TODO:Change these to actual safe values
 
     /**
      * TODO: ADD COMMENTS ONCE FINISHED
@@ -80,4 +80,5 @@ public final class Constants {
     public static final double kRamseteB = 2;
     public static final double kRamseteZeta = 0.7;
 
+    public static final double MagazineMotorSpeed = 0.5;
 }
