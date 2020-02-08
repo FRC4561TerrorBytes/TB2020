@@ -17,6 +17,12 @@ package frc.robot;
  */
 public final class Constants {
     
+    // Robot tick rate in seconds
+    public static final double ROBOT_TICK_RATE = 0.01667;
+
+    // Dubug constants
+    public static final boolean CLIMBER_SUBSYSTEM_DEBUG = true;
+
     // Drive PID values
     public static final double DRIVE_kP = 0.010;
     public static final double DRIVE_kD = 0.0005;
