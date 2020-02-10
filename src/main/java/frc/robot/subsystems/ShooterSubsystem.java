@@ -126,7 +126,7 @@ public class ShooterSubsystem extends SubsystemBase {
    */
   public void turretVisionPID() {
     if (table.getEntry("detected?").getBoolean(false)) {
-      moveTurretPID(Turret.MOTOR.getClosedLoopTarget() + table.getEntry("xAngle").getDouble(0.0));
+      relativeMoveTurretPID(convertTurretTicksToDegrees(table.getEntry("xAngle").getDouble(0.0)));
     }
   }
 
@@ -176,6 +176,10 @@ public class ShooterSubsystem extends SubsystemBase {
    */
   private double convertTurretDegreesToTicks(double degrees) {
     return (Turret.TICKS_PER_DEGREE * degrees);
+  }
+
+  private double convertTurretTicksToDegrees(double ticks) {
+    return (ticks / Turret.TICKS_PER_DEGREE);
   }
 
   /**
