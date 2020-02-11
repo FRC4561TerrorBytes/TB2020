@@ -17,9 +17,63 @@ package frc.robot;
 public class AutoModeConstants {
 
     public  static class AM_PATH1 { //TODO: Change this String to an actual path
-         public static String trajectoryJSON = "src/main/deploy/paths/AutoPaths/testpath.wpilib.json"; 
+         public static String trajectoryJSON = "src/main/deploy/AutoPaths/testpath.wpilib.json"; 
         
 }
+
+
+    public static class backForSpace {
+        public static String trajectoryJSON = "src/main/deploy/output/backForSpace.wpilib.json";
+    }
+
+    public static class BlueSGball1{
+        public static String trajectoryJSON ="src/main/deploy/output/BlueFroShieldBall1.wpilib.json";
+    }
+
+    public static class BlueSGball2{
+        public static String trajectoryJSON = "src/main/deploy/output/BlueFroShieldBall2.wpilib.json";
+    }
+
+    public static class BlueSGDriveback{ 
+        public static String trajectoryJSON ="src/main/deploy/output/BlueFroShieldDriveback.wpilib.json";
+    }
+
+    public static class BlueTrenchBall1{ 
+        public static String trajectoryJSON ="src/main/deploy/output/BlueTrenchBall1.wpilib.json";
+    }
+
+    public static class BlueTrenchBall2{ 
+        public static String trajectoryJSON ="src/main/deploy/output/BlueTrenchBall2.wpilib.json";
+    }
+
+    public static class BlueTrenchBall3{ 
+        public static String trajectoryJSON ="src/main/deploy/output/BlueTrenchBall3.wpilib.json";
+    }
+
+    public static class driveBack{ 
+        public static String trajectoryJSON ="src/main/deploy/output/driveBack.wpilib.json";
+    }
+
+    public static class MoveBackAfterShooting3Balls{ 
+        public static String trajectoryJSON ="src/main/deploy/output/MoveBackAfterShooting3Balls.wpilib.json";
+    }
+
+
+    public static class RedTrenchBall1{ 
+        public static String trajectoryJSON ="src/main/deploy/output/RedTrenchBall1.wpilib.json";
+    }
+    
+    public static class RedTrenchBall2{ 
+        public static String trajectoryJSON ="src/main/deploy/output/RedTrenchBall2.wpilib.json";
+    }
+
+    public static class RedTrenchBall3{ 
+        public static String trajectoryJSON ="src/main/deploy/output/RedTrenchBall3.wpilib.json";
+    }
+
+    public static class ShootBalls{ 
+        public static String trajectoryJSON ="src/main/deploy/output/Shoot.wpilib.json";
+    }
 
 }
 

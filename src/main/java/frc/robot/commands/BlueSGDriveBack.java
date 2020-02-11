@@ -5,30 +5,21 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-
 package frc.robot.commands;
-
 
 import java.io.IOException;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.AutoModeConstants.AM_PATH1;
+import frc.robot.AutoModeConstants.BlueSGDriveback;
 import frc.robot.subsystems.DriveSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-
-/*This automode is to just test basic position movement and only the drivetrain motors. Right now, it is just 
-* a simple change in rotation. Later, it will be changed into slight change in forward movement, then side to side,
-* then a curve, etc. I don't know if waypoints will be used or not, but they are in the comments if needed.
-*/
-public class AutoMode1 extends InstantCommand { // TODO: Change name to something relevant to path or function
-
-  public AutoMode1(DriveSubsystem subsystem) throws IOException {
-
-    new AutoTrajectory(subsystem, AM_PATH1.trajectoryJSON); /*Auto generates a new trajectory
-    *from the DriveSubsystem, and from AutoTrajectory, but with a assigned path */
+public class BlueSGDriveBack extends InstantCommand {
+  public BlueSGDriveBack(DriveSubsystem subsystem) throws IOException{
+    new AutoTrajectory(subsystem, BlueSGDriveback.trajectoryJSON);
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
@@ -36,4 +27,3 @@ public class AutoMode1 extends InstantCommand { // TODO: Change name to somethin
   public void initialize() {
   }
 }
-

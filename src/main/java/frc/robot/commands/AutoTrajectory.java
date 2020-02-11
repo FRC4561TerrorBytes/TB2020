@@ -32,11 +32,12 @@ public class AutoTrajectory extends CommandBase {
   /*
    Creates a new AutoTrajectory.
    */
-  public AutoTrajectory(DriveSubsystem subsystem, String trajectoryJSON){
+  public AutoTrajectory(DriveSubsystem subsystem, String trajectoryJSON) throws IOException {
     this.subsystem = subsystem;
     addRequirements(this.subsystem);
 
-    // Create a voltage constraint to ensure we don't accelerate too fast
+    
+     //Create a voltage constraint to ensure we don't accelerate too fast
     var autoVoltageConstraint =
         new DifferentialDriveVoltageConstraint(
             new SimpleMotorFeedforward(Constants.ksVolts,
@@ -44,7 +45,10 @@ public class AutoTrajectory extends CommandBase {
                                        Constants.kaVoltSecondsSquaredPerMeter),
             Constants.kDriveKinematics,
             10);
+            
 
+
+    // I DO NOT KNOW IF "config" IS NEEDED OR JUST NEEDS TO BE PASSED IN A DIFFERENT PLACE!
     // Create config for trajectory
     TrajectoryConfig config =
         new TrajectoryConfig(Constants.kMaxSpeedMetersPerSecond,
@@ -53,6 +57,7 @@ public class AutoTrajectory extends CommandBase {
             .setKinematics(Constants.kDriveKinematics)
             // Apply the voltage constraint
             .addConstraint(autoVoltageConstraint);
+            
     
             
             
@@ -60,7 +65,7 @@ public class AutoTrajectory extends CommandBase {
     // An example trajectory to follow.  All units in meters.
     
     //trajectoryJSON is defined in each automode and is defined there so that the trajectoryJSON has no value here.
-    Trajectory AMtrajectory = null; //
+    Trajectory AMtrajectory; //
      
     try { /*tries to get the .json file from the trajectoryJSON string, then converts it to the computer system path
             then gets the trajectory and puts it together from the x,y points from the .json files*/
@@ -69,6 +74,7 @@ public class AutoTrajectory extends CommandBase {
     } catch (IOException ex) { /*  catches error if trajectory cannot be found, generated, etc.
       writes error message on driver station if caught*/
       DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+      throw ex;
     } 
 
       /* This below Transforms the starting position of the trajectory to match the starting position of the actual 
