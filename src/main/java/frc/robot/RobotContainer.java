@@ -60,6 +60,7 @@ public class RobotContainer {
     DRIVE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> DRIVE_SUBSYSTEM.teleopPID(XBOX_CONTROLLER.getY(Hand.kLeft), XBOX_CONTROLLER.getX(Hand.kRight)), DRIVE_SUBSYSTEM));
     // Alternative way of setting default command using command class
     //DRIVE_SUBSYSTEM.setDefaultCommand(new TeleopDriveCommand(DRIVE_SUBSYSTEM, () -> XBOX_CONTROLLER.getY(Hand.kLeft), () -> XBOX_CONTROLLER.getY(Hand.kRight)));
+    MAGAZINE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(), MAGAZINE_SUBSYSTEM));
   }
 
   /**
@@ -79,10 +80,6 @@ public class RobotContainer {
     // Moves climber hook at 0.5 speed when Y button is pressed
     new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
         .whileHeld(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(Constants.CLIMBER_HOOK_CONSTANT), CLIMBER_SUBSYSTEM));
-
-    // When pressed, detects ball and spins motor at 0.5 speed
-    new Trigger(MAGAZINE_SUBSYSTEM::ballDetected)
-        .whenActive(new InstantCommand(() ->  MAGAZINE_SUBSYSTEM.magazineMotorSpeed(), MAGAZINE_SUBSYSTEM));
   }
 
 

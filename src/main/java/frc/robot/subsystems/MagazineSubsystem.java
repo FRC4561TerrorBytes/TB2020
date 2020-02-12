@@ -14,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.TalonPIDConfig;
@@ -25,10 +26,16 @@ public class MagazineSubsystem extends SubsystemBase {
   private final CANSparkMax INTAKE_MOTOR = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
   private final WPI_TalonSRX ARM_MOTOR = new WPI_TalonSRX(Constants.ARM_MOTOR_PORT);
 
+  private final AnalogInput MAGAZINE_SENSOR_BOT = new AnalogInput(Constants.MAGAZINE_ULTRASONIC_BOT);
+  private final AnalogInput MAGAZINE_SENSOR_TOP = new AnalogInput(Constants.MAGAZINE_ULTRASONIC_TOP);
+
   private final double TICKS_PER_ROTATION = 4096;
   private final double GEAR_RATIO = 2;
   private final double TICKS_PER_DEGREE = (this.TICKS_PER_DEGREE * this. GEAR_RATIO) / 360;
   private TalonPIDConfig config;
+
+  private final double DISTANCE_PER_VOLT = 0; //TODO: Find value
+  private final double ULTRASONIC_THRESHOLD = 5; //TODO: Find value
 
   /**
    * Creates a new MagazineSubsystem.
@@ -42,7 +49,7 @@ public class MagazineSubsystem extends SubsystemBase {
    * Makes the motor for the magazine to spin
    */
   public void magazineMotorSpeed() {
-    MAGAZINE_MOTOR.set(Constants.MagazineMotorSpeed);
+    MAGAZINE_MOTOR.set(Constants.MAGAZINE_MOTOR_SPEED);
   }
 
   /**
@@ -97,17 +104,55 @@ public class MagazineSubsystem extends SubsystemBase {
   }
 
   /**
-   * Detects ball 
-   * @return True if limit switch is hit else False
+   * @return bottom ultrasonic distance
    */
-  public boolean ballDetected() {
-    boolean DetectorBall = this.MAGAZINE_MOTOR.getSensorCollection().isFwdLimitSwitchClosed();
-    return DetectorBall;
+  private double magazineSensorBottom() {
+    return voltageToDistance(MAGAZINE_SENSOR_BOT.getValue());
   }
+
+  /**
+   * @return top ultrasonic distance
+   */
+  private double magazineSensorTop() {
+    return voltageToDistance(MAGAZINE_SENSOR_TOP.getValue());
+  }
+
+  /**
+   * @return if a ball is detected at the bottom position
+   */
+  public boolean ballDetectedBottom() {
+    return magazineSensorBottom() < ULTRASONIC_THRESHOLD;
+  }
+
+  /**
+   * @return if a ball is detected at the bottom position
+   */
+  public boolean ballDetectedTop() {
+    return magazineSensorTop() < ULTRASONIC_THRESHOLD;
+  }
+
+  /**
+   * 
+   */
+  public void ballUptake() {
+    if (ballDetectedBottom() && !ballDetectedTop()) {
+      MAGAZINE_MOTOR.set(Constants.MAGAZINE_MOTOR_SPEED);
+    }
+  }
+  
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+
+  /**
+   * converts raw voltage to distance from ultrasonic sensor
+   * @param voltage input ultrasonic sensor voltage
+   * @return distance in inches
+   */
+  private double voltageToDistance(double voltage) {
+    return voltage * DISTANCE_PER_VOLT;
   }
 }
 

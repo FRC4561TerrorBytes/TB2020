@@ -90,5 +90,9 @@ public final class Constants {
     public static final int ARM_MOTOR_PORT = 15;
       
     //set Magazine Motor Speed
-    public static final double MagazineMotorSpeed = 0.5;
+    public static final double MAGAZINE_MOTOR_SPEED = 0.5;
+
+    //Magazine proximity sensor ports
+    public static final int MAGAZINE_ULTRASONIC_BOT = 0;
+    public static final int MAGAZINE_ULTRASONIC_TOP = 1;
 }
