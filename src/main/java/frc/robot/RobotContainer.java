@@ -11,10 +11,9 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
@@ -60,23 +59,58 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(XBOX_CONTROLLER, Button.kA.value)
-        .whenPressed(new InstantCommand(() -> DRIVE_SUBSYSTEM.setSetpoint(180), DRIVE_SUBSYSTEM));
+    // new JoystickButton(XBOX_CONTROLLER, Button.kA.value)
+    //     .whenPressed(new InstantCommand(() -> DRIVE_SUBSYSTEM.setSetpoint(180), DRIVE_SUBSYSTEM));
 
-    // When pressed, moves hood to top position
+    // // When pressed, moves hood to top position
     
-    new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
-        .whenPressed(new InstantCommand(() -> SHOOTER_SUBSYSTEM.moveHoodPID(Constants.HOOD_TOP_POSITION), SHOOTER_SUBSYSTEM));
+    // new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
+    //     .whenPressed(new InstantCommand(() -> SHOOTER_SUBSYSTEM.moveHoodPID(Constants.HOOD_TOP_POSITION), SHOOTER_SUBSYSTEM));
 
         //When pressed, moves hood to bottom position
 
+    // new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
+    //     .whenPressed(new InstantCommand(() -> SHOOTER_SUBSYSTEM.moveHoodPID(Constants.HOOD_BOTTOM_POSITION), SHOOTER_SUBSYSTEM));
+    
+    // Control the Flywheel at a set speed using the right bumber
+    new JoystickButton(XBOX_CONTROLLER, Button.kBumperRight.value)
+        .whenPressed(new RunCommand(() -> SHOOTER_SUBSYSTEM.flywheelManual(-0.2), SHOOTER_SUBSYSTEM))
+        .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.flywheelManual(0.0), SHOOTER_SUBSYSTEM));
+
+    // Control the Flywheel using PID using the left bumber
+    new JoystickButton(XBOX_CONTROLLER, Button.kBumperLeft.value)
+        .whenPressed(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(-1000), SHOOTER_SUBSYSTEM))
+        .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(0), SHOOTER_SUBSYSTEM));
+    
+    // Move the hood down using the A button
+    new JoystickButton(XBOX_CONTROLLER, Button.kA.value)
+        .whenPressed(new RunCommand(() -> SHOOTER_SUBSYSTEM.hoodManual(-0.3), SHOOTER_SUBSYSTEM))
+        .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.hoodManual(0.0), SHOOTER_SUBSYSTEM));
+
+    // Move the hood up using the Y button
     new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
-        .whenPressed(new InstantCommand(() -> SHOOTER_SUBSYSTEM.moveHoodPID(Constants.HOOD_BOTTOM_POSITION), SHOOTER_SUBSYSTEM));
+        .whenPressed(new RunCommand(() -> SHOOTER_SUBSYSTEM.hoodManual(0.3), SHOOTER_SUBSYSTEM))
+        .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.hoodManual(0), SHOOTER_SUBSYSTEM));
+
+    // Reset the turret encoder to the front position
+    if (SHOOTER_SUBSYSTEM.turretLimitFront()) {
+      SHOOTER_SUBSYSTEM.getTurretMotor().setSelectedSensorPosition(Constants.TURRET_FRONT_POSITION);
+    }
+    
+    // Reset the turret encoder to the back position
+    if (SHOOTER_SUBSYSTEM.turretLimitBack()) {
+       SHOOTER_SUBSYSTEM.getTurretMotor().setSelectedSensorPosition(Constants.TURRET_BACK_POSITION);
+    }
+
+    // Reset the hood encoder to the back position
+    if (SHOOTER_SUBSYSTEM.hoodLimit()) {
+      SHOOTER_SUBSYSTEM.getHoodMotor().setSelectedSensorPosition(Constants.HOOD_BOTTOM_POSITION);
+    }
   }
 
 
   /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
+   * Use this to pass the autonomous command to the main {@link Robot class.
    *
    * @return the command to run in autonomous
    */

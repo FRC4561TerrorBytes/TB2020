@@ -29,9 +29,9 @@ public final class Constants {
 
     // Shooter PID Values
     //TODO: Set these
-    private static final double FLYWHEEL_kP = 0.0;
+    private static final double FLYWHEEL_kP = 0.3;
     private static final double FLYWHEEL_kD = 0.0;
-    private static final double FLYWHEEL_kF = 0.0;
+    private static final double FLYWHEEL_kF = 0.01;
     private static final double FLYWHEEL_TOLERANCE = 0.0;
     private static final boolean FLYWHEEL_ENCODER_SENSOR_PHASE = true;
     private static final boolean FLYWHEEL_MOTOR_INVERTED = true;
@@ -55,9 +55,9 @@ public final class Constants {
     // Shooter Positions
     public static final int HOOD_BOTTOM_POSITION = 0;
     public static final int HOOD_TOP_POSITION = 1000; //TODO: set this
-    public static final int TURRET_RIGHT_POSITION = 0;
+    public static final int TURRET_FRONT_POSITION = 0;
     public static final int TURRET_MIDDLE_POSITION = 9626; //TODO: set this
-    public static final int TURRET_LEFT_POSITION = 19251; //TODO: set this
+    public static final int TURRET_BACK_POSITION = 19251; //TODO: set this
 
     // Set PID for Flywheel
     public static final TalonPIDConfig FLYWHEEL_CONFIG = new TalonPIDConfig(FLYWHEEL_ENCODER_SENSOR_PHASE,
@@ -89,8 +89,8 @@ public final class Constants {
                                                         TURRET_kD,
                                                         0,
                                                         TURRET_TOLERANCE,
-                                                        TURRET_RIGHT_POSITION,
-                                                        TURRET_LEFT_POSITION,
+                                                        TURRET_FRONT_POSITION,
+                                                        TURRET_BACK_POSITION,
                                                         TURRET_VELOCITY_RPM,
                                                         TURRET_ACCELERATION_RPM_PER_SEC,
                                                         TURRET_MOTION_SMOOTHING);

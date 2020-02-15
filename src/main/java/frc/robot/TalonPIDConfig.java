@@ -148,9 +148,9 @@ public class TalonPIDConfig {
     // Configure forward and reverse soft limits
     if (this.enableLimits) {
       talon.configForwardSoftLimitThreshold((int)this.upperLimit);
-      talon.configForwardSoftLimitEnable(true);
+      talon.configForwardSoftLimitEnable(false); // TODO: Set this once tuned
       talon.configReverseSoftLimitThreshold((int)this.lowerLimit);
-      talon.configReverseSoftLimitEnable(true);
+      talon.configReverseSoftLimitEnable(false); // TODO: Set this once tuned
     }
 
     // Configure forward and reverse limit switches if required

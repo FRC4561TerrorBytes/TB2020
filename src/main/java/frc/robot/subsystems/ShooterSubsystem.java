@@ -25,7 +25,8 @@ public class ShooterSubsystem extends SubsystemBase {
   private static class Flywheel {
     private static double kF;
     private static final int TICKS_PER_ROTATION = 2048;
-    public static final double GEAR_RATIO = 3 / 4;
+    // public static final double GEAR_RATIO = 3 / 4; The real thing
+    public static final double GEAR_RATIO = 1.0;
     private static final WPI_TalonFX MASTER_MOTOR = new WPI_TalonFX(Constants.FLYWHEEL_MASTER_MOTOR_PORT);
     private static final WPI_TalonFX SLAVE_MOTOR = new WPI_TalonFX(Constants.FLYWHEEL_SLAVE_MOTOR_PORT);
     private static TalonPIDConfig config;
@@ -73,6 +74,7 @@ public class ShooterSubsystem extends SubsystemBase {
     Hood.config = hoodConfig;
     Turret.config = turretConfig;
 
+    // Set one of the flywheel motors as a slave of the other flywheel motor
     Flywheel.SLAVE_MOTOR.set(ControlMode.Follower, Flywheel.MASTER_MOTOR.getDeviceID());
 
     Flywheel.config.initializeTalonPID(Flywheel.MASTER_MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, false, false);
@@ -83,6 +85,7 @@ public class ShooterSubsystem extends SubsystemBase {
     this.resetEncoder(Flywheel.MASTER_MOTOR);
     this.resetEncoder(Hood.MOTOR);
     
+    // TODO: Comment this
     Turret.middlePosition = Turret.MOTOR.getSensorCollection().getPulseWidthPosition();
 
 		/* Mask out overflows, keep bottom 12 bits */
@@ -148,7 +151,18 @@ public class ShooterSubsystem extends SubsystemBase {
    * @param speed input RPM to keep the motor at
    */
   public void setFlywheelSpeed(double speed) {
+    SmartDashboard.putNumber("flywheel speed: ", speed);
     Flywheel.MASTER_MOTOR.set(ControlMode.Velocity, speed, DemandType.ArbitraryFeedForward, Flywheel.kF);
+  }
+
+  // TODO: Delete this once moveMotorManual works
+  public void flywheelManual(double speed) {
+    Flywheel.MASTER_MOTOR.set(speed);
+  }
+
+    // TODO: Delete this once moveMotorManual works
+  public void hoodManual(double speed) {
+    Hood.MOTOR.set(speed);
   }
 
   /**
@@ -178,6 +192,9 @@ public class ShooterSubsystem extends SubsystemBase {
     return (Turret.TICKS_PER_DEGREE * degrees);
   }
 
+  /**
+   * @return converts ticks to degrees on the turret
+   */
   private double convertTurretTicksToDegrees(double ticks) {
     return (ticks / Turret.TICKS_PER_DEGREE);
   }
@@ -208,6 +225,7 @@ public class ShooterSubsystem extends SubsystemBase {
   
   /**
    * Moves subsystem motors manually
+   * TODO: Test if this works, then delete other manual methods
    * @param motor Input motor
    * @param value Percentage power to motor [-1.0, 1.0]
    */
@@ -219,8 +237,29 @@ public class ShooterSubsystem extends SubsystemBase {
    * Reset encoder to 0 to keep it in sync
    * @param motor resets input encoder
    */
-  private void resetEncoder(BaseTalon motor) {
+  public void resetEncoder(BaseTalon motor) {
     motor.setSelectedSensorPosition(0);
+  }
+
+  /**
+   * @return if the front limit switch is pressed
+   */
+  public boolean turretLimitFront() {
+    return Turret.MOTOR.getSensorCollection().isFwdLimitSwitchClosed(); // TODO: Figure out if this is right
+  }
+
+  /**
+   * @return if the back limit switch is pressed
+   */
+  public boolean turretLimitBack() {
+    return Turret.MOTOR.getSensorCollection().isRevLimitSwitchClosed(); // TODO: Figure out if this is right
+  }
+
+  /**
+   * @return if the back limit switch is pressed
+   */
+  public boolean hoodLimit() {
+    return Hood.MOTOR.getSensorCollection().isFwdLimitSwitchClosed(); // TODO: Figure out if this is right
   }
 
   @Override
@@ -230,6 +269,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // Automatically move turret to vision target
     turretVisionPID();
 
+    // Prints debug statements on SmartDashboard
     if (Constants.SHOOTER_DEBUG) {
       SmartDashboard.putNumber("Flywheel Motor Output", Flywheel.MASTER_MOTOR.getMotorOutputPercent());
       SmartDashboard.putNumber("Flywheel Motor Velocity", Flywheel.MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity());
