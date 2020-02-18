@@ -7,23 +7,28 @@
 
 package frc.robot.commands;
 
-import java.io.IOException;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.AutoModeConstants.BlueSGDriveback;
+
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+
 import frc.robot.subsystems.DriveSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class BlueSGDriveBack extends InstantCommand {
-  public BlueSGDriveBack(DriveSubsystem subsystem) throws IOException{
-    new AutoTrajectory(subsystem, BlueSGDriveback.trajectoryJSON);
-    // Use addRequirements() here to declare subsystem dependencies.
-  }
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
+public class BlueAuto extends SequentialCommandGroup {
+
+
+  /**
+   * Creates a new Blue Side Auto Auto. This will be a SequentialCommandGroup (a list) of commands that will run 
+   * one after another in the order it is put into the syntax. This is what an auto mode will likely consist of.
+   * 
+
+   */
+  public BlueAuto(DriveSubsystem subsystem){
+  
+    addCommands(new SequentialCommandGroup(/*new AutoTrajectory(subsystem, AutoModeConstants.Example)*/)); //TODO: Add Sequential Commands here to run in Autonomous when on blue side of field
+   
   }
 }

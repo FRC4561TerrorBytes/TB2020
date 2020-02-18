@@ -7,7 +7,6 @@
 
 package frc.robot.commands;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -15,6 +14,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Transform2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
@@ -22,17 +22,18 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class AutoTrajectory extends CommandBase {
   DriveSubsystem subsystem;
   RamseteCommand ramseteCommand;
-
+  Trajectory AMtrajectory;
   /*
    Creates a new AutoTrajectory.
    */
-  public AutoTrajectory(DriveSubsystem subsystem, String trajectoryJSON) throws IOException {
+  public AutoTrajectory(DriveSubsystem subsystem, String trajectoryJSON) {
     this.subsystem = subsystem;
     addRequirements(this.subsystem);
 
@@ -57,36 +58,33 @@ public class AutoTrajectory extends CommandBase {
             .setKinematics(Constants.kDriveKinematics)
             // Apply the voltage constraint
             .addConstraint(autoVoltageConstraint);
-            
     
-            
-            
-
-    // An example trajectory to follow.  All units in meters.
-    
-    //trajectoryJSON is defined in each automode and is defined there so that the trajectoryJSON has no value here.
-    Trajectory AMtrajectory; //
-     
-    try { /*tries to get the .json file from the trajectoryJSON string, then converts it to the computer system path
-            then gets the trajectory and puts it together from the x,y points from the .json files*/
+   
+   // Each Auto Mode is created in RobotContainer and has its own String for trajectoryJSON which it gets
+   //from AutoModeConstants
+    try { /*tries to get the PathWeaver .json file from the directory in the code that has been
+      deployed onto the RoboRIO.*/
       Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);// Trajectory path converted from trajectoryJSON
-       AMtrajectory= TrajectoryUtil.fromPathweaverJson(trajectoryPath); // Creates the trajectory from the trajectoryPath
-    } catch (IOException ex) { /*  catches error if trajectory cannot be found, generated, etc.
+        AMtrajectory= TrajectoryUtil.fromPathweaverJson(trajectoryPath); // Creates the trajectory from the trajectoryPath
+    } catch (Exception ex) { /*  catches error if trajectory cannot be found, generated, etc.
       writes error message on driver station if caught*/
       DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
-      throw ex;
+     
     } 
+  
 
-      /* This below Transforms the starting position of the trajectory to match the starting position of the actual 
-      roboto. Prevents robot from moving itself to the starting point of the trajectory first, and then following the
-      correct Auto Mode. (Basically starts trajectory from where the robot currently is, not first XY point in file) */
-      Transform2d transform = subsystem.getPose().minus(AMtrajectory.getInitialPose());
-      Trajectory transformedTrajectory = AMtrajectory.transformBy(transform);
+      /* This Transforms the starting position of the trajectory to match the starting position of the actual 
+      roboto. Prevents robot from moving to first X,Y of trajectory and then following the path.
+      Changes the first point(s) of the trajectory to the X,Y point of where the robot currently is*/
+      Pose2d initial_pose = AMtrajectory.getInitialPose();
+      Pose2d system_pose = subsystem.getPose();
+      Transform2d transform = system_pose.minus(initial_pose);
+      Trajectory transformedTrajectory =  AMtrajectory.transformBy(transform);
       
 
 
-    /* This is a method used to calculate the trajectory from given points and follows it using robot characterization
-      that is defined above*/
+    /* This is a method used to get the desired trajectory, put it into the command, have the command calculate the 
+    actual route relative to one plotted in Pathweaver, and then follow it the best it can, based on characterization given to it.*/
     ramseteCommand = new RamseteCommand(
         transformedTrajectory, /* This had been changed to be the transformed trajecotry so that it calculates trajectory 
                                 from final (transformed) trajectory*/
@@ -109,7 +107,19 @@ public class AutoTrajectory extends CommandBase {
 
 
 
-  // Called when the command is initially scheduled.
+
+
+
+
+
+
+
+
+
+
+
+
+// Called when the command is initially scheduled.
   @Override
   public void initialize() {
     // Run path following command, then stop at the end.
