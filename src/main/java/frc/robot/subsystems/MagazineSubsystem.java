@@ -15,6 +15,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.TalonPIDConfig;
@@ -42,14 +43,15 @@ public class MagazineSubsystem extends SubsystemBase {
    */
   public MagazineSubsystem(TalonPIDConfig config) {
     this.config = config;
-    this.config.initializeTalonPID(ARM_MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, true, false);
+    this.config.initializeTalonPID(ARM_MOTOR, FeedbackDevice.CTRE_MagEncoder_Absolute, true, false);
   }
  
   /**
    * Makes the motor for the magazine to spin
+   * @param speed (double) how fast you want the motor to spin [-1, 1]
    */
-  public void magazineMotorSpeed() {
-    MAGAZINE_MOTOR.set(Constants.MAGAZINE_MOTOR_SPEED);
+  public void magazineMotorSpeed(double speed) {
+    MAGAZINE_MOTOR.set(speed);
   }
 
   /**
@@ -65,7 +67,23 @@ public class MagazineSubsystem extends SubsystemBase {
    */
   public void armSetPosition(double setpoint) {
     double feedForward = this.config.getkF() * Math.cos(Math.toRadians(encoderPositionToDegrees(ARM_MOTOR.getSelectedSensorPosition())));
-    ARM_MOTOR.set(ControlMode.MotionMagic, setpoint, DemandType.ArbitraryFeedForward, feedForward);
+    ARM_MOTOR.set(ControlMode.Position, setpoint); //, DemandType.ArbitraryFeedForward, feedForward);
+  }
+
+  /**
+   * Moves arm relative to current setpoint
+   * @param setpoint increments to move arm by
+   */
+  public void armPositionRelative(double setpoint) {
+    this.armSetPosition(ARM_MOTOR.getClosedLoopTarget() + setpoint);
+  }
+
+  /**
+   * Moves arm at set speed
+   * @param speed (double) how fast you want the motor to spin [-1, 1]
+   */
+  public void armManual(double speed) {
+    ARM_MOTOR.set(speed);
   }
 
   /**
@@ -134,16 +152,48 @@ public class MagazineSubsystem extends SubsystemBase {
   /**
    * 
    */
-  public void ballUptake() {
+  public void ballUptake(double speed) {
     if (ballDetectedBottom() && !ballDetectedTop()) {
-      MAGAZINE_MOTOR.set(Constants.MAGAZINE_MOTOR_SPEED);
+      magazineMotorSpeed(speed);
     }
+  }
+
+  /**
+   * Reset encoder to 0 to keep it in sync
+   * @param motor resets input encoder
+   */
+  public void resetEncoder(WPI_TalonSRX motor) {
+    motor.setSelectedSensorPosition(0);
+  }
+
+  /**
+   * @return True if the limit switch is pressed else false
+   */
+  public boolean armLimit() {
+    return ARM_MOTOR.getSensorCollection().isFwdLimitSwitchClosed(); // TODO: Figure out if this is right
+  }
+
+  /**
+   * Gets arm motor
+   * @return WPI_TalonSRX arm motor
+   */
+  public WPI_TalonSRX getArmMotor() {
+    return ARM_MOTOR;
   }
   
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    if (ARM_MOTOR.getSensorCollection().isFwdLimitSwitchClosed()) ARM_MOTOR.setSelectedSensorPosition(0);
+
+    if (Constants.MAGAZINE_DEBUG) {
+      SmartDashboard.putNumber("Arm Motor Output", ARM_MOTOR.getMotorOutputPercent());
+      SmartDashboard.putNumber("Arm Motor Position", ARM_MOTOR.getSelectedSensorPosition());
+      SmartDashboard.putNumber("Arm Motor Setpoint", ARM_MOTOR.getClosedLoopTarget());
+      SmartDashboard.putNumber("Intake speed", INTAKE_MOTOR.get());
+    }
   }
 
   /**
