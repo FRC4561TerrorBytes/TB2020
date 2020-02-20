@@ -104,6 +104,14 @@ public class RobotContainer {
     new JoystickButton(XBOX_CONTROLLER, Button.kBumperLeft.value)
         .whenPressed(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(-1000), SHOOTER_SUBSYSTEM))
         .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(0), SHOOTER_SUBSYSTEM));
+
+    new JoystickButton(XBOX_CONTROLLER, Button.kBumperLeft.value)
+        .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.magazineMotorSpeed(Constants.MAGAZINE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
+        .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.magazineMotorStop(), MAGAZINE_SUBSYSTEM));
+
+    new JoystickButton(XBOX_CONTROLLER, Button.kB.value)
+        .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.magazineMotorSpeed(-Constants.MAGAZINE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
+        .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.magazineMotorStop(), MAGAZINE_SUBSYSTEM));
     
 
     // // Moves climber lift at 0.5 speed when X button is pressed
@@ -114,8 +122,8 @@ public class RobotContainer {
     // new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
     //     .whileHeld(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(Constants.CLIMBER_HOOK_CONSTANT), CLIMBER_SUBSYSTEM));
 
-    new JoystickButton(XBOX_CONTROLLER, Button.kB.value)
-        .whenPressed(new InstantCommand(() -> MAGAZINE_SUBSYSTEM.toggleArmPosition()));
+    // new JoystickButton(XBOX_CONTROLLER, Button.kB.value)
+    //     .whenPressed(new InstantCommand(() -> MAGAZINE_SUBSYSTEM.toggleArmPosition()));
     
     // Move the hood up using the Y button
     // new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
@@ -133,8 +141,10 @@ public class RobotContainer {
 
     // Moves magazine at set speed
     new JoystickButton(XBOX_CONTROLLER, Button.kX.value)
-        .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.magazineMotorSpeed(Constants.MAGAZINE_MOTOR_SPEED), CLIMBER_SUBSYSTEM))
-        .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.magazineMotorStop(), CLIMBER_SUBSYSTEM));
+        .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.magazineMotorSpeed(Constants.MAGAZINE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
+        .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.magazineMotorStop(), MAGAZINE_SUBSYSTEM));
+
+    
 
 
     // Arm Up at set speed

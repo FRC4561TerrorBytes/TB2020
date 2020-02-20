@@ -29,23 +29,23 @@ public final class Constants {
     public static final double DRIVE_TOLERANCE = 1.0;
 
     // Intake Arm PID config
-    public static final double ARM_kP = 0.1;
-    public static final double ARM_kD = 0.0;
-    public static final double ARM_kF = 0.0;
+    public static final double ARM_kP = 1.0;
+    public static final double ARM_kD = 0.005;
+    public static final double ARM_kF = 0.0005;
     public static final double ARM_TOLERANCE = 1.0;
     public static final double ARM_LOWER_LIMIT = 0.0;
     public static final double ARM_UPPER_LIMIT = -750;
     public static final boolean ARM_SOFT_LIMITS = false;
-    public static final double ARM_VELOCITY_RPM = 102400;
-    public static final double ARM_ACCELERATION_RPM_PER_SEC = 16384;
+    public static final double ARM_VELOCITY_RPM = 1000; // 25 RPM
+    public static final double ARM_ACCELERATION_RPM_PER_SEC = 200;
     public static final int ARM_MOTION_SMOOTHING = 0;
     public static final boolean ARM_SENSOR_PHASE = true;
     public static final boolean ARM_INVERT_MOTOR = false;
 
     // Intake Arm Positions
     //TODO: Set these
-    public static final int ARM_TOP_POSITION = 0;
-    public static final int ARM_BOTTOM_POSITION = 1000;
+    public static final int ARM_TOP_POSITION = -750;
+    public static final int ARM_BOTTOM_POSITION = 0;
 
 
     // Shooter PID Values
@@ -182,8 +182,8 @@ public final class Constants {
 
     // Motor Speeds
     public static final double MOTOR_STOP = 0;
-    public static final double INTAKE_MOTOR_SPEED = 0.5;
+    public static final double INTAKE_MOTOR_SPEED = 0.75;
     public static final double LIFT_MOTOR_SPEED = 0.6;
-    public static final double MAGAZINE_MOTOR_SPEED = 0.5;
+    public static final double MAGAZINE_MOTOR_SPEED = 0.35;
 
 }
