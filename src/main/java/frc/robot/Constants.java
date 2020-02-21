@@ -20,6 +20,12 @@ public final class Constants {
     // Show Debug
     public static final boolean SHOOTER_DEBUG = true;
     
+    // Robot tick rate in seconds
+    public static final double ROBOT_TICK_RATE = 0.01667;
+
+    // Dubug constants
+    public static final boolean CLIMBER_SUBSYSTEM_DEBUG = true;
+
     // Drive PID values
     public static final double DRIVE_kP = 0.010;
     public static final double DRIVE_kD = 0.0005;
@@ -94,6 +100,9 @@ public final class Constants {
                                                         TURRET_VELOCITY_RPM,
                                                         TURRET_ACCELERATION_RPM_PER_SEC,
                                                         TURRET_MOTION_SMOOTHING);
+    // Mouse Droid PID values
+    public static final double MOUSE_kP = 0.0;
+    public static final double MOUSE_kD = 0.0;
 
     // Analog stick deadband value
     public static final double DEADBAND = 0.005;
@@ -118,5 +127,19 @@ public final class Constants {
     public static final int HOOD_MOTOR_PORT = 6;
     public static final int TURRET_MOTOR_PORT = 7;
 
+    // Climber Motor Ports
+    public static final int CLIMBER_LIFT_MOTOR_PORT = 6;
+    public static final int CLIMBER_HOOK_MOTOR_PORT = 11;
+    public static final int CLIMBER_BALANCE_MOTOR_PORT = 7;
+
+    // Climber Movement Constants
+    public static final double CLIMBER_LIFT_CONSTANT = 0.5;
+    public static final double CLIMBER_HOOK_CONSTANT = 0.69;
+
+    // Climber I2C port
+    //public static final int CLIMBER_GYRO_PORT = 0x6B;
+
+    // Speed limiting [0.0, 1.0]
+    public static final double CLIMBER_SPEED_LIMIT = 1.0; 
 
 }

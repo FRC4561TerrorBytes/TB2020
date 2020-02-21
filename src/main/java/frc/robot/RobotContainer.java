@@ -14,8 +14,11 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -25,6 +28,8 @@ import frc.robot.subsystems.ShooterSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+
+
   
   private final DriveSubsystem DRIVE_SUBSYSTEM = new DriveSubsystem(Constants.DRIVE_kP,
                                                                             Constants.DRIVE_kD, 
@@ -32,11 +37,11 @@ public class RobotContainer {
                                                                             Constants.DRIVE_TOLERANCE,
                                                                             Constants.DRIVE_TURN_SCALAR,
                                                                             Constants.DEADBAND);
-
   private static final ShooterSubsystem SHOOTER_SUBSYSTEM = new ShooterSubsystem(Constants.FLYWHEEL_CONFIG, Constants.HOOD_CONFIG, Constants.TURRET_CONFIG);
+  private static final ClimberSubsystem CLIMBER_SUBSYSTEM = new ClimberSubsystem(Constants.MOUSE_kP, Constants.MOUSE_kD);
   
   private static final XboxController XBOX_CONTROLLER = new XboxController(Constants.XBOX_CONTROLLER_PORT);
-
+  
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
@@ -45,9 +50,11 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Enable PID on drive subsytem
-    DRIVE_SUBSYSTEM.enable();
+    //DRIVE_SUBSYSTEM.enable();
     // Set default command
-    DRIVE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> DRIVE_SUBSYSTEM.teleopPID(XBOX_CONTROLLER.getY(Hand.kLeft), XBOX_CONTROLLER.getX(Hand.kRight)), DRIVE_SUBSYSTEM));
+    //DRIVE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> DRIVE_SUBSYSTEM.teleopPID(XBOX_CONTROLLER.getY(Hand.kLeft), XBOX_CONTROLLER.getX(Hand.kRight)), DRIVE_SUBSYSTEM));
+
+    CLIMBER_SUBSYSTEM.enable();
     // Alternative way of setting default command using command class
     //DRIVE_SUBSYSTEM.setDefaultCommand(new TeleopDriveCommand(DRIVE_SUBSYSTEM, () -> XBOX_CONTROLLER.getY(Hand.kLeft), () -> XBOX_CONTROLLER.getY(Hand.kRight)));
   }
@@ -106,6 +113,18 @@ public class RobotContainer {
     if (SHOOTER_SUBSYSTEM.hoodLimit()) {
       SHOOTER_SUBSYSTEM.getHoodMotor().setSelectedSensorPosition(Constants.HOOD_BOTTOM_POSITION);
     }
+    //     .whileHeld(new RunCommand(() -> DRIVE_SUBSYSTEM.setSetpoint(180), DRIVE_SUBSYSTEM));
+
+    // Moves climber lift at 0.5 speed when X button is pressed
+    new JoystickButton(XBOX_CONTROLLER, Button.kX.value)
+        .whileHeld(new RunCommand(() -> CLIMBER_SUBSYSTEM.liftManual(Constants.CLIMBER_LIFT_CONSTANT), CLIMBER_SUBSYSTEM));
+    
+    // Moves climber hook at 0.5 speed when Y button is pressed
+    new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
+        .whileHeld(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(Constants.CLIMBER_HOOK_CONSTANT), CLIMBER_SUBSYSTEM));
+
+    new Trigger(() -> (XBOX_CONTROLLER.getY(Hand.kLeft) > Constants.DEADBAND)).whenActive(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(-XBOX_CONTROLLER.getY(Hand.kLeft) * Constants.CLIMBER_SPEED_LIMIT), CLIMBER_SUBSYSTEM));
+    new Trigger(() -> (XBOX_CONTROLLER.getY(Hand.kRight) > Constants.DEADBAND)).whenActive(new RunCommand(() -> CLIMBER_SUBSYSTEM.liftManual(XBOX_CONTROLLER.getY(Hand.kRight) * Constants.CLIMBER_SPEED_LIMIT), CLIMBER_SUBSYSTEM));
   }
 
 
