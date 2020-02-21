@@ -21,7 +21,7 @@ public class ClimberSubsystem extends PIDSubsystem {
   private final WPI_TalonSRX CLIMBER_LIFT_MOTOR = new WPI_TalonSRX(Constants.CLIMBER_LIFT_MOTOR_PORT);
   private final WPI_TalonSRX CLIMBER_HOOK_MOTOR = new WPI_TalonSRX(Constants.CLIMBER_HOOK_MOTOR_PORT);
   private final WPI_TalonSRX CLIMBER_BALANCE_MOTOR = new WPI_TalonSRX(Constants.CLIMBER_BALANCE_MOTOR_PORT);
-  private final I2C gyro = new I2C(I2C.Port.kOnboard, Constants.CLIMBER_GYRO_PORT);
+  //private final I2C gyro = new I2C(I2C.Port.kOnboard, Constants.CLIMBER_GYRO_PORT);
   private final double GYRO_SENSITIVITY = 0.00875;
   private final int ENABLE_GYRO_REG = 0x10;
   private final int ENABLE_GYRO_VALUE = 0x20;
@@ -38,7 +38,7 @@ public class ClimberSubsystem extends PIDSubsystem {
         // The PIDController used by the subsystem
         new PIDController(kP, 0, kD));
 
-    gyro.write(ENABLE_GYRO_REG, ENABLE_GYRO_VALUE);
+    //gyro.write(ENABLE_GYRO_REG, ENABLE_GYRO_VALUE);
 
     this.setSetpoint(0);
   }
@@ -51,8 +51,8 @@ public class ClimberSubsystem extends PIDSubsystem {
 
   @Override
   public double getMeasurement() {
-    // Return the process variable measurement here
-    
+    // Return the process variable measurement here //TODO: rip gyro
+    /*
     if (!gyro.read(this.GYRO_ADDRESS, 2, this.zAxisVelocityBytes)) {
       long currentTime = System.currentTimeMillis();
       zAxisVelocity = this.zAxisVelocityBytes[1] << 8 | this.zAxisVelocityBytes[0];
@@ -63,6 +63,8 @@ public class ClimberSubsystem extends PIDSubsystem {
       this.previousTime = currentTime;
       return this.zAxisPosition += zAxisVelocity * (timeDelta / 1000);
     } else return zAxisPosition;
+    */
+    return 0;
   }
 
   /**
@@ -115,6 +117,9 @@ public class ClimberSubsystem extends PIDSubsystem {
 
     getMeasurement();
     if(Constants.CLIMBER_SUBSYSTEM_DEBUG) {
+      SmartDashboard.putNumber("Hook Percent Output", CLIMBER_HOOK_MOTOR.getMotorOutputPercent());
+      SmartDashboard.putNumber("Lift Percent Output", CLIMBER_LIFT_MOTOR.getMotorOutputPercent());
+      SmartDashboard.putNumber("Mouse Droid position", CLIMBER_BALANCE_MOTOR.getSensorCollection().getQuadraturePosition());
       SmartDashboard.putNumber("Mouse Droid Angle", zAxisPosition);
     }
   }

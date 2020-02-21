@@ -11,10 +11,10 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -49,9 +49,9 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Enable PID on drive subsytem
-    DRIVE_SUBSYSTEM.enable();
+    //DRIVE_SUBSYSTEM.enable();
     // Set default command
-    DRIVE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> DRIVE_SUBSYSTEM.teleopPID(XBOX_CONTROLLER.getY(Hand.kLeft), XBOX_CONTROLLER.getX(Hand.kRight)), DRIVE_SUBSYSTEM));
+    //DRIVE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> DRIVE_SUBSYSTEM.teleopPID(XBOX_CONTROLLER.getY(Hand.kLeft), XBOX_CONTROLLER.getX(Hand.kRight)), DRIVE_SUBSYSTEM));
 
     CLIMBER_SUBSYSTEM.enable();
     // Alternative way of setting default command using command class
@@ -65,8 +65,8 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(XBOX_CONTROLLER, Button.kA.value)
-        .whileHeld(new RunCommand(() -> DRIVE_SUBSYSTEM.setSetpoint(180), DRIVE_SUBSYSTEM));
+    // new JoystickButton(XBOX_CONTROLLER, Button.kA.value)
+    //     .whileHeld(new RunCommand(() -> DRIVE_SUBSYSTEM.setSetpoint(180), DRIVE_SUBSYSTEM));
 
     // Moves climber lift at 0.5 speed when X button is pressed
     new JoystickButton(XBOX_CONTROLLER, Button.kX.value)
@@ -75,6 +75,9 @@ public class RobotContainer {
     // Moves climber hook at 0.5 speed when Y button is pressed
     new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
         .whileHeld(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(Constants.CLIMBER_HOOK_CONSTANT), CLIMBER_SUBSYSTEM));
+
+    new Trigger(() -> (XBOX_CONTROLLER.getY(Hand.kLeft) > Constants.DEADBAND)).whenActive(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(-XBOX_CONTROLLER.getY(Hand.kLeft) * Constants.CLIMBER_SPEED_LIMIT), CLIMBER_SUBSYSTEM));
+    new Trigger(() -> (XBOX_CONTROLLER.getY(Hand.kRight) > Constants.DEADBAND)).whenActive(new RunCommand(() -> CLIMBER_SUBSYSTEM.liftManual(XBOX_CONTROLLER.getY(Hand.kRight) * Constants.CLIMBER_SPEED_LIMIT), CLIMBER_SUBSYSTEM));
   }
 
 

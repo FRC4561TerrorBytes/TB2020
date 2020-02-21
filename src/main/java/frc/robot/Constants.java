@@ -52,15 +52,18 @@ public final class Constants {
     public static final int REAR_RIGHT_MOTOR_PORT = 3;
 
     // Climber Motor Ports
-    public static final int CLIMBER_LIFT_MOTOR_PORT = 12;
+    public static final int CLIMBER_LIFT_MOTOR_PORT = 6;
     public static final int CLIMBER_HOOK_MOTOR_PORT = 11;
-    public static final int CLIMBER_BALANCE_MOTOR_PORT = 10;
+    public static final int CLIMBER_BALANCE_MOTOR_PORT = 7;
 
     // Climber Movement Constants
     public static final double CLIMBER_LIFT_CONSTANT = 0.5;
     public static final double CLIMBER_HOOK_CONSTANT = 0.69;
 
     // Climber I2C port
-    public static final int CLIMBER_GYRO_PORT = 0x6B;
+    //public static final int CLIMBER_GYRO_PORT = 0x6B;
+
+    // Speed limiting [0.0, 1.0]
+    public static final double CLIMBER_SPEED_LIMIT = 1.0; 
 
 }
