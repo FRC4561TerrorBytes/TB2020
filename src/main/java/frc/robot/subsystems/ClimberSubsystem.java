@@ -83,11 +83,19 @@ public class ClimberSubsystem extends PIDSubsystem {
   }
 
   /**
-   * Moves the climber hook with controller button
+   * Moves the climber hook
    * @param hookspeed speed at which the hook moves at [-1, 1]
    */
   public void hookManual(double hookspeed) {
     CLIMBER_HOOK_MOTOR.set(hookspeed);
+  }
+
+  /**
+   * Moves the climber mouse droid
+   * @param speed speed at which the mouse droid moves at [-1, 1]
+   */
+  public void mouseDroidManual(double speed) {
+    CLIMBER_BALANCE_MOTOR.set(speed);
   }
 
   /**
