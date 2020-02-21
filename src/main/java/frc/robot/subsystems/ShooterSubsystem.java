@@ -148,7 +148,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   /**
    * Moves flywheel to a speed
-   * @param speed input RPM to keep the motor at
+   * @param speed input speed to keep the motor at (ticks per 100 ms)
    */
   public void setFlywheelSpeed(double speed) {
     SmartDashboard.putNumber("flywheel speed: ", speed);

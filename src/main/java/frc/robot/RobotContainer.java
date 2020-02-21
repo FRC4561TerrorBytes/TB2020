@@ -94,15 +94,10 @@ public class RobotContainer {
     // Move the hood down using the A button
     // new JoystickButton(XBOX_CONTROLLER, Button.kA.value)
     //     .whileHeld(new RunCommand(() -> DRIVE_SUBSYSTEM.setSetpoint(180), DRIVE_SUBSYSTEM));
-    
-    // Control the Flywheel at a set speed using the right bumber
-    new JoystickButton(XBOX_CONTROLLER, Button.kBumperRight.value)
-        .whenPressed(new RunCommand(() -> SHOOTER_SUBSYSTEM.flywheelManual(-0.2), SHOOTER_SUBSYSTEM))
-        .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.flywheelManual(0.0), SHOOTER_SUBSYSTEM));
 
     // Control the Flywheel using PID using the left bumber
     new JoystickButton(XBOX_CONTROLLER, Button.kBumperLeft.value)
-        .whenPressed(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(-1000), SHOOTER_SUBSYSTEM))
+        .whenPressed(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(1000), SHOOTER_SUBSYSTEM))
         .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(0), SHOOTER_SUBSYSTEM));
 
     new JoystickButton(XBOX_CONTROLLER, Button.kBumperLeft.value)
