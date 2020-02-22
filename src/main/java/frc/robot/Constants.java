@@ -186,4 +186,7 @@ public final class Constants {
     public static final double LIFT_MOTOR_SPEED = 0.6;
     public static final double MAGAZINE_MOTOR_SPEED = 0.35;
 
+    // Ultrasonic Sensor ports
+    public static final int ANALOG_PORT = 0;
+
 }
