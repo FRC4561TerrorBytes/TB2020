@@ -35,7 +35,7 @@ public class MagazineSubsystem extends SubsystemBase {
   private final double TICKS_PER_DEGREE = (this.TICKS_PER_DEGREE * this. GEAR_RATIO) / 360;
   private TalonPIDConfig config;
 
-  private final double DISTANCE_PER_VOLT = 0; //TODO: Find value
+  private final double DISTANCE_PER_VOLT = 1.0; //TODO: Find value
   private final double ULTRASONIC_THRESHOLD = 5; //TODO: Find value
 
   /**
@@ -43,14 +43,23 @@ public class MagazineSubsystem extends SubsystemBase {
    */
   public MagazineSubsystem(TalonPIDConfig config) {
     this.config = config;
-    this.config.initializeTalonPID(ARM_MOTOR, FeedbackDevice.CTRE_MagEncoder_Absolute, true, false);
+    this.config.initializeTalonPID(ARM_MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, true, false);
+  }
+
+  /**
+   * Run uptake when ball is detected at the bottom & not at the top
+   */
+  public void ballUptake() {
+    if (ballDetectedBottom() && !ballDetectedTop()) {
+      this.ballUptake(Constants.MAGAZINE_MOTOR_SPEED);
+    }
   }
  
   /**
    * Makes the motor for the magazine to spin
    * @param speed (double) how fast you want the motor to spin [-1, 1]
    */
-  public void magazineMotorSpeed(double speed) {
+  public void ballUptake(double speed) {
     MAGAZINE_MOTOR.set(speed);
   }
 
@@ -67,7 +76,7 @@ public class MagazineSubsystem extends SubsystemBase {
    */
   public void armSetPosition(double setpoint) {
     double feedForward = this.config.getkF() * Math.cos(Math.toRadians(encoderPositionToDegrees(ARM_MOTOR.getSelectedSensorPosition())));
-    ARM_MOTOR.set(ControlMode.Position, setpoint); //, DemandType.ArbitraryFeedForward, feedForward);
+    ARM_MOTOR.set(ControlMode.Position, setpoint, DemandType.ArbitraryFeedForward, feedForward);
   }
 
   /**
@@ -125,14 +134,14 @@ public class MagazineSubsystem extends SubsystemBase {
    * @return bottom ultrasonic distance
    */
   private double magazineSensorBottom() {
-    return voltageToDistance(MAGAZINE_SENSOR_BOT.getValue());
+    return voltageToDistance(MAGAZINE_SENSOR_BOT.getVoltage());
   }
 
   /**
    * @return top ultrasonic distance
    */
   private double magazineSensorTop() {
-    return voltageToDistance(MAGAZINE_SENSOR_TOP.getValue());
+    return voltageToDistance(MAGAZINE_SENSOR_TOP.getVoltage());
   }
 
   /**
@@ -147,15 +156,6 @@ public class MagazineSubsystem extends SubsystemBase {
    */
   public boolean ballDetectedTop() {
     return magazineSensorTop() < ULTRASONIC_THRESHOLD;
-  }
-
-  /**
-   * 
-   */
-  public void ballUptake(double speed) {
-    if (ballDetectedBottom() && !ballDetectedTop()) {
-      magazineMotorSpeed(speed);
-    }
   }
 
   /**
@@ -193,6 +193,8 @@ public class MagazineSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Arm Motor Position", ARM_MOTOR.getSelectedSensorPosition());
       SmartDashboard.putNumber("Arm Motor Setpoint", ARM_MOTOR.getClosedLoopTarget());
       SmartDashboard.putNumber("Intake speed", INTAKE_MOTOR.get());
+      SmartDashboard.putNumber("Top sensor", this.magazineSensorTop());
+      SmartDashboard.putNumber("Bottom sensor", this.magazineSensorBottom());
     }
   }
 

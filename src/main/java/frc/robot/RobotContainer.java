@@ -7,14 +7,16 @@
 
 package frc.robot;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoSource;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -53,6 +55,9 @@ public class RobotContainer {
   private static final Joystick LEFT_JOYSTICK = new Joystick(Constants.LEFT_JOYSTICK_PORT);
   private static final Joystick RIGHT_JOYSTICK = new Joystick(Constants.RIGHT_JOYSTICK_PORT);
 
+  public static UsbCamera camera1;
+  public static UsbCamera camera2;
+
 
   
   /**
@@ -62,13 +67,16 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
+    // Start streaming driver camera
+    initializeCamera();
+
     // Enable PID on drive subsytem
     DRIVE_SUBSYSTEM.enable();
     // Set default command
     DRIVE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> DRIVE_SUBSYSTEM.teleopPID(LEFT_JOYSTICK.getY(), RIGHT_JOYSTICK.getX()), DRIVE_SUBSYSTEM));
     // Alternative way of setting default command using command class
     //DRIVE_SUBSYSTEM.setDefaultCommand(new TeleopDriveCommand(DRIVE_SUBSYSTEM, () -> XBOX_CONTROLLER.getY(Hand.kLeft), () -> XBOX_CONTROLLER.getY(Hand.kRight)));
-    MAGAZINE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(.5), MAGAZINE_SUBSYSTEM));
+    MAGAZINE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(), MAGAZINE_SUBSYSTEM));
   }
 
   /**
@@ -101,12 +109,12 @@ public class RobotContainer {
         .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(0), SHOOTER_SUBSYSTEM));
 
     new JoystickButton(XBOX_CONTROLLER, Button.kBumperLeft.value)
-        .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.magazineMotorSpeed(Constants.MAGAZINE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
+        .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MAGAZINE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
         .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.magazineMotorStop(), MAGAZINE_SUBSYSTEM));
 
-    new JoystickButton(XBOX_CONTROLLER, Button.kB.value)
-        .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.magazineMotorSpeed(-Constants.MAGAZINE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
-        .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.magazineMotorStop(), MAGAZINE_SUBSYSTEM));
+    // new JoystickButton(XBOX_CONTROLLER, Button.kB.value)
+    //     .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(-Constants.MAGAZINE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
+    //     .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.magazineMotorStop(), MAGAZINE_SUBSYSTEM));
     
 
     // // Moves climber lift at 0.5 speed when X button is pressed
@@ -121,11 +129,11 @@ public class RobotContainer {
     //     .whenPressed(new InstantCommand(() -> MAGAZINE_SUBSYSTEM.toggleArmPosition()));
     
     // Move the hood up using the Y button
-    // new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
-    //     .whileHeld(new RunCommand(() -> SHOOTER_SUBSYSTEM.hoodManual(0.3), SHOOTER_SUBSYSTEM))
-    //     .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.hoodManual(0), SHOOTER_SUBSYSTEM));
-
     new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
+        .whileHeld(new RunCommand(() -> SHOOTER_SUBSYSTEM.hoodManual(0.3), SHOOTER_SUBSYSTEM))
+        .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.hoodManual(0), SHOOTER_SUBSYSTEM));
+
+    new JoystickButton(XBOX_CONTROLLER, Button.kB.value)
     .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(0.4), MAGAZINE_SUBSYSTEM))
     .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(0), MAGAZINE_SUBSYSTEM));
 
@@ -136,7 +144,7 @@ public class RobotContainer {
 
     // Moves magazine at set speed
     new JoystickButton(XBOX_CONTROLLER, Button.kX.value)
-        .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.magazineMotorSpeed(Constants.MAGAZINE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
+        .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MAGAZINE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
         .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.magazineMotorStop(), MAGAZINE_SUBSYSTEM));
 
     
@@ -147,37 +155,56 @@ public class RobotContainer {
     //     .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(.6), MAGAZINE_SUBSYSTEM))
     //     .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(0), MAGAZINE_SUBSYSTEM));
 
-    // new POVButton(XBOX_CONTROLLER, 0).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(-0.2), MAGAZINE_SUBSYSTEM))
-    //     .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(0), MAGAZINE_SUBSYSTEM));
+    new POVButton(XBOX_CONTROLLER, 0).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(-0.2), MAGAZINE_SUBSYSTEM))
+        .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(0), MAGAZINE_SUBSYSTEM));
 
 
-    // new POVButton(XBOX_CONTROLLER, 180).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(0.2), MAGAZINE_SUBSYSTEM))
-    //     .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(0), MAGAZINE_SUBSYSTEM));
+    new POVButton(XBOX_CONTROLLER, 180).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(0.2), MAGAZINE_SUBSYSTEM))
+        .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(0), MAGAZINE_SUBSYSTEM));
 
-    new POVButton(XBOX_CONTROLLER, 0).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armPositionRelative(-10), MAGAZINE_SUBSYSTEM));
-    new POVButton(XBOX_CONTROLLER, 180).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armPositionRelative(10), MAGAZINE_SUBSYSTEM));
+    // new POVButton(XBOX_CONTROLLER, 0).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armPositionRelative(-10), MAGAZINE_SUBSYSTEM));
+    // new POVButton(XBOX_CONTROLLER, 180).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armPositionRelative(10), MAGAZINE_SUBSYSTEM));
 
 
-    new Trigger(() -> (XBOX_CONTROLLER.getTriggerAxis(Hand.kRight) > .2))
-                .whenActive(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(Constants.INTAKE_MOTOR_SPEED)))
-                .whenInactive(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(Constants.MOTOR_STOP)));
+    // new Trigger(() -> (XBOX_CONTROLLER.getTriggerAxis(Hand.kRight) > .2))
+    //             .whenActive(new RunCommand(() -> SHOOTER_SUBSYSTEM.relativeMoveTurretPID(XBOX_CONTROLLER.getTriggerAxis(Hand.kRight) * 10), SHOOTER_SUBSYSTEM));
 
-    new Trigger(() -> (XBOX_CONTROLLER.getTriggerAxis(Hand.kRight) > .2))
-                .whenActive(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(Constants.INTAKE_MOTOR_SPEED)))
-                .whenInactive(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(Constants.MOTOR_STOP)));
+    // new Trigger(() -> (XBOX_CONTROLLER.getTriggerAxis(Hand.kLeft) > .2))
+    //             .whenActive(new RunCommand(() -> SHOOTER_SUBSYSTEM.relativeMoveTurretPID(XBOX_CONTROLLER.getTriggerAxis(Hand.kLeft) * 10), SHOOTER_SUBSYSTEM));
 
+    
+    new Trigger(() -> (XBOX_CONTROLLER.getTriggerAxis(Hand.kRight) > Constants.DEADBAND))
+                .whenActive(new RunCommand(() -> SHOOTER_SUBSYSTEM.moveMotorManual(SHOOTER_SUBSYSTEM.getTurretMotor(),XBOX_CONTROLLER.getTriggerAxis(Hand.kRight) * 1), SHOOTER_SUBSYSTEM))
+                .whenInactive(new RunCommand(() -> SHOOTER_SUBSYSTEM.moveMotorManual(SHOOTER_SUBSYSTEM.getTurretMotor(), 0), SHOOTER_SUBSYSTEM));
+
+    new Trigger(() -> (XBOX_CONTROLLER.getTriggerAxis(Hand.kLeft) > Constants.DEADBAND))
+                .whenActive(new RunCommand(() -> SHOOTER_SUBSYSTEM.moveMotorManual(SHOOTER_SUBSYSTEM.getTurretMotor(),-XBOX_CONTROLLER.getTriggerAxis(Hand.kLeft) * 1), SHOOTER_SUBSYSTEM))
+                .whenInactive(new RunCommand(() -> SHOOTER_SUBSYSTEM.moveMotorManual(SHOOTER_SUBSYSTEM.getTurretMotor(), 0), SHOOTER_SUBSYSTEM));
+    
   
-    new POVButton(XBOX_CONTROLLER, 90).whenPressed(new RunCommand(() -> CLIMBER_SUBSYSTEM.liftManual(Constants.LIFT_MOTOR_SPEED), CLIMBER_SUBSYSTEM))
-                  .whenReleased(new RunCommand(() -> CLIMBER_SUBSYSTEM.liftManual(Constants.MOTOR_STOP), CLIMBER_SUBSYSTEM));
+    // new POVButton(XBOX_CONTROLLER, 90).whenPressed(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(1), CLIMBER_SUBSYSTEM))
+    //               .whenReleased(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(Constants.MOTOR_STOP), CLIMBER_SUBSYSTEM));
             
-    new POVButton(XBOX_CONTROLLER, 270).whenPressed(new RunCommand(() -> CLIMBER_SUBSYSTEM.liftManual(-Constants.LIFT_MOTOR_SPEED), CLIMBER_SUBSYSTEM))
-                  .whenReleased(new RunCommand(() -> CLIMBER_SUBSYSTEM.liftManual(Constants.MOTOR_STOP), CLIMBER_SUBSYSTEM));
+    // new POVButton(XBOX_CONTROLLER, 270).whenPressed(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(-1), CLIMBER_SUBSYSTEM))
+    //               .whenReleased(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(Constants.MOTOR_STOP), CLIMBER_SUBSYSTEM));
+
+    new Trigger(() -> (XBOX_CONTROLLER.getY(Hand.kLeft) > Constants.DEADBAND)).whenActive(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(-XBOX_CONTROLLER.getY(Hand.kLeft)), CLIMBER_SUBSYSTEM));
+    new Trigger(() -> (XBOX_CONTROLLER.getY(Hand.kRight) > Constants.DEADBAND)).whenActive(new RunCommand(() -> CLIMBER_SUBSYSTEM.liftManual(XBOX_CONTROLLER.getY(Hand.kRight)), CLIMBER_SUBSYSTEM));
 
 
     // Reset the arm encoder to the back position
     // new Trigger(() -> MAGAZINE_SUBSYSTEM.armLimit())
     //             .whileActiveOnce(new InstantCommand(() -> MAGAZINE_SUBSYSTEM.getArmMotor().setSelectedSensorPosition(Constants.ARM_BOTTOM_POSITION),
     //             MAGAZINE_SUBSYSTEM));
+    
+
+    // TODO: Keep, this will be the shoot command
+    new JoystickButton(XBOX_CONTROLLER, Button.kBumperRight.value)
+      .whileHeld(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(1000), SHOOTER_SUBSYSTEM).alongWith(
+        new ConditionalCommand(
+          new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MAGAZINE_MOTOR_SPEED)), 
+          new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MOTOR_STOP)), 
+          () -> SHOOTER_SUBSYSTEM.isFlywheelAtSpeed())));
   }
 
 
@@ -206,5 +233,15 @@ public class RobotContainer {
 
    public static MagazineSubsystem getMagazineSubsystem() {
      return MAGAZINE_SUBSYSTEM;
+   }
+
+   public void initializeCamera() {
+    camera1 = CameraServer.getInstance().startAutomaticCapture();
+    camera1.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
+    camera1.setResolution(176, 144);
+    camera1.setFPS(30);
+    camera1.setBrightness(25);
+    camera1.setExposureManual(10);
+    camera1.setWhiteBalanceManual(10);
    }
 }

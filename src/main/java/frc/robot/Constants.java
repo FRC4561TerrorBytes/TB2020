@@ -29,16 +29,13 @@ public final class Constants {
     public static final double DRIVE_TOLERANCE = 1.0;
 
     // Intake Arm PID config
-    public static final double ARM_kP = 1.0;
+    public static final double ARM_kP = .05;
     public static final double ARM_kD = 0.005;
-    public static final double ARM_kF = 0.0005;
+    public static final double ARM_kF = 0.000;
     public static final double ARM_TOLERANCE = 1.0;
     public static final double ARM_LOWER_LIMIT = 0.0;
     public static final double ARM_UPPER_LIMIT = -750;
     public static final boolean ARM_SOFT_LIMITS = false;
-    public static final double ARM_VELOCITY_RPM = 1000; // 25 RPM
-    public static final double ARM_ACCELERATION_RPM_PER_SEC = 200;
-    public static final int ARM_MOTION_SMOOTHING = 0;
     public static final boolean ARM_SENSOR_PHASE = true;
     public static final boolean ARM_INVERT_MOTOR = false;
 
@@ -64,7 +61,7 @@ public final class Constants {
     private static final double HOOD_ACCELERATION_RPM_PER_SEC = 0.0;
     private static final int HOOD_MOTION_SMOOTHING = 0; // between [0, 7]
     private static final boolean HOOD_ENCODER_SENSOR_PHASE = true;
-    private static final boolean HOOD_MOTOR_INVERTED = true;
+    private static final boolean HOOD_MOTOR_INVERTED = false;
     private static final double TURRET_kP = 0.0;
     private static final double TURRET_kD = 0.0;
     private static final double TURRET_TOLERANCE = 0.0;
@@ -73,7 +70,7 @@ public final class Constants {
     private static final double TURRET_ACCELERATION_RPM_PER_SEC = 0.0;
     private static final int TURRET_MOTION_SMOOTHING = 0; // between [0, 7]
     private static final boolean TURRET_ENCODER_SENSOR_PHASE = true;
-    private static final boolean TURRET_MOTOR_INVERTED = true;
+    private static final boolean TURRET_MOTOR_INVERTED = false;
     
     // Shooter Positions
     public static final int HOOD_BOTTOM_POSITION = 0;
@@ -131,9 +128,6 @@ public final class Constants {
                                                                         ARM_LOWER_LIMIT,
                                                                         ARM_UPPER_LIMIT,
                                                                         ARM_SOFT_LIMITS);
-                                                                        // ARM_VELOCITY_RPM,
-                                                                        // ARM_ACCELERATION_RPM_PER_SEC,
-                                                                        // ARM_MOTION_SMOOTHING); 
 
     //public static final TalonPIDConfig MAGAZINE_CONFIG = new TalonPIDConfig(); //TODO: f
 
@@ -180,11 +174,11 @@ public final class Constants {
     public static final int HOOD_MOTOR_PORT = 9;
     public static final int TURRET_MOTOR_PORT = 8;
 
-    // Motor Speeds
+    // Motor Speeds - @author utkarsh
     public static final double MOTOR_STOP = 0;
     public static final double INTAKE_MOTOR_SPEED = 0.75;
     public static final double LIFT_MOTOR_SPEED = 0.6;
-    public static final double MAGAZINE_MOTOR_SPEED = 0.35;
+    public static final double MAGAZINE_MOTOR_SPEED = 0.45;
 
     // Ultrasonic Sensor ports
     public static final int ANALOG_PORT = 0;
