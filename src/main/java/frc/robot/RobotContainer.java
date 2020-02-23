@@ -17,10 +17,12 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.HoodCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.MagazineSubsystem;
@@ -48,7 +50,7 @@ public class RobotContainer {
 
   public static final MagazineSubsystem MAGAZINE_SUBSYSTEM = new MagazineSubsystem(Constants.ARM_CONFIG);
 
-  private static final ShooterSubsystem SHOOTER_SUBSYSTEM = new ShooterSubsystem(Constants.FLYWHEEL_CONFIG, Constants.HOOD_CONFIG, Constants.TURRET_CONFIG);
+  private static final ShooterSubsystem SHOOTER_SUBSYSTEM = new ShooterSubsystem(Constants.FLYWHEEL_MASTER_CONFIG, Constants.FLYWHEEL_SLAVE_CONFIG, Constants.HOOD_CONFIG, Constants.TURRET_CONFIG);
   
   private static final XboxController XBOX_CONTROLLER = new XboxController(Constants.XBOX_CONTROLLER_PORT);
 
@@ -107,8 +109,8 @@ public class RobotContainer {
 
     // Control the Flywheel using PID using the left bumber
     new JoystickButton(XBOX_CONTROLLER, Button.kBumperLeft.value)
-        .whenPressed(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(1000), SHOOTER_SUBSYSTEM))
-        .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(0), SHOOTER_SUBSYSTEM));
+        .whenPressed(new RunCommand(() -> SHOOTER_SUBSYSTEM.flywheelManual(0.1), SHOOTER_SUBSYSTEM))
+        .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.flywheelManual(0), SHOOTER_SUBSYSTEM));
 
     new JoystickButton(XBOX_CONTROLLER, Button.kBumperLeft.value)
         .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MAGAZINE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
@@ -117,11 +119,7 @@ public class RobotContainer {
     // new JoystickButton(XBOX_CONTROLLER, Button.kB.value)
     //     .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(-Constants.MAGAZINE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
     //     .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.magazineMotorStop(), MAGAZINE_SUBSYSTEM));
-    
-    // Move the hood down using the A button
-    new JoystickButton(XBOX_CONTROLLER, Button.kA.value)
-        .whenPressed(new RunCommand(() -> SHOOTER_SUBSYSTEM.hoodManual(-0.3), SHOOTER_SUBSYSTEM))
-        .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.hoodManual(0.0), SHOOTER_SUBSYSTEM));
+
 
     // // Moves climber lift at 0.5 speed when X button is pressed
     // new JoystickButton(XBOX_CONTROLLER, Button.kX.value)
@@ -136,17 +134,17 @@ public class RobotContainer {
     
     // Move the hood up using the Y button
     new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
-        .whileHeld(new RunCommand(() -> SHOOTER_SUBSYSTEM.hoodManual(0.3), SHOOTER_SUBSYSTEM))
-        .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.hoodManual(0), SHOOTER_SUBSYSTEM));
+        .whileHeld(new HoodCommand(SHOOTER_SUBSYSTEM, -0.3))
+        .whenReleased(new HoodCommand(SHOOTER_SUBSYSTEM, Constants.MOTOR_STOP));
 
     new JoystickButton(XBOX_CONTROLLER, Button.kB.value)
     .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(0.4), MAGAZINE_SUBSYSTEM))
     .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(0), MAGAZINE_SUBSYSTEM));
 
-    // Move the hood up using the A button
+    // Move the hood down using the A button
     new JoystickButton(XBOX_CONTROLLER, Button.kA.value)
-        .whileHeld(new RunCommand(() -> SHOOTER_SUBSYSTEM.hoodManual(-0.3), SHOOTER_SUBSYSTEM))
-        .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.hoodManual(0), SHOOTER_SUBSYSTEM));
+        .whileHeld(new HoodCommand(SHOOTER_SUBSYSTEM, 0.3))
+        .whenReleased(new HoodCommand(SHOOTER_SUBSYSTEM, Constants.MOTOR_STOP));
 
     // Moves magazine at set speed
     new JoystickButton(XBOX_CONTROLLER, Button.kX.value)
@@ -188,18 +186,8 @@ public class RobotContainer {
     if (SHOOTER_SUBSYSTEM.hoodLimit()) {
       SHOOTER_SUBSYSTEM.getHoodMotor().setSelectedSensorPosition(Constants.HOOD_BOTTOM_POSITION);
     }
-    //     .whileHeld(new RunCommand(() -> DRIVE_SUBSYSTEM.setSetpoint(180), DRIVE_SUBSYSTEM));
-
-    // Moves climber lift at 0.5 speed when X button is pressed
-    new JoystickButton(XBOX_CONTROLLER, Button.kX.value)
-        .whileHeld(new RunCommand(() -> CLIMBER_SUBSYSTEM.liftManual(Constants.CLIMBER_LIFT_CONSTANT), CLIMBER_SUBSYSTEM));
     
-    // Moves climber hook at 0.5 speed when Y button is pressed
-    new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
-        .whileHeld(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(Constants.CLIMBER_HOOK_CONSTANT), CLIMBER_SUBSYSTEM));
 
-    new Trigger(() -> (XBOX_CONTROLLER.getY(Hand.kLeft) > Constants.DEADBAND)).whenActive(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(-XBOX_CONTROLLER.getY(Hand.kLeft) * Constants.CLIMBER_SPEED_LIMIT), CLIMBER_SUBSYSTEM));
-    new Trigger(() -> (XBOX_CONTROLLER.getY(Hand.kRight) > Constants.DEADBAND)).whenActive(new RunCommand(() -> CLIMBER_SUBSYSTEM.liftManual(XBOX_CONTROLLER.getY(Hand.kRight) * Constants.CLIMBER_SPEED_LIMIT), CLIMBER_SUBSYSTEM));
     new Trigger(() -> (XBOX_CONTROLLER.getTriggerAxis(Hand.kRight) > Constants.DEADBAND))
                 .whenActive(new RunCommand(() -> SHOOTER_SUBSYSTEM.moveMotorManual(SHOOTER_SUBSYSTEM.getTurretMotor(),XBOX_CONTROLLER.getTriggerAxis(Hand.kRight) * 1), SHOOTER_SUBSYSTEM))
                 .whenInactive(new RunCommand(() -> SHOOTER_SUBSYSTEM.moveMotorManual(SHOOTER_SUBSYSTEM.getTurretMotor(), 0), SHOOTER_SUBSYSTEM));
@@ -224,14 +212,65 @@ public class RobotContainer {
     //             .whileActiveOnce(new InstantCommand(() -> MAGAZINE_SUBSYSTEM.getArmMotor().setSelectedSensorPosition(Constants.ARM_BOTTOM_POSITION),
     //             MAGAZINE_SUBSYSTEM));
     
+    // TODO: Driver buttons here!!!
+//     
+// 
+// 
+//  
+    // Right joystick intake button 1
+    new JoystickButton(RIGHT_JOYSTICK, 1)
+      .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(Constants.INTAKE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
+      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(Constants.MOTOR_STOP), MAGAZINE_SUBSYSTEM));
 
-    // TODO: Keep, this will be the shoot command
-    new JoystickButton(XBOX_CONTROLLER, Button.kBumperRight.value)
-      .whileHeld(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(1000), SHOOTER_SUBSYSTEM).alongWith(
+    // Right joystick Hood Toggle button 2
+    new JoystickButton(RIGHT_JOYSTICK, 2)
+      .whenPressed(new InstantCommand(() -> SHOOTER_SUBSYSTEM.toggleHoodPosition(), SHOOTER_SUBSYSTEM));
+
+    // Right joystick shoot button 3
+    new JoystickButton(RIGHT_JOYSTICK, 3)
+      .whileHeld(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(-1000), SHOOTER_SUBSYSTEM).alongWith(
         new ConditionalCommand(
           new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MAGAZINE_MOTOR_SPEED)), 
           new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MOTOR_STOP)), 
           () -> SHOOTER_SUBSYSTEM.isFlywheelAtSpeed())));
+
+    new JoystickButton(RIGHT_JOYSTICK, 3)
+      .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(0), SHOOTER_SUBSYSTEM))
+      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(0), MAGAZINE_SUBSYSTEM));
+
+    // Right joystick shoot button 4
+    new JoystickButton(RIGHT_JOYSTICK, 4)
+      .whileHeld(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(-17600), SHOOTER_SUBSYSTEM).alongWith(
+        new ConditionalCommand(
+          new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MAGAZINE_MOTOR_SPEED)), 
+          new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MOTOR_STOP)), 
+          () -> SHOOTER_SUBSYSTEM.isFlywheelAtSpeed())));
+      
+    new JoystickButton(RIGHT_JOYSTICK, 4)
+      .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(0), SHOOTER_SUBSYSTEM))
+      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(0), MAGAZINE_SUBSYSTEM));
+
+    // Left joystick intake button 1
+    new JoystickButton(LEFT_JOYSTICK, 1)
+      .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(-0.5), MAGAZINE_SUBSYSTEM))
+      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(Constants.MOTOR_STOP), MAGAZINE_SUBSYSTEM));
+    
+    // Right joystick Arm Toggle button 2
+    new JoystickButton(LEFT_JOYSTICK, 2)
+      .whenPressed(new InstantCommand(() -> MAGAZINE_SUBSYSTEM.toggleArmPosition(), MAGAZINE_SUBSYSTEM));
+
+    // Right joystick turret to 180 button 3
+    new JoystickButton(LEFT_JOYSTICK, 3)
+      .whenPressed(new InstantCommand(() -> SHOOTER_SUBSYSTEM.moveTurretPID(Constants.TURRET_BACK_POSITION), SHOOTER_SUBSYSTEM));
+
+    // Right joystick turret to 0 button 4
+    new JoystickButton(LEFT_JOYSTICK, 4)
+      .whenPressed(new InstantCommand(() -> SHOOTER_SUBSYSTEM.moveTurretPID(Constants.TURRET_STRAIGHT_POSITION), SHOOTER_SUBSYSTEM));
+
+    // Right joystick turret to 0 button 4
+    // new JoystickButton(XBOX_CONTROLLER, 1)
+    //   .whenPressed(new InstantCommand(() -> SHOOTER_SUBSYSTEM.moveTurretPID(Constants.TURRET_BACK_POSITION), SHOOTER_SUBSYSTEM));
+    
   }
 
 
