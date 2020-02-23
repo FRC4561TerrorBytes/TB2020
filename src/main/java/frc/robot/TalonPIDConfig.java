@@ -22,7 +22,7 @@ public class TalonPIDConfig {
   private static final int PID_SLOT = 0;
 
   private boolean motionMagic = false;
-  private boolean enableLimits = true;
+  private boolean enableSoftLimits = true;
 
   private boolean sensorPhase = false;
   private boolean invertMotor = false;
@@ -53,7 +53,7 @@ public class TalonPIDConfig {
    */
   TalonPIDConfig(boolean sensorPhase, boolean invertMotor, 
                   double kP, double kI, double kD, double kF, 
-                  double tolerance, double lowerLimit, double upperLimit) {
+                  double tolerance, double lowerLimit, double upperLimit, boolean enableSoftLimits) {
     this.sensorPhase = sensorPhase;
     this.invertMotor = invertMotor;
     this.kP = kP;
@@ -63,6 +63,7 @@ public class TalonPIDConfig {
     this.tolerance = tolerance;
     this.lowerLimit = lowerLimit;
     this.upperLimit = upperLimit;
+    this.enableSoftLimits = enableSoftLimits;
 
     if (this.tolerance < MIN_TOLERANCE) this.tolerance = MIN_TOLERANCE;
   }
@@ -89,7 +90,7 @@ public class TalonPIDConfig {
     this.kF = kF;
     this.tolerance = tolerance;
 
-    this.enableLimits = false;
+    this.enableSoftLimits = false;
 
     if (this.tolerance < MIN_TOLERANCE) this.tolerance = MIN_TOLERANCE;
   }
@@ -104,13 +105,13 @@ public class TalonPIDConfig {
    * @param kD derivative gain
    * @param kF feed-forward gain
    * @param tolerance tolerance of PID loop
-   * @param velocityRPM MotionMagic cruise velocity in RPM
-   * @param accelerationRPMPerSec MotionMagic acceleration in RPM per sec
+   * @param velocity MotionMagic cruise velocity in ticks per 100ms
+   * @param accelerationRPMPerSec MotionMagic acceleration in ticks per 100ms per sec
    * @param motionSmoothing MotionMagic smoothing factor [0, 7]
    */
   TalonPIDConfig(boolean sensorPhase, boolean invertMotor, 
                   double kP, double kI, double kD, double kF, 
-                  double tolerance, double lowerLimit, double upperLimit,
+                  double tolerance, double lowerLimit, double upperLimit, boolean enableSoftLimits,
                   double velocityRPM, double accelerationRPMPerSec, int motionSmoothing) {
     this.sensorPhase = sensorPhase;
     this.invertMotor = invertMotor;
@@ -121,6 +122,7 @@ public class TalonPIDConfig {
     this.tolerance = tolerance;
     this.lowerLimit = lowerLimit;
     this.upperLimit = upperLimit;
+    this.enableSoftLimits = enableSoftLimits;
     
     this.velocityRPM = velocityRPM;
     this.accelerationRPMPerSec = accelerationRPMPerSec;
@@ -146,11 +148,11 @@ public class TalonPIDConfig {
     talon.configSelectedFeedbackSensor(feedbackDevice);
     
     // Configure forward and reverse soft limits
-    if (this.enableLimits) {
+    if (this.enableSoftLimits) {
       talon.configForwardSoftLimitThreshold((int)this.upperLimit);
-      talon.configForwardSoftLimitEnable(false); // TODO: Set this once tuned
+      talon.configForwardSoftLimitEnable(true);
       talon.configReverseSoftLimitThreshold((int)this.lowerLimit);
-      talon.configReverseSoftLimitEnable(false); // TODO: Set this once tuned
+      talon.configReverseSoftLimitEnable(true);
     }
 
     // Configure forward and reverse limit switches if required
