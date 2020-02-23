@@ -28,11 +28,11 @@ public final class Constants {
     public static final boolean CLIMBER_SUBSYSTEM_DEBUG = true;
 
     // Drive PID values
-    public static final double DRIVE_kP = 0.010;
-    public static final double DRIVE_kD = 0.0005;
+    public static final double DRIVE_kP = 0.025;
+    public static final double DRIVE_kD = 0.000;
     public static final double DRIVE_PERIOD_SECONDS = 0.01667; // 60Hz
     public static final double DRIVE_TURN_SCALAR = 10.0;
-    public static final double DRIVE_TOLERANCE = 1.0;
+    public static final double DRIVE_TOLERANCE = 2.0;
 
     // Intake Arm PID config
     public static final double ARM_kP = .05;
