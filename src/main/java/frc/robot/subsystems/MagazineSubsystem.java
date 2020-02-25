@@ -10,6 +10,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -31,7 +33,7 @@ public class MagazineSubsystem extends SubsystemBase {
   private final AnalogInput MAGAZINE_SENSOR_TOP = new AnalogInput(Constants.MAGAZINE_ULTRASONIC_TOP);
 
   private final double TICKS_PER_ROTATION = 4096;
-  private final double GEAR_RATIO = 2;
+  private final double GEAR_RATIO = 5/2;
   private final double TICKS_PER_DEGREE = (this.TICKS_PER_DEGREE * this. GEAR_RATIO) / 360;
   private TalonPIDConfig config;
 
@@ -43,7 +45,9 @@ public class MagazineSubsystem extends SubsystemBase {
    */
   public MagazineSubsystem(TalonPIDConfig config) {
     this.config = config;
-    this.config.initializeTalonPID(ARM_MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, true, false);
+    this.config.initializeTalonPID(ARM_MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, false, true);
+    ARM_MOTOR.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+    ARM_MOTOR.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.NormallyClosed);
   }
 
   /**
@@ -75,7 +79,14 @@ public class MagazineSubsystem extends SubsystemBase {
    * @param setpoint Position where arm goes (ticks)
    */
   public void armSetPosition(double setpoint) {
+    // normalise setpoint
+    if (setpoint < this.config.getLowerLimit()) setpoint = this.config.getLowerLimit();
+    if (setpoint > this.config.getUpperLimit()) setpoint = this.config.getUpperLimit();
+
+    // set feed-forward
     double feedForward = this.config.getkF() * Math.cos(Math.toRadians(encoderPositionToDegrees(ARM_MOTOR.getSelectedSensorPosition())));
+
+    // Move arm toward setpoint
     ARM_MOTOR.set(ControlMode.Position, setpoint, DemandType.ArbitraryFeedForward, feedForward);
   }
 
@@ -191,7 +202,7 @@ public class MagazineSubsystem extends SubsystemBase {
     if (Constants.MAGAZINE_DEBUG) {
       SmartDashboard.putNumber("Arm Motor Output", ARM_MOTOR.getMotorOutputPercent());
       SmartDashboard.putNumber("Arm Motor Position", ARM_MOTOR.getSelectedSensorPosition());
-      SmartDashboard.putNumber("Arm Motor Setpoint", ARM_MOTOR.getClosedLoopTarget());
+      //SmartDashboard.putNumber("Arm Motor Setpoint", ARM_MOTOR.getClosedLoopTarget());
       SmartDashboard.putNumber("Intake speed", INTAKE_MOTOR.get());
       SmartDashboard.putNumber("Top sensor", this.magazineSensorTop());
       SmartDashboard.putNumber("Bottom sensor", this.magazineSensorBottom());

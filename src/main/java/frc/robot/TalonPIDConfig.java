@@ -175,10 +175,14 @@ public class TalonPIDConfig {
 
     // Configure MotionMagic values
     if (this.motionMagic) {
-      talon.configMotionCruiseVelocity((int)this.velocityRPM);
-      talon.configMotionAcceleration((int)this.accelerationRPMPerSec);
+      talon.configMotionCruiseVelocity(rpmToTicksPer100ms(this.velocityRPM));
+      talon.configMotionAcceleration(rpmToTicksPer100ms(this.accelerationRPMPerSec));
       talon.configMotionSCurveStrength(this.motionSmoothing);
     }
+  }
+
+  private int rpmToTicksPer100ms(double rpm) {
+    return (int)((rpm * 4096) / 10);
   }
 
   /**

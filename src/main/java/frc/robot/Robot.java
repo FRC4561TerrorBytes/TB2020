@@ -96,6 +96,8 @@ public class Robot extends TimedRobot {
     robotContainer.getDriveSubsystem().resetAngle();
     robotContainer.getDriveSubsystem().setSetpoint(0);
 
+    robotContainer.getShooterSubsystem().reset();
+
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove

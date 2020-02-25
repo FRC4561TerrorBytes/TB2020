@@ -60,7 +60,7 @@ public class DriveSubsystem extends PIDSubsystem {
       RIGHT_REAR_SLAVE.set(ControlMode.Follower, RIGHT_MASTER_MOTOR.getDeviceID());
 
       // Wait for Robot init before finishing DriveSubsystem init
-      try { Thread.sleep(10000); }
+      try { Thread.sleep(7000); }
       catch (Exception e) { e.printStackTrace(); }
 
       // Initialise PID subsystem setpoint and input
@@ -98,7 +98,10 @@ public class DriveSubsystem extends PIDSubsystem {
    * @param speed Desired speed from -1.0 to 1.0
    * @param turn_request Turn input from -1.0 to 1.0
    */
-  public void teleopPID(double speed, double turn_request) {
+  public void teleopPID(double speed, double turn_request, int power) {
+    speed = Math.copySign(Math.pow(speed, power), speed);
+    turn_request = Math.copySign(Math.pow(turn_request, power), turn_request);
+
     // Set drive speed if it is more than the deadband
     if (Math.abs(speed) >= this.deadband) this.setSpeed(speed);
     else this.stop();
