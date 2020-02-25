@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Transform2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
@@ -34,6 +33,7 @@ public class AutoTrajectory extends CommandBase {
    Creates a new AutoTrajectory.
    */
   public AutoTrajectory(DriveSubsystem subsystem, String trajectoryJSON) {
+  //public AutoTrajectory(DriveSubsystem subsystem, Pose2d startPosition, Pose2d endPosition /*,List<Translation2d> interiorWaypoints*/ ) {
     this.subsystem = subsystem;
     addRequirements(this.subsystem);
 
@@ -46,10 +46,7 @@ public class AutoTrajectory extends CommandBase {
                                        Constants.kaVoltSecondsSquaredPerMeter),
             Constants.kDriveKinematics,
             10);
-            
 
-
-    // I DO NOT KNOW IF "config" IS NEEDED OR JUST NEEDS TO BE PASSED IN A DIFFERENT PLACE!
     // Create config for trajectory
     TrajectoryConfig config =
         new TrajectoryConfig(Constants.kMaxSpeedMetersPerSecond,
@@ -58,6 +55,22 @@ public class AutoTrajectory extends CommandBase {
             .setKinematics(Constants.kDriveKinematics)
             // Apply the voltage constraint
             .addConstraint(autoVoltageConstraint);
+
+
+            // Trajectory AMtrajectory = TrajectoryGenerator.generateTrajectory(
+            //   // Start at the origin facing the +X direction
+            //   new Pose2d(0, 0, new Rotation2d(0)),
+            //   // Pass through these two interior waypoints, making an 's' curve path
+            //   List.of(
+            //       new Translation2d(1, 1),
+            //       new Translation2d(2, -1)
+            //   ),
+             // End 3 meters straight ahead of where we started, facing forward
+    //     new Pose2d(3, 0, new Rotation2d(0)),
+    //     // Pass config
+    //     config
+    // );
+
     
    
    // Each Auto Mode is created in RobotContainer and has its own String for trajectoryJSON which it gets
@@ -76,9 +89,7 @@ public class AutoTrajectory extends CommandBase {
       /* This Transforms the starting position of the trajectory to match the starting position of the actual 
       roboto. Prevents robot from moving to first X,Y of trajectory and then following the path.
       Changes the first point(s) of the trajectory to the X,Y point of where the robot currently is*/
-      Pose2d initial_pose = AMtrajectory.getInitialPose();
-      Pose2d system_pose = subsystem.getPose();
-      Transform2d transform = system_pose.minus(initial_pose);
+      Transform2d transform = subsystem.getPose().minus(AMtrajectory.getInitialPose());
       Trajectory transformedTrajectory =  AMtrajectory.transformBy(transform);
       
 
@@ -103,22 +114,6 @@ public class AutoTrajectory extends CommandBase {
         
     );
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Called when the command is initially scheduled.
   @Override
   public void initialize() {

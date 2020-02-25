@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 //import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -27,9 +28,10 @@ public class Robot extends TimedRobot {
 
 
 
- RobotContainer robotContainer;
+  RobotContainer robotContainer;
   DriveSubsystem subsystem;
   Command autonomousCommand;
+  ShooterSubsystem SHOOTER_SUBSYSTEM;
 
  
   
@@ -50,7 +52,7 @@ public class Robot extends TimedRobot {
 
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    robotContainer = new RobotContainer();
+   robotContainer = new RobotContainer();
 
   }
   /**
@@ -89,6 +91,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+
+    SHOOTER_SUBSYSTEM.getTurretMotor().setSelectedSensorPosition(Constants.TURRET_BACK_POSITION);
  
     // Reset DriveSubsystem PID
     robotContainer.getDriveSubsystem().resetAngle();
