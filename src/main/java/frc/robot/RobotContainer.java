@@ -58,8 +58,6 @@ public class RobotContainer {
   private static final Joystick LEFT_JOYSTICK = new Joystick(Constants.LEFT_JOYSTICK_PORT);
   private static final Joystick RIGHT_JOYSTICK = new Joystick(Constants.RIGHT_JOYSTICK_PORT);
 
-  private static final int DRIVE_RESPONSE_EXPONENT = 2;
-
   public static UsbCamera camera1;
   public static UsbCamera camera2;
 
@@ -79,7 +77,7 @@ public class RobotContainer {
     DRIVE_SUBSYSTEM.enable();
 
     // Set default commands for subsystems
-    DRIVE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> DRIVE_SUBSYSTEM.teleopPID(LEFT_JOYSTICK.getY(), RIGHT_JOYSTICK.getX(), DRIVE_RESPONSE_EXPONENT), DRIVE_SUBSYSTEM));
+    DRIVE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> DRIVE_SUBSYSTEM.teleopPID(LEFT_JOYSTICK.getY(), RIGHT_JOYSTICK.getX(), Constants.DRIVE_RESPONSE_EXPONENT), DRIVE_SUBSYSTEM));
     MAGAZINE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(), MAGAZINE_SUBSYSTEM));
   }
 
@@ -116,11 +114,6 @@ public class RobotContainer {
 
     new POVButton(XBOX_CONTROLLER, 270).whileHeld(new HoodCommand(SHOOTER_SUBSYSTEM, 0.3))
       .whenReleased(new HoodCommand(SHOOTER_SUBSYSTEM, Constants.MOTOR_STOP));
-
-    // Arm Up at set speed
-    // new JoystickButton(XBOX_CONTROLLER, getPOVCount())
-    //     .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(.6), MAGAZINE_SUBSYSTEM))
-    //     .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(0), MAGAZINE_SUBSYSTEM));
 
     new POVButton(XBOX_CONTROLLER, 0).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armPositionRelative(-Constants.ARM_MANUAL_INCREMENT), MAGAZINE_SUBSYSTEM));
     new POVButton(XBOX_CONTROLLER, 180).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armPositionRelative(Constants.ARM_MANUAL_INCREMENT), MAGAZINE_SUBSYSTEM));

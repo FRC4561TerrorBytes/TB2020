@@ -16,12 +16,17 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.TalonPIDConfig;
 
 public class ShooterSubsystem extends SubsystemBase {
+
+  private final String SUBSYSTEM_NAME = "Shooter Subsystem";
+
   private static class Flywheel {
     private static double kF;
     private static final int TICKS_PER_ROTATION = 2048;
@@ -311,20 +316,21 @@ public class ShooterSubsystem extends SubsystemBase {
 
     // Prints debug statements on SmartDashboard
     if (Constants.SHOOTER_DEBUG) {
-      SmartDashboard.putNumber("Flywheel Motor Output", Flywheel.MASTER_MOTOR.getMotorOutputPercent());
-      SmartDashboard.putNumber("Flywheel Motor Velocity", Flywheel.MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity());
-      SmartDashboard.putNumber("Flywheel Motor Setpoint", Flywheel.speed);
-      SmartDashboard.putNumber("Flywheel Error", flywheelError());
-      SmartDashboard.putBoolean("Flywheel at Speed?", isFlywheelAtSpeed());
+      ShuffleboardTab tab = Shuffleboard.getTab(this.SUBSYSTEM_NAME);
+      tab.addNumber("Flywheel Motor Output", () -> Flywheel.MASTER_MOTOR.getMotorOutputPercent());
+      tab.addNumber("Flywheel Motor Velocity", () -> Flywheel.MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity());
+      tab.addNumber("Flywheel Motor Setpoint", () -> Flywheel.speed);
+      tab.addNumber("Flywheel Error", () -> flywheelError());
+      tab.addBoolean("Flywheel at Speed?", () -> isFlywheelAtSpeed());
 
-      SmartDashboard.putNumber("Hood Motor Output", Hood.MOTOR.getMotorOutputPercent());
-      SmartDashboard.putNumber("Hood Encoder Position", Hood.MOTOR.getSelectedSensorPosition());
-      SmartDashboard.putNumber("Hood Error", Hood.MOTOR.getClosedLoopError());
+      tab.addNumber("Hood Motor Output", () -> Hood.MOTOR.getMotorOutputPercent());
+      tab.addNumber("Hood Encoder Position", () -> Hood.MOTOR.getSelectedSensorPosition());
+      tab.addNumber("Hood Error", () -> Hood.MOTOR.getClosedLoopError());
       
-      SmartDashboard.putNumber("Turret Motor Output", Turret.MOTOR.getMotorOutputPercent());
-      SmartDashboard.putNumber("Turret Encoder Position", Turret.MOTOR.getSelectedSensorPosition());
-      SmartDashboard.putNumber("Turret Encoder Setpoint", Turret.MOTOR.getClosedLoopTarget());
-      SmartDashboard.putNumber("Turret Error", Turret.MOTOR.getClosedLoopError());
+      tab.addNumber("Turret Motor Output", () -> Turret.MOTOR.getMotorOutputPercent());
+      tab.addNumber("Turret Encoder Position", () -> Turret.MOTOR.getSelectedSensorPosition());
+      tab.addNumber("Turret Encoder Setpoint", () -> Turret.MOTOR.getClosedLoopTarget());
+      tab.addNumber("Turret Error", () -> Turret.MOTOR.getClosedLoopError());
     }
   }
 }

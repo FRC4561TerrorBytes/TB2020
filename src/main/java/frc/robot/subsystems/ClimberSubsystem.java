@@ -9,13 +9,16 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.robot.Constants;
 
 public class ClimberSubsystem extends PIDSubsystem {
+
+  private final String SUBSYSTEM_NAME = "Climber Subsystem";
   
   // Declaration of motors
   private final WPI_TalonSRX CLIMBER_LIFT_MOTOR = new WPI_TalonSRX(Constants.CLIMBER_LIFT_MOTOR_PORT);
@@ -33,10 +36,7 @@ public class ClimberSubsystem extends PIDSubsystem {
 
 
   public ClimberSubsystem(double kP, double kD) {
-    
-    super(
-        // The PIDController used by the subsystem
-        new PIDController(kP, 0, kD));
+    super(new PIDController(kP, 0, kD));
 
     //gyro.write(ENABLE_GYRO_REG, ENABLE_GYRO_VALUE);
 
@@ -123,12 +123,12 @@ public class ClimberSubsystem extends PIDSubsystem {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    getMeasurement();
-    if(Constants.CLIMBER_SUBSYSTEM_DEBUG) {
-      SmartDashboard.putNumber("Hook Percent Output", CLIMBER_HOOK_MOTOR.getMotorOutputPercent());
-      SmartDashboard.putNumber("Lift Percent Output", CLIMBER_LIFT_MOTOR.getMotorOutputPercent());
-      SmartDashboard.putNumber("Mouse Droid position", CLIMBER_BALANCE_MOTOR.getSensorCollection().getQuadraturePosition());
-      SmartDashboard.putNumber("Mouse Droid Angle", zAxisPosition);
+    if (Constants.CLIMBER_DEBUG) {
+      ShuffleboardTab tab = Shuffleboard.getTab(this.SUBSYSTEM_NAME);
+      tab.addNumber("Hook Percent Output", () -> CLIMBER_HOOK_MOTOR.getMotorOutputPercent());
+      tab.addNumber("Lift Percent Output", () -> CLIMBER_LIFT_MOTOR.getMotorOutputPercent());
+      tab.addNumber("Mouse Droid position", () -> CLIMBER_BALANCE_MOTOR.getSensorCollection().getQuadraturePosition());
+      tab.addNumber("Mouse Droid Angle", () -> this.zAxisPosition);
     }
   }
 }
