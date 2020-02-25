@@ -11,10 +11,13 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+//import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.AutoTrajectory;
 import frc.robot.subsystems.DriveSubsystem;
 
 /**
@@ -25,6 +28,8 @@ import frc.robot.subsystems.DriveSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+
+  DriveSubsystem subsystem;
   
   private final DriveSubsystem DRIVE_SUBSYSTEM = new DriveSubsystem(Constants.DRIVE_kP,
                                                                             Constants.DRIVE_kD, 
@@ -35,6 +40,9 @@ public class RobotContainer {
                                                                             Constants.AUTO_SPEED);
   
   private static final XboxController XBOX_CONTROLLER = new XboxController(Constants.XBOX_CONTROLLER_PORT);
+
+  
+  
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -49,7 +57,17 @@ public class RobotContainer {
     DRIVE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> DRIVE_SUBSYSTEM.teleopPID(XBOX_CONTROLLER.getY(Hand.kLeft), XBOX_CONTROLLER.getX(Hand.kRight)), DRIVE_SUBSYSTEM));
     // Alternative way of setting default command using command class
     //DRIVE_SUBSYSTEM.setDefaultCommand(new TeleopDriveCommand(DRIVE_SUBSYSTEM, () -> XBOX_CONTROLLER.getY(Hand.kLeft), () -> XBOX_CONTROLLER.getY(Hand.kRight)));
+   
+    chooser.addOption("Kongo Auto", new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.RedSideTrenchBall2.name()));
+    //Creates a new Shuffleboard option that displays the String as its name, and its option is a 
+    // new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.Example.name()); with subsystem (like normal)
+    //as its params, as well as its custom and corresponding trajectoryJSON String in AutoModeConstants
   }
+
+  static SendableChooser<Command> chooser = new SendableChooser<>();//Creates a SendableChooser for the 
+  //SmartDashboard/Shuffleboard. 
+   
+  
 
   /**
    * Use this method to define your button->command mappings.  Buttons can be created by
@@ -70,7 +88,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new RunCommand(() -> DRIVE_SUBSYSTEM.driveStraight(30), DRIVE_SUBSYSTEM);
+    // return new RunCommand(() -> DRIVE_SUBSYSTEM.driveStraight(30), DRIVE_SUBSYSTEM); LEAVE HERE! MAY BE USED?
+    return chooser.getSelected();
   }
 
   

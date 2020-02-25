@@ -8,7 +8,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+/*import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;*/
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.SPI;
@@ -25,11 +26,18 @@ public class DriveSubsystem extends PIDSubsystem {
 
   private DifferentialDrive drivetrain;
 
-  private final WPI_TalonFX LEFT_MASTER_MOTOR = new WPI_TalonFX(Constants.FRONT_LEFT_MOTOR_PORT);
+  // THESE BELONG HERE!!!! THEY WERE JUST TAKEN OUT TO TEST AUTO WITH KONGO!!!
+  /*private final WPI_TalonFX LEFT_MASTER_MOTOR = new WPI_TalonFX(Constants.FRONT_LEFT_MOTOR_PORT);
   private final WPI_TalonFX LEFT_REAR_SLAVE = new WPI_TalonFX(Constants.REAR_LEFT_MOTOR_PORT);
 
   private final WPI_TalonFX RIGHT_MASTER_MOTOR = new WPI_TalonFX(Constants.FRONT_RIGHT_MOTOR_PORT);
-  private final WPI_TalonFX RIGHT_REAR_SLAVE = new WPI_TalonFX(Constants.REAR_RIGHT_MOTOR_PORT);
+  private final WPI_TalonFX RIGHT_REAR_SLAVE = new WPI_TalonFX(Constants.REAR_RIGHT_MOTOR_PORT);*/
+
+  private final WPI_TalonSRX LEFT_MASTER_MOTOR = new WPI_TalonSRX(Constants.FRONT_LEFT_MOTOR_PORT);
+  private final WPI_TalonSRX LEFT_REAR_SLAVE = new WPI_TalonSRX(Constants.REAR_LEFT_MOTOR_PORT);
+
+  private final WPI_TalonSRX RIGHT_MASTER_MOTOR = new WPI_TalonSRX(Constants.FRONT_RIGHT_MOTOR_PORT);
+  private final WPI_TalonSRX RIGHT_REAR_SLAVE = new WPI_TalonSRX(Constants.REAR_RIGHT_MOTOR_PORT);
 
   private final double MIN_TOLERANCE = 1.0;
 
