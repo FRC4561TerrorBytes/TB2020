@@ -76,7 +76,7 @@ public final class Constants {
     private static final boolean TURRET_SOFT_LIMITS = true;
     private static final double TURRET_VELOCITY = 150;
     private static final double TURRET_ACCELERATION = 30;
-    private static final int TURRET_MOTION_SMOOTHING = 7; // between [0, 7]
+    private static final int TURRET_MOTION_SMOOTHING = 4; // between [0, 7]
     private static final boolean TURRET_ENCODER_SENSOR_PHASE = false;
     private static final boolean TURRET_MOTOR_INVERTED = false;
     
