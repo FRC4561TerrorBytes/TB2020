@@ -27,6 +27,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final String SUBSYSTEM_NAME = "Shooter Subsystem";
 
+  private boolean hasToRun = true;
+
   private static class Flywheel {
     private static double kF;
     private static final int TICKS_PER_ROTATION = 2048;
@@ -98,6 +100,25 @@ public class ShooterSubsystem extends SubsystemBase {
     
     // Initialize Turret to 0
     this.moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
+
+     // Prints debug statements on SmartDashboard
+     if (Constants.SHOOTER_DEBUG) {
+      ShuffleboardTab tab = Shuffleboard.getTab(this.SUBSYSTEM_NAME);
+      tab.addNumber("Flywheel Motor Output", () -> Flywheel.MASTER_MOTOR.getMotorOutputPercent());
+      tab.addNumber("Flywheel Motor Velocity", () -> Flywheel.MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity());
+      tab.addNumber("Flywheel Motor Setpoint", () -> Flywheel.speed);
+      tab.addNumber("Flywheel Error", () -> flywheelError());
+      tab.addBoolean("Flywheel at Speed?", () -> isFlywheelAtSpeed());
+
+      tab.addNumber("Hood Motor Output", () -> Hood.MOTOR.getMotorOutputPercent());
+      tab.addNumber("Hood Encoder Position", () -> Hood.MOTOR.getSelectedSensorPosition());
+      tab.addNumber("Hood Error", () -> Hood.MOTOR.getClosedLoopError());
+      
+      tab.addNumber("Turret Motor Output", () -> Turret.MOTOR.getMotorOutputPercent());
+      tab.addNumber("Turret Encoder Position", () -> Turret.MOTOR.getSelectedSensorPosition());
+      tab.addNumber("Turret Encoder Setpoint", () -> Turret.MOTOR.getClosedLoopTarget());
+      tab.addNumber("Turret Error", () -> Turret.MOTOR.getClosedLoopError());
+    }
   }
   
   /**
@@ -313,24 +334,5 @@ public class ShooterSubsystem extends SubsystemBase {
       Hood.needsReset = false;
       Hood.MOTOR.setSelectedSensorPosition(Constants.HOOD_BOTTOM_POSITION);
     } else if (!this.hoodLimit()) Hood.needsReset = true;
-
-    // Prints debug statements on SmartDashboard
-    if (Constants.SHOOTER_DEBUG) {
-      ShuffleboardTab tab = Shuffleboard.getTab(this.SUBSYSTEM_NAME);
-      tab.addNumber("Flywheel Motor Output", () -> Flywheel.MASTER_MOTOR.getMotorOutputPercent());
-      tab.addNumber("Flywheel Motor Velocity", () -> Flywheel.MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity());
-      tab.addNumber("Flywheel Motor Setpoint", () -> Flywheel.speed);
-      tab.addNumber("Flywheel Error", () -> flywheelError());
-      tab.addBoolean("Flywheel at Speed?", () -> isFlywheelAtSpeed());
-
-      tab.addNumber("Hood Motor Output", () -> Hood.MOTOR.getMotorOutputPercent());
-      tab.addNumber("Hood Encoder Position", () -> Hood.MOTOR.getSelectedSensorPosition());
-      tab.addNumber("Hood Error", () -> Hood.MOTOR.getClosedLoopError());
-      
-      tab.addNumber("Turret Motor Output", () -> Turret.MOTOR.getMotorOutputPercent());
-      tab.addNumber("Turret Encoder Position", () -> Turret.MOTOR.getSelectedSensorPosition());
-      tab.addNumber("Turret Encoder Setpoint", () -> Turret.MOTOR.getClosedLoopTarget());
-      tab.addNumber("Turret Error", () -> Turret.MOTOR.getClosedLoopError());
-    }
   }
 }

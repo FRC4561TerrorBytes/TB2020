@@ -10,6 +10,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -17,7 +19,6 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.TalonPIDConfig;
@@ -35,7 +36,7 @@ public class MagazineSubsystem extends SubsystemBase {
   private final AnalogInput MAGAZINE_SENSOR_TOP = new AnalogInput(Constants.MAGAZINE_ULTRASONIC_TOP);
 
   private final double TICKS_PER_ROTATION = 4096;
-  private final double GEAR_RATIO = 5/2;
+  private final double GEAR_RATIO = 1;
   private final double TICKS_PER_DEGREE = (this.TICKS_PER_DEGREE * this. GEAR_RATIO) / 360;
   private TalonPIDConfig config;
 
@@ -50,6 +51,18 @@ public class MagazineSubsystem extends SubsystemBase {
   public MagazineSubsystem(TalonPIDConfig config) {
     this.config = config;
     this.config.initializeTalonPID(ARM_MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, false, true);
+    ARM_MOTOR.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.NormallyOpen);
+
+    if (Constants.MAGAZINE_DEBUG) {
+      ShuffleboardTab tab = Shuffleboard.getTab(this.SUBSYSTEM_NAME);
+      tab.addNumber("Arm Motor Output", () -> ARM_MOTOR.getMotorOutputPercent());
+      tab.addNumber("Arm Motor Position", () -> ARM_MOTOR.getSelectedSensorPosition());
+      tab.addNumber("Arm Motor Setpoint", () -> ARM_MOTOR.getClosedLoopTarget());
+      tab.addBoolean("Arm limit switch", () -> ARM_MOTOR.getSensorCollection().isFwdLimitSwitchClosed());
+      tab.addNumber("Intake speed", () -> INTAKE_MOTOR.get());
+      tab.addNumber("Top sensor", () -> this.magazineSensorTop());
+      tab.addNumber("Bottom sensor", () -> this.magazineSensorBottom());
+    }
   }
 
   /**
@@ -128,6 +141,10 @@ public class MagazineSubsystem extends SubsystemBase {
     return voltageToDistance(MAGAZINE_SENSOR_BOT.getVoltage());
   }
 
+  public void armManual (double speed) {
+    ARM_MOTOR.set(speed);
+  }
+
   /**
    * @return top ultrasonic distance
    */
@@ -157,15 +174,6 @@ public class MagazineSubsystem extends SubsystemBase {
       this.armNeedsReset = false;
       ARM_MOTOR.setSelectedSensorPosition(0);
     } else if (!ARM_MOTOR.getSensorCollection().isFwdLimitSwitchClosed()) this.armNeedsReset = true;
-
-    if (Constants.MAGAZINE_DEBUG) {
-      ShuffleboardTab tab = Shuffleboard.getTab(this.SUBSYSTEM_NAME);
-      tab.addNumber("Arm Motor Output", () -> ARM_MOTOR.getMotorOutputPercent());
-      tab.addNumber("Arm Motor Position", () -> ARM_MOTOR.getSelectedSensorPosition());
-      tab.addNumber("Intake speed", () -> INTAKE_MOTOR.get());
-      tab.addNumber("Top sensor", () -> this.magazineSensorTop());
-      tab.addNumber("Bottom sensor", () -> this.magazineSensorBottom());
-    }
   }
 
   /**

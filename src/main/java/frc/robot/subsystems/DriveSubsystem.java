@@ -97,6 +97,7 @@ public class DriveSubsystem extends PIDSubsystem {
    * Call this repeatedly to drive using PID during teleoperation
    * @param speed Desired speed from -1.0 to 1.0
    * @param turn_request Turn input from -1.0 to 1.0
+   * @param power exponent for drive response curve. 1 is linear response
    */
   public void teleopPID(double speed, double turn_request, int power) {
     speed = Math.copySign(Math.pow(speed, power), speed);
@@ -119,6 +120,20 @@ public class DriveSubsystem extends PIDSubsystem {
       }
     }
   }
+  
+
+  /**
+   * Call this repeatedly to drive without PID during teleoperation
+   * @param speed Desired speed from -1.0 to 1.0
+   * @param turn_request Turn input from -1.0 to 1.0
+   * @param power exponent for drive response curve. 1 is linear response
+   */
+	public void teleop(double speed, double turn_request, int power) {
+    speed = Math.copySign(Math.pow(speed, power), speed);
+    turn_request = Math.copySign(Math.pow(turn_request, power), turn_request);
+
+    this.drivetrain.curvatureDrive(speed, turn_request, true);
+	}
 
   /**
    * Set DriveSubsystem speed

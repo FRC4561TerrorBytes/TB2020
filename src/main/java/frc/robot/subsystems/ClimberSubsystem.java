@@ -19,6 +19,7 @@ import frc.robot.Constants;
 public class ClimberSubsystem extends PIDSubsystem {
 
   private final String SUBSYSTEM_NAME = "Climber Subsystem";
+  private boolean hasToRun = true;
   
   // Declaration of motors
   private final WPI_TalonSRX CLIMBER_LIFT_MOTOR = new WPI_TalonSRX(Constants.CLIMBER_LIFT_MOTOR_PORT);
@@ -41,6 +42,14 @@ public class ClimberSubsystem extends PIDSubsystem {
     //gyro.write(ENABLE_GYRO_REG, ENABLE_GYRO_VALUE);
 
     this.setSetpoint(0);
+
+    if (Constants.CLIMBER_DEBUG) {
+      ShuffleboardTab tab = Shuffleboard.getTab(this.SUBSYSTEM_NAME);
+      tab.addNumber("Hook Percent Output", () -> CLIMBER_HOOK_MOTOR.getMotorOutputPercent());
+      tab.addNumber("Lift Percent Output", () -> CLIMBER_LIFT_MOTOR.getMotorOutputPercent());
+      tab.addNumber("Mouse Droid position", () -> CLIMBER_BALANCE_MOTOR.getSensorCollection().getQuadraturePosition());
+      tab.addNumber("Mouse Droid Angle", () -> this.zAxisPosition);
+    }
   }
 
   @Override
@@ -122,13 +131,5 @@ public class ClimberSubsystem extends PIDSubsystem {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
-    if (Constants.CLIMBER_DEBUG) {
-      ShuffleboardTab tab = Shuffleboard.getTab(this.SUBSYSTEM_NAME);
-      tab.addNumber("Hook Percent Output", () -> CLIMBER_HOOK_MOTOR.getMotorOutputPercent());
-      tab.addNumber("Lift Percent Output", () -> CLIMBER_LIFT_MOTOR.getMotorOutputPercent());
-      tab.addNumber("Mouse Droid position", () -> CLIMBER_BALANCE_MOTOR.getSensorCollection().getQuadraturePosition());
-      tab.addNumber("Mouse Droid Angle", () -> this.zAxisPosition);
-    }
   }
 }

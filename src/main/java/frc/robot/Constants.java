@@ -26,16 +26,16 @@ public final class Constants {
     public static final double ROBOT_TICK_RATE = 1 / 60;
 
     // Drive PID values
-    public static final double DRIVE_kP = 0.015;
+    public static final double DRIVE_kP = 0.005;
     public static final double DRIVE_kD = 0.001;
     public static final double DRIVE_PERIOD_SECONDS = 1 / 480;
     public static final double DRIVE_TURN_SCALAR = 5.0;
-    public static final double DRIVE_TOLERANCE = 1.0;
+    public static final double DRIVE_TOLERANCE = 2.0;
     public static final int DRIVE_RESPONSE_EXPONENT = 2;
 
     // Intake Arm PID config
-    private static final double ARM_kP = 1.2;
-    private static final double ARM_kD = 0.000;
+    private static final double ARM_kP = .2;
+    private static final double ARM_kD = 0.0001;
     private static final double ARM_kF = 0.000;
     private static final double ARM_TOLERANCE = 10.0;
     private static final double ARM_LOWER_LIMIT = -3500;
@@ -47,7 +47,7 @@ public final class Constants {
     // Intake Arm Positions
     public static final int ARM_TOP_POSITION = -3080;
     public static final int ARM_BOTTOM_POSITION = 0;
-    public static final double ARM_MANUAL_INCREMENT = 150;
+    public static final double ARM_MANUAL_INCREMENT = 50;
 
 
     // Shooter PID Values
