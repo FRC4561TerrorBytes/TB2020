@@ -77,16 +77,9 @@ public class RobotContainer {
 
     // Enable PID on drive subsytem
     DRIVE_SUBSYSTEM.enable();
-    //DRIVE_SUBSYSTEM.disable();
 
-    // Set default command
-    //DRIVE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> DRIVE_SUBSYSTEM.teleopPID(XBOX_CONTROLLER.getY(Hand.kLeft), XBOX_CONTROLLER.getX(Hand.kRight)), DRIVE_SUBSYSTEM));
-
+    // Set default commands for subsystems
     DRIVE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> DRIVE_SUBSYSTEM.teleopPID(LEFT_JOYSTICK.getY(), RIGHT_JOYSTICK.getX(), DRIVE_RESPONSE_EXPONENT), DRIVE_SUBSYSTEM));
-    //DRIVE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> DRIVE_SUBSYSTEM.curvatureDrive(LEFT_JOYSTICK.getY(), RIGHT_JOYSTICK.getX()), DRIVE_SUBSYSTEM));
-
-    // Alternative way of setting default command using command class
-    //DRIVE_SUBSYSTEM.setDefaultCommand(new TeleopDriveCommand(DRIVE_SUBSYSTEM, () -> XBOX_CONTROLLER.getY(Hand.kLeft), () -> XBOX_CONTROLLER.getY(Hand.kRight)));
     MAGAZINE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(), MAGAZINE_SUBSYSTEM));
   }
 
@@ -97,31 +90,10 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // new JoystickButton(XBOX_CONTROLLER, Button.kA.value)
-    //     .whenPressed(new InstantCommand(() -> DRIVE_SUBSYSTEM.setSetpoint(180), DRIVE_SUBSYSTEM));
-
-    // // When pressed, moves hood to top position
-    
-    // new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
-    //     .whenPressed(new InstantCommand(() -> SHOOTER_SUBSYSTEM.moveHoodPID(Constants.HOOD_TOP_POSITION), SHOOTER_SUBSYSTEM));
-
-        //When pressed, moves hood to bottom position
-
-    // new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
-    //     .whenPressed(new InstantCommand(() -> SHOOTER_SUBSYSTEM.moveHoodPID(Constants.HOOD_BOTTOM_POSITION), SHOOTER_SUBSYSTEM));
-
-    // Move the hood down using the A button
-    // new JoystickButton(XBOX_CONTROLLER, Button.kA.value)
-    //     .whileHeld(new RunCommand(() -> DRIVE_SUBSYSTEM.setSetpoint(180), DRIVE_SUBSYSTEM));
-
-    // Control the Flywheel using PID using the left bumber
-    // new JoystickButton(XBOX_CONTROLLER, Button.kBumperLeft.value)
-    //     .whenPressed(new RunCommand(() -> SHOOTER_SUBSYSTEM.flywheelManual(0.9), SHOOTER_SUBSYSTEM))
-    //     .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.flywheelManual(0), SHOOTER_SUBSYSTEM));
 
     new JoystickButton(XBOX_CONTROLLER, Button.kBumperLeft.value)
         .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MAGAZINE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
-        .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.magazineMotorStop(), MAGAZINE_SUBSYSTEM));
+        .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MOTOR_STOP), MAGAZINE_SUBSYSTEM));
 
     // new JoystickButton(XBOX_CONTROLLER, Button.kB.value)
     //     .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(-Constants.MAGAZINE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))

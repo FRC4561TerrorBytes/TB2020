@@ -28,22 +28,22 @@ public final class Constants {
     public static final boolean CLIMBER_SUBSYSTEM_DEBUG = true;
 
     // Drive PID values
-    public static final double DRIVE_kP = 0.025;
+    public static final double DRIVE_kP = 0.015;
     public static final double DRIVE_kD = 0.001;
     public static final double DRIVE_PERIOD_SECONDS = 0.004166; // 240Hz
     public static final double DRIVE_TURN_SCALAR = 10.0;
     public static final double DRIVE_TOLERANCE = 1.0;
 
     // Intake Arm PID config
-    public static final double ARM_kP = 1.2;
-    public static final double ARM_kD = 0.000;
-    public static final double ARM_kF = 0.000;
-    public static final double ARM_TOLERANCE = 10.0;
-    public static final double ARM_LOWER_LIMIT = -3500;
-    public static final double ARM_UPPER_LIMIT = 0;
-    public static final boolean ARM_SOFT_LIMITS = true;
-    public static final boolean ARM_SENSOR_PHASE = true;
-    public static final boolean ARM_INVERT_MOTOR = false;
+    private static final double ARM_kP = 1.2;
+    private static final double ARM_kD = 0.000;
+    private static final double ARM_kF = 0.000;
+    private static final double ARM_TOLERANCE = 10.0;
+    private static final double ARM_LOWER_LIMIT = -3500;
+    private static final double ARM_UPPER_LIMIT = 0;
+    private static final boolean ARM_SOFT_LIMITS = true;
+    private static final boolean ARM_SENSOR_PHASE = true;
+    private static final boolean ARM_INVERT_MOTOR = false;
     public static final double ARM_MANUAL_INCREMENT = 150;
 
     // Intake Arm Positions
@@ -65,13 +65,13 @@ public final class Constants {
     private static final double HOOD_kD = 0.01;
     private static final double HOOD_TOLERANCE = 1.0;
     private static final boolean HOOD_SOFT_LIMITS = false;
-    public static final int HOOD_BOTTOM_POSITION = 0;
-    public static final double HOOD_VELOCITY = 100;
-    public static final double HOOD_ACCELERATION = 50;
-    public static final int HOOD_MOTION_SMOOTHING = 1;
-    public static final int HOOD_TOP_POSITION = -4570;
+    private static final double HOOD_VELOCITY = 100;
+    private static final double HOOD_ACCELERATION = 50;
+    private static final int HOOD_MOTION_SMOOTHING = 1;
     private static final boolean HOOD_ENCODER_SENSOR_PHASE = false;
     private static final boolean HOOD_MOTOR_INVERTED = false;
+    public static final int HOOD_BOTTOM_POSITION = 0;
+    public static final int HOOD_TOP_POSITION = -4570;
 
     private static final double TURRET_kP = 0.5;
     private static final double TURRET_kD = 0.001;
