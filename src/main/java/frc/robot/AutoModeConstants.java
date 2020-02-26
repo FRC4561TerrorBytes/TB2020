@@ -20,19 +20,10 @@ package frc.robot;
  //An enum of the .json files for the Auto Mode Trajectories. Is like a list, and has an object that has a 
  //String attributed to it.
 public enum AutoModeConstants {
-    backForSpace("backForSpace"),
-    BlueSGball1("BlueFroShieldBall1"),
-    BlueSGball2("BlueFroShieldBall2"),
-    BlueSGDriveBack("BlueFroShieldDriveback"),
-    BlueSideTrenchBall1("BlueTrenchBall1"),
-    BlueSideTrenchBall2("BlueTrenchBall2"),
-    BlueSideTrenchBall3("BlueTrenchBall3"),
-    DriveBackTrench("driveBack"),
-    MoveBackShootingAutoBalls("MoveBackAfterShooting3Balls"),
-    RedSideTrenchBall1("RedTrenchBall1"),
-    RedSideTrenchBall2("RedTrenchBall2"),
-    RedSideTrenchBall3("RedTrenchBall3"),
-    BlueTestAuto("bluea"),
+    BlueSideTrenchBalls("BlueSideTrenchBalls"),
+    BlueFroTrenchReverse("BlueTrenchReverse"),
+    BlueA("bluea"),
+    BlueAMovetoTrench("BlueAtoTrench"),
     ShootBallsAuto("Shoot");
 
   
