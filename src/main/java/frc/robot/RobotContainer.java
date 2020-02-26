@@ -17,7 +17,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 //import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.AutoTrajectory;
+
+import frc.robot.commands.BlueAuto;
 //import frc.robot.commands.BlueAuto;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -63,7 +64,7 @@ public class RobotContainer {
      //Creates a new Shuffleboard option that displays the String as its name, and its option is a 
     // new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.Example.name()); with subsystem (like normal)
     //as its params, as well as its custom and corresponding trajectoryJSON String in AutoModeConstants
-    chooser.setDefaultOption("Hyperion Test Auto", new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.BlueTestAuto.name()));
+    chooser.setDefaultOption("Hyperion Test Auto", new BlueAuto(DRIVE_SUBSYSTEM, SHOOTER_SUBSYSTEM));
     //chooser.addOption("Blue Auto Mode 1", new BlueAuto(subsystem));
 
     //FOR MANUAL MODE ONLY!!!!

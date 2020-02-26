@@ -32,7 +32,7 @@ public enum AutoModeConstants {
     RedSideTrenchBall1("RedTrenchBall1"),
     RedSideTrenchBall2("RedTrenchBall2"),
     RedSideTrenchBall3("RedTrenchBall3"),
-    BlueTestAuto("KongoTestAuto"),
+    BlueTestAuto("bluea"),
     ShootBallsAuto("Shoot");
 
   
