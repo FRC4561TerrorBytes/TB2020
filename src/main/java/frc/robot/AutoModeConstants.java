@@ -32,8 +32,9 @@ public enum AutoModeConstants {
     RedSideTrenchBall1("RedTrenchBall1"),
     RedSideTrenchBall2("RedTrenchBall2"),
     RedSideTrenchBall3("RedTrenchBall3"),
-    KongoAutoMode1("KongoTestAuto"),
+    BlueTestAuto("KongoTestAuto"),
     ShootBallsAuto("Shoot");
+
   
     public final String trajectoryJSON;
     AutoModeConstants(String name) {

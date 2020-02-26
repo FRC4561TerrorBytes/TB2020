@@ -63,7 +63,7 @@ public class RobotContainer {
      //Creates a new Shuffleboard option that displays the String as its name, and its option is a 
     // new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.Example.name()); with subsystem (like normal)
     //as its params, as well as its custom and corresponding trajectoryJSON String in AutoModeConstants
-    chooser.setDefaultOption("Kongo Auto", new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.KongoAutoMode1.name()));
+    chooser.setDefaultOption("Hyperion Test Auto", new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.BlueTestAuto.name()));
     //chooser.addOption("Blue Auto Mode 1", new BlueAuto(subsystem));
 
     //FOR MANUAL MODE ONLY!!!!

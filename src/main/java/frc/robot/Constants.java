@@ -131,10 +131,9 @@ public final class Constants {
     public static final DifferentialDriveKinematics kDriveKinematics =
         new DifferentialDriveKinematics(kTrackwidthMeters);
 
-    /*public static final int kEncoderTPR = 4096;
-    ALSO NEEDS TO STAY HERE!!! THIS IS FOR THE ACTUAL ROBOT!!! BELOW IS JUST FOR TESTING KONGO!!!*/
-      
-    public static final int kEncoderTPR = 8192;
+    public static final int kEncoderTPR = 4096;
+    
+  
 
     public static final double kWheelDiameterMeters = 0.1524;
     public static final double kEncoderDistancePerPulse = (kWheelDiameterMeters * Math.PI) / (double) kEncoderTPR;
@@ -150,10 +149,10 @@ public final class Constants {
     public static final double kaVoltSecondsSquaredPerMeter = 0.0;
     public static final double kPDriveVel = 0.0;
 
-    //public static final double kMaxSpeedMetersPerSecond = 0;
-    public static final double kMaxSpeedMetersPerSecond = 3.18;
-    //public static final double kMaxAccelerationMetersPerSecondSquared = 0;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+    public static final double kMaxSpeedMetersPerSecond = 0;
+    
+    public static final double kMaxAccelerationMetersPerSecondSquared = 0;
+   
     
     public static final double kRamseteB = 2;
     public static final double kRamseteZeta = 0.7;
