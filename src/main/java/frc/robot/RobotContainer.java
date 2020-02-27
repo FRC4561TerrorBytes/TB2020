@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.commands.BlueAuto;
+import frc.robot.commands.ThreeAutoTest;
 //import frc.robot.commands.BlueAuto;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -65,6 +66,7 @@ public class RobotContainer {
     // new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.Example.name()); with subsystem (like normal)
     //as its params, as well as its custom and corresponding trajectoryJSON String in AutoModeConstants
     chooser.setDefaultOption("Hyperion Test Auto", new BlueAuto(DRIVE_SUBSYSTEM, SHOOTER_SUBSYSTEM));
+    chooser.addOption("Multiple Auto paths test", new ThreeAutoTest(DRIVE_SUBSYSTEM));
     //chooser.addOption("Blue Auto Mode 1", new BlueAuto(subsystem));
 
     //FOR MANUAL MODE ONLY!!!!

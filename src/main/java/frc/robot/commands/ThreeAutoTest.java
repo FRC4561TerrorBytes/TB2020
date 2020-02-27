@@ -20,9 +20,9 @@ public class ThreeAutoTest extends SequentialCommandGroup {
    * Creates a new ThreeAutoTest.
    */
 
-   DriveSubsystem subsystem;
+   
 
-  public ThreeAutoTest() {
+  public ThreeAutoTest(DriveSubsystem subsystem) {
 
     addCommands(
     new AutoTrajectory(subsystem, AutoModeConstants.BlueA.name()),
