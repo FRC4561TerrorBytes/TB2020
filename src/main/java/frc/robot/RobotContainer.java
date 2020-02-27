@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoException;
 import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -298,23 +299,29 @@ public class RobotContainer {
     * Initializes the intake camera
     */
    public void initializeCamera() {
-    // Intake
-    camera1 = CameraServer.getInstance().startAutomaticCapture();
-    camera1.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
-    camera1.setResolution(176, 144);
-    camera1.setFPS(15); // Can go up to 30
-    camera1.setBrightness(25);
-    camera1.setExposureManual(10);
-    camera1.setWhiteBalanceManual(10);
+    try {
 
-    // Shooter
-    // camera2 = CameraServer.getInstance().startAutomaticCapture();
-    // camera2.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
-    // camera2.setResolution(176, 144);
-    // camera2.setFPS(15); // Can go up to 30
-    // camera2.setBrightness(25);
-    // camera2.setExposureManual(10);
-    // camera2.setWhiteBalanceManual(10);
+      // Intake
+      camera1 = CameraServer.getInstance().startAutomaticCapture();
+      camera1.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
+      camera1.setResolution(176, 144);
+      camera1.setFPS(15); // Can go up to 30
+      camera1.setBrightness(25);
+      camera1.setExposureManual(10);
+      camera1.setWhiteBalanceManual(10);
+      
+      // Shooter
+      // camera2 = CameraServer.getInstance().startAutomaticCapture();
+      // camera2.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
+      // camera2.setResolution(176, 144);
+      // camera2.setFPS(15); // Can go up to 30
+      // camera2.setBrightness(25);
+      // camera2.setExposureManual(10);
+      // camera2.setWhiteBalanceManual(10);
+      
+    } catch (VideoException e) {
+      e.printStackTrace();
+    }
    }
    
 }
