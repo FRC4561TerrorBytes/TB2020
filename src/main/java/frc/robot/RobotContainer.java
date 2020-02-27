@@ -16,13 +16,14 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.HoodCommand;
+import frc.robot.commands.HookCommand;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.MoveTurretManualCommand;
 import frc.robot.commands.TurretSetpointCommand;
 import frc.robot.commands.WinchCommand;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -48,7 +49,7 @@ public class RobotContainer {
                                                                     Constants.DRIVE_TURN_SCALAR,
                                                                     Constants.DEADBAND);
 
-  private static final ClimberSubsystem CLIMBER_SUBSYSTEM = new ClimberSubsystem(Constants.MOUSE_kP, Constants.MOUSE_kD);
+  private static final ClimberSubsystem CLIMBER_SUBSYSTEM = new ClimberSubsystem();
 
   public static final MagazineSubsystem MAGAZINE_SUBSYSTEM = new MagazineSubsystem(Constants.ARM_CONFIG);
 
@@ -61,8 +62,6 @@ public class RobotContainer {
 
   public static UsbCamera camera1;
   public static UsbCamera camera2;
-
-
   
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -106,19 +105,16 @@ public class RobotContainer {
     // new JoystickButton(XBOX_CONTROLLER, Button.kB.value)
     //     .whenPressed(new InstantCommand(() -> MAGAZINE_SUBSYSTEM.toggleArmPosition()));
 
-    new POVButton(XBOX_CONTROLLER, 90).whileHeld(new HoodCommand(SHOOTER_SUBSYSTEM, -0.3))
-      .whenReleased(new HoodCommand(SHOOTER_SUBSYSTEM, Constants.MOTOR_STOP));
+    // new POVButton(XBOX_CONTROLLER, 90).whileHeld(new HoodCommand(SHOOTER_SUBSYSTEM, -0.3))
+    //   .whenReleased(new HoodCommand(SHOOTER_SUBSYSTEM, Constants.MOTOR_STOP));
 
-    new POVButton(XBOX_CONTROLLER, 270).whileHeld(new HoodCommand(SHOOTER_SUBSYSTEM, 0.3))
-      .whenReleased(new HoodCommand(SHOOTER_SUBSYSTEM, Constants.MOTOR_STOP));
+    // new POVButton(XBOX_CONTROLLER, 270).whileHeld(new HoodCommand(SHOOTER_SUBSYSTEM, 0.3))
+    //   .whenReleased(new HoodCommand(SHOOTER_SUBSYSTEM, Constants.MOTOR_STOP));
 
-    // new POVButton(XBOX_CONTROLLER, 0).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armPositionRelative(-Constants.ARM_MANUAL_INCREMENT), MAGAZINE_SUBSYSTEM));
-    // new POVButton(XBOX_CONTROLLER, 180).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armPositionRelative(Constants.ARM_MANUAL_INCREMENT), MAGAZINE_SUBSYSTEM));
-
-    new POVButton(XBOX_CONTROLLER, 0).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(-.5), MAGAZINE_SUBSYSTEM))
-      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(Constants.MOTOR_STOP), MAGAZINE_SUBSYSTEM));
-    new POVButton(XBOX_CONTROLLER, 180).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(.5), MAGAZINE_SUBSYSTEM))
-      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(Constants.MOTOR_STOP), MAGAZINE_SUBSYSTEM));
+    // new POVButton(XBOX_CONTROLLER, 0).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(-.5), MAGAZINE_SUBSYSTEM))
+    //   .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(Constants.MOTOR_STOP), MAGAZINE_SUBSYSTEM));
+    // new POVButton(XBOX_CONTROLLER, 180).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(.5), MAGAZINE_SUBSYSTEM))
+    //   .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(Constants.MOTOR_STOP), MAGAZINE_SUBSYSTEM));
 
 
     // new Trigger(() -> (XBOX_CONTROLLER.getTriggerAxis(Hand.kRight) > .2))
@@ -146,9 +142,13 @@ public class RobotContainer {
 // 
 //  
     // Right joystick intake button 1
+    // new JoystickButton(RIGHT_JOYSTICK, 1)
+    //   .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(Constants.INTAKE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
+    //   .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(Constants.MOTOR_STOP), MAGAZINE_SUBSYSTEM));
+
     new JoystickButton(RIGHT_JOYSTICK, 1)
-      .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(Constants.INTAKE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
-      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(Constants.MOTOR_STOP), MAGAZINE_SUBSYSTEM));
+      .whileHeld(new IntakeCommand(MAGAZINE_SUBSYSTEM, Constants.INTAKE_MOTOR_SPEED))
+      .whenReleased(new IntakeCommand(MAGAZINE_SUBSYSTEM, Constants.MOTOR_STOP));
 
     // Right joystick Hood Toggle button 2
     new JoystickButton(RIGHT_JOYSTICK, 2)
@@ -156,36 +156,32 @@ public class RobotContainer {
 
     // Right joystick shoot button 3
     new JoystickButton(RIGHT_JOYSTICK, 3)
-      .whileHeld(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(17000), SHOOTER_SUBSYSTEM).alongWith(
-        new ConditionalCommand(
-          new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MAGAZINE_MOTOR_SPEED)), 
-          new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MOTOR_STOP)), 
-          () -> SHOOTER_SUBSYSTEM.isFlywheelAtSpeed())));
+      .whileHeld(new RunCommand(() -> SHOOTER_SUBSYSTEM.flywheelManual(-1), SHOOTER_SUBSYSTEM));
 
     new JoystickButton(RIGHT_JOYSTICK, 3)
-      .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(0), SHOOTER_SUBSYSTEM))
-      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(0), MAGAZINE_SUBSYSTEM));
+      .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(0), SHOOTER_SUBSYSTEM));
+      // .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(0), MAGAZINE_SUBSYSTEM));
 
     // Right joystick shoot button 4
-    new JoystickButton(RIGHT_JOYSTICK, 4)
-      .whileHeld(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(-17600), SHOOTER_SUBSYSTEM).alongWith(
-        new ConditionalCommand(
-          new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MAGAZINE_MOTOR_SPEED)), 
-          new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MOTOR_STOP)), 
-          () -> SHOOTER_SUBSYSTEM.isFlywheelAtSpeed())));
+    // new JoystickButton(RIGHT_JOYSTICK, 4)
+    //   .whileHeld(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(-17600), SHOOTER_SUBSYSTEM).alongWith(
+    //     new ConditionalCommand(
+    //       new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MAGAZINE_MOTOR_SPEED)), 
+    //       new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MOTOR_STOP)), 
+    //       () -> SHOOTER_SUBSYSTEM.isFlywheelAtSpeed())));
       
-    new JoystickButton(RIGHT_JOYSTICK, 4)
-      .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(0), SHOOTER_SUBSYSTEM))
-      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(0), MAGAZINE_SUBSYSTEM));
+    // new JoystickButton(RIGHT_JOYSTICK, 4)
+    //   .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(0), SHOOTER_SUBSYSTEM))
+    //   .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(0), MAGAZINE_SUBSYSTEM));
 
     // Left joystick intake button 1
     new JoystickButton(LEFT_JOYSTICK, 1)
-      .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(-0.5), MAGAZINE_SUBSYSTEM))
-      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(Constants.MOTOR_STOP), MAGAZINE_SUBSYSTEM));
+      .whileHeld(new IntakeCommand(MAGAZINE_SUBSYSTEM, -Constants.OUTTAKE_MOTOR_SPEED))
+      .whenReleased(new IntakeCommand(MAGAZINE_SUBSYSTEM, Constants.MOTOR_STOP));
 
     // Right joystick Arm Toggle button 2
-    // new JoystickButton(LEFT_JOYSTICK, 2)
-    //   .whenPressed(new InstantCommand(() -> MAGAZINE_SUBSYSTEM.toggleArmPosition(), MAGAZINE_SUBSYSTEM));
+    new JoystickButton(LEFT_JOYSTICK, 2)
+      .whenPressed(new InstantCommand(() -> MAGAZINE_SUBSYSTEM.toggleArmPosition(), MAGAZINE_SUBSYSTEM));
 
     // Right joystick turret to 180 button 3
     new JoystickButton(LEFT_JOYSTICK, 3)
@@ -211,12 +207,16 @@ public class RobotContainer {
       .whenPressed(new TurretSetpointCommand(SHOOTER_SUBSYSTEM, Constants.TURRET_STRAIGHT_POSITION));
 
     new JoystickButton(XBOX_CONTROLLER, Button.kBumperLeft.value)
-      .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MAGAZINE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
-      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MOTOR_STOP), MAGAZINE_SUBSYSTEM));
+      .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armPositionRelative(-Constants.ARM_MANUAL_INCREMENT), MAGAZINE_SUBSYSTEM));
 
     new JoystickButton(XBOX_CONTROLLER, Button.kBumperRight.value)
-      .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(-Constants.MAGAZINE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
-      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MOTOR_STOP), MAGAZINE_SUBSYSTEM));
+      .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armPositionRelative(Constants.ARM_MANUAL_INCREMENT), MAGAZINE_SUBSYSTEM));
+
+    new POVButton(XBOX_CONTROLLER, 0).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
+      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MOTOR_STOP)));
+
+    new POVButton(XBOX_CONTROLLER, 180).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(-Constants.MAGAZINE_DOWN_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
+      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MOTOR_STOP)));;
 
       /*
     // Controller mouse droid left/right button 5 // TODO: change to left or right
@@ -233,26 +233,21 @@ public class RobotContainer {
 
     // Controller turret left, trigger left
     new Trigger(() -> (XBOX_CONTROLLER.getTriggerAxis(Hand.kLeft) > Constants.DEADBAND))
-      .whenActive(new RunCommand(() -> SHOOTER_SUBSYSTEM.relativeMoveTurretPID(-XBOX_CONTROLLER.getTriggerAxis(Hand.kLeft) * 200), SHOOTER_SUBSYSTEM));
-      //.whenInactive(new InstantCommand(() -> SHOOTER_SUBSYSTEM.moveTurretManual(Constants.MOTOR_STOP)));
+      .whenActive(new MoveTurretManualCommand(SHOOTER_SUBSYSTEM, () -> -XBOX_CONTROLLER.getTriggerAxis(Hand.kLeft) * 25));
     
     // Controller turret right, trigger right
     new Trigger(() -> (XBOX_CONTROLLER.getTriggerAxis(Hand.kRight) > Constants.DEADBAND))
-      .whenActive(new RunCommand(() -> SHOOTER_SUBSYSTEM.relativeMoveTurretPID(XBOX_CONTROLLER.getTriggerAxis(Hand.kRight) * 200), SHOOTER_SUBSYSTEM));
-      //.whenInactive(new InstantCommand(() -> SHOOTER_SUBSYSTEM.moveTurretManual(Constants.MOTOR_STOP)));
+      .whenActive(new MoveTurretManualCommand(SHOOTER_SUBSYSTEM, () -> XBOX_CONTROLLER.getTriggerAxis(Hand.kRight) * 25));
 
     // Controller Hook left stick
-    // new Trigger(() -> (Math.abs(XBOX_CONTROLLER.getY(Hand.kLeft)) > Constants.DEADBAND))
-    //   .whenActive(new HookCommand(CLIMBER_SUBSYSTEM, XBOX_CONTROLLER.getY(Hand.kLeft)))
-    //   .whenInactive(new HookCommand(CLIMBER_SUBSYSTEM, Constants.MOTOR_STOP));
-
-    // new Trigger(() -> (Math.abs(XBOX_CONTROLLER.getY(Hand.kLeft)) > Constants.DEADBAND))
-    //   .whileActiveContinuous(new WinchCommand(CLIMBER_SUBSYSTEM, -XBOX_CONTROLLER.getY(Hand.kLeft)));
+    new Trigger(() -> (Math.abs(XBOX_CONTROLLER.getY(Hand.kLeft)) > Constants.DEADBAND))
+      .whenActive(new HookCommand(CLIMBER_SUBSYSTEM, () -> XBOX_CONTROLLER.getY(Hand.kLeft)))
+      .whenInactive(new HookCommand(CLIMBER_SUBSYSTEM, () -> Constants.MOTOR_STOP));
 
     // Controller Lift right stick
-    // new Trigger(() -> (Math.abs(XBOX_CONTROLLER.getY(Hand.kRight)) > Constants.DEADBAND))
-    //   .whenActive(new WinchCommand(CLIMBER_SUBSYSTEM, -XBOX_CONTROLLER.getY(Hand.kRight)))
-    //   .whenInactive(new WinchCommand(CLIMBER_SUBSYSTEM, Constants.MOTOR_STOP));;
+    new Trigger(() -> (Math.abs(XBOX_CONTROLLER.getY(Hand.kRight)) > Constants.DEADBAND))
+      .whenActive(new WinchCommand(CLIMBER_SUBSYSTEM, () -> -XBOX_CONTROLLER.getY(Hand.kRight)))
+      .whenInactive(new WinchCommand(CLIMBER_SUBSYSTEM, () -> Constants.MOTOR_STOP));
   }
 
 
@@ -294,13 +289,23 @@ public class RobotContainer {
     * Initializes the intake camera
     */
    public void initializeCamera() {
+    // Intake
     camera1 = CameraServer.getInstance().startAutomaticCapture();
     camera1.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
     camera1.setResolution(176, 144);
-    camera1.setFPS(15); // Can go up to 15
+    camera1.setFPS(15); // Can go up to 30
     camera1.setBrightness(25);
     camera1.setExposureManual(10);
     camera1.setWhiteBalanceManual(10);
+
+    // Shooter
+    camera2 = CameraServer.getInstance().startAutomaticCapture();
+    camera2.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
+    camera2.setResolution(176, 144);
+    camera2.setFPS(15); // Can go up to 30
+    camera2.setBrightness(25);
+    camera2.setExposureManual(10);
+    camera2.setWhiteBalanceManual(10);
    }
    
 }

@@ -70,7 +70,7 @@ public class MagazineSubsystem extends SubsystemBase {
    */
   public void ballUptake() {
     if (ballDetectedBottom() && !ballDetectedTop()) {
-      this.ballUptake(Constants.MAGAZINE_MOTOR_SPEED);
+      this.ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED);
     }
   }
  
@@ -80,6 +80,14 @@ public class MagazineSubsystem extends SubsystemBase {
    */
   public void ballUptake(double speed) {
     MAGAZINE_MOTOR.set(speed);
+  }
+
+  /**
+   * Move arm manually at specified speed
+   * @param speed speed to move arm at [-1, 1]
+   */
+  public void armManual (double speed) {
+    ARM_MOTOR.set(speed);
   }
 
   /**
@@ -139,10 +147,6 @@ public class MagazineSubsystem extends SubsystemBase {
    */
   private double magazineSensorBottom() {
     return voltageToDistance(MAGAZINE_SENSOR_BOT.getVoltage());
-  }
-
-  public void armManual (double speed) {
-    ARM_MOTOR.set(speed);
   }
 
   /**

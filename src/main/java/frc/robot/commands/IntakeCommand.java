@@ -8,47 +8,40 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.MagazineSubsystem;
 
-public class TurretSetpointCommand extends CommandBase {
-  
-  ShooterSubsystem subsystem;
-  int setpoint;
-  boolean detected = false;
+public class IntakeCommand extends CommandBase {
 
+  MagazineSubsystem subsystem;
+  double speed = 0;
   /**
-   * Creates a new TurretSetpointCommand.
+   * Creates a new IntakeCommand.
    */
-  public TurretSetpointCommand(ShooterSubsystem subsystem, int setpoint) {
+  public IntakeCommand(MagazineSubsystem subsystem, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.subsystem = subsystem;
-    this.setpoint = setpoint;
-    addRequirements(this.subsystem);
+    this.speed = speed;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    subsystem.moveTurretPID(setpoint);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    this.detected = subsystem.isDetected();
+    subsystem.intakeMotorSpeed(this.speed);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    //TODO: uncomment for vision
-    //if (this.detected) subsystem.turretVisionPID();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    //return subsystem.turretCheckIfMotionComplete() || this.detected;
-    return true;
+    return false;
   }
 }

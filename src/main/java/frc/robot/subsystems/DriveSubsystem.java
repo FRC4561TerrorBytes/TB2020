@@ -132,7 +132,7 @@ public class DriveSubsystem extends PIDSubsystem {
     speed = Math.copySign(Math.pow(speed, power), speed);
     turn_request = Math.copySign(Math.pow(turn_request, power), turn_request);
 
-    this.drivetrain.curvatureDrive(speed, turn_request, true);
+    this.drivetrain.curvatureDrive(speed, -turn_request, true);
 	}
 
   /**

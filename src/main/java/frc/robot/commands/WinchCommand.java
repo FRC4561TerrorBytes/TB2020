@@ -7,21 +7,22 @@
 
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ClimberSubsystem;
 
 public class WinchCommand extends CommandBase {
 ClimberSubsystem subsystem;
-double speed = 0;
+DoubleSupplier speed;
 
   /**
    * Creates a new WinchCommand.
    */
-  public WinchCommand(ClimberSubsystem subsystem, double speed) {
+  public WinchCommand(ClimberSubsystem subsystem, DoubleSupplier speed) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.subsystem = subsystem;
     this.speed = speed;
-
   }
 
   // Called when the command is initially scheduled.
@@ -32,7 +33,7 @@ double speed = 0;
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    subsystem.liftManual(this.speed);
+    subsystem.liftManual(this.speed.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.

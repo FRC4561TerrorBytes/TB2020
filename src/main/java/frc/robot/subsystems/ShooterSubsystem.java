@@ -27,8 +27,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final String SUBSYSTEM_NAME = "Shooter Subsystem";
 
-  private boolean hasToRun = true;
-
   private static class Flywheel {
     private static double kF;
     private static final int TICKS_PER_ROTATION = 2048;
@@ -315,7 +313,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
 
     // Automatically move turret to vision target
-    turretVisionPID();
+    //turretVisionPID();
 
     // Reset the turret encoder to the front position
     if (this.turretLimitFront() && Turret.needsReset) {

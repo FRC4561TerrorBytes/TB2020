@@ -34,20 +34,23 @@ public final class Constants {
     public static final int DRIVE_RESPONSE_EXPONENT = 2;
 
     // Intake Arm PID config
-    private static final double ARM_kP = .2;
-    private static final double ARM_kD = 0.0001;
+    private static final double ARM_kP = 0.9;
+    private static final double ARM_kD = 0.1;
     private static final double ARM_kF = 0.000;
-    private static final double ARM_TOLERANCE = 10.0;
-    private static final double ARM_LOWER_LIMIT = -3500;
+    private static final double ARM_TOLERANCE = 5.0;
+    private static final double ARM_LOWER_LIMIT = -1500;
     private static final double ARM_UPPER_LIMIT = 0;
+    private static final double ARM_VELOCITY = 1;
+    private static final double ARM_ACCLERATION = 0.1;
+    private static final int ARM_MOTION_SMOOTHING = 7;
     private static final boolean ARM_SOFT_LIMITS = true;
     private static final boolean ARM_SENSOR_PHASE = true;
     private static final boolean ARM_INVERT_MOTOR = false;
 
     // Intake Arm Positions
-    public static final int ARM_TOP_POSITION = -3080;
+    public static final int ARM_TOP_POSITION = -1450;
     public static final int ARM_BOTTOM_POSITION = 0;
-    public static final double ARM_MANUAL_INCREMENT = 50;
+    public static final double ARM_MANUAL_INCREMENT = 75;
 
 
     // Shooter PID Values
@@ -58,9 +61,9 @@ public final class Constants {
     private static final boolean FLYWHEEL_MASTER_ENCODER_SENSOR_PHASE = true;
     private static final boolean FLYWHEEL_MASTER_MOTOR_INVERTED = true;
 
-    private static final double HOOD_kP = 2.0;
+    private static final double HOOD_kP = 1;
     private static final double HOOD_kD = 0.01;
-    private static final double HOOD_TOLERANCE = 1.0;
+    private static final double HOOD_TOLERANCE = 5.0;
     private static final boolean HOOD_SOFT_LIMITS = false;
     private static final double HOOD_VELOCITY = 100;
     private static final double HOOD_ACCELERATION = 50;
@@ -68,14 +71,14 @@ public final class Constants {
     private static final boolean HOOD_ENCODER_SENSOR_PHASE = false;
     private static final boolean HOOD_MOTOR_INVERTED = false;
     public static final int HOOD_BOTTOM_POSITION = 0;
-    public static final int HOOD_TOP_POSITION = -4570;
+    public static final int HOOD_TOP_POSITION = -4770;
 
-    private static final double TURRET_kP = 0.5;
-    private static final double TURRET_kD = 0.001;
+    private static final double TURRET_kP = 0.75;
+    private static final double TURRET_kD = 0.02;
     private static final double TURRET_TOLERANCE = 2;
     private static final boolean TURRET_SOFT_LIMITS = true;
     private static final double TURRET_VELOCITY = 150;
-    private static final double TURRET_ACCELERATION = 30;
+    private static final double TURRET_ACCELERATION = 50;
     private static final int TURRET_MOTION_SMOOTHING = 4; // between [0, 7]
     private static final boolean TURRET_ENCODER_SENSOR_PHASE = false;
     private static final boolean TURRET_MOTOR_INVERTED = false;
@@ -139,7 +142,10 @@ public final class Constants {
                                                                         ARM_TOLERANCE,
                                                                         ARM_LOWER_LIMIT,
                                                                         ARM_UPPER_LIMIT,
-                                                                        ARM_SOFT_LIMITS);
+                                                                        ARM_SOFT_LIMITS,
+                                                                        ARM_VELOCITY,
+                                                                        ARM_ACCLERATION,
+                                                                        ARM_MOTION_SMOOTHING);
 
     // Analog stick deadband value
     public static final double DEADBAND = 0.005;
@@ -193,8 +199,10 @@ public final class Constants {
     // Motor Speeds - @author utkarsh
     public static final double MOTOR_STOP = 0;
     public static final double INTAKE_MOTOR_SPEED = 0.4;
+    public static final double OUTTAKE_MOTOR_SPEED = 0.5;
     public static final double LIFT_MOTOR_SPEED = 0.6;
-    public static final double MAGAZINE_MOTOR_SPEED = 0.45;
+    public static final double MAGAZINE_UP_MOTOR_SPEED = 0.4;
+    public static final double MAGAZINE_DOWN_MOTOR_SPEED = 0.2;
     public static final double MOUSE_DROID_SPEED = .5;
 
 }

@@ -7,48 +7,44 @@
 
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ShooterSubsystem;
 
-public class TurretSetpointCommand extends CommandBase {
-  
+public class MoveTurretManualCommand extends CommandBase {
+
   ShooterSubsystem subsystem;
-  int setpoint;
-  boolean detected = false;
+  DoubleSupplier setpoint;
 
   /**
-   * Creates a new TurretSetpointCommand.
+   * Creates a new MoveTurretManualCommand.
    */
-  public TurretSetpointCommand(ShooterSubsystem subsystem, int setpoint) {
+  public MoveTurretManualCommand(ShooterSubsystem subsystem, DoubleSupplier setpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.subsystem = subsystem;
     this.setpoint = setpoint;
-    addRequirements(this.subsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    subsystem.moveTurretPID(setpoint);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    this.detected = subsystem.isDetected();
+    this.subsystem.relativeMoveTurretPID(this.setpoint.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    //TODO: uncomment for vision
-    //if (this.detected) subsystem.turretVisionPID();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    //return subsystem.turretCheckIfMotionComplete() || this.detected;
-    return true;
+    return false;
   }
 }
