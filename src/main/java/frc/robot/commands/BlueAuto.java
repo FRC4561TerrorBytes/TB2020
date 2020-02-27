@@ -34,7 +34,7 @@ public class BlueAuto extends SequentialCommandGroup {
     
       //Set flywheel speed to -1000 or counterclockwise rotations in RPM
        new RunCommand(() -> {
-      SHOOTER_SUBSYSTEM.setFlywheelSpeed(-1000);
+      SHOOTER_SUBSYSTEM.setFlywheelSpeed(-1);
       try 
         {
         Thread.sleep(2000); //Keeps the flywheel speed at -1000 RPM for 2000ms/2s (or however long it will take to fire the 3 balls)
