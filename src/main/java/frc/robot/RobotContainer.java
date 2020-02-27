@@ -308,13 +308,13 @@ public class RobotContainer {
     camera1.setWhiteBalanceManual(10);
 
     // Shooter
-    camera2 = CameraServer.getInstance().startAutomaticCapture();
-    camera2.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
-    camera2.setResolution(176, 144);
-    camera2.setFPS(15); // Can go up to 30
-    camera2.setBrightness(25);
-    camera2.setExposureManual(10);
-    camera2.setWhiteBalanceManual(10);
+    // camera2 = CameraServer.getInstance().startAutomaticCapture();
+    // camera2.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
+    // camera2.setResolution(176, 144);
+    // camera2.setFPS(15); // Can go up to 30
+    // camera2.setBrightness(25);
+    // camera2.setExposureManual(10);
+    // camera2.setWhiteBalanceManual(10);
    }
    
 }
