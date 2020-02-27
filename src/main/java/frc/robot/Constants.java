@@ -33,6 +33,15 @@ public final class Constants {
     public static final double DRIVE_TOLERANCE = 2.0;
     public static final int DRIVE_RESPONSE_EXPONENT = 2;
 
+    // Auto drive config values
+    // TODO Set
+    public static final double ANGLE_TOLERANCE = 15.0; // Degrees
+    public static final double TARGET_DISTANCE = 0.0; // Inches
+    public static final double AUTO_STOPPING_DISTANCE = 0.0; // Inches
+    public static final double AUTO_SPEED = 0.0; // [0, 1]
+    public static final double TURN_DAMPER = 0.1; // [0, 1]
+	public static final double TURRET_TURN_DAMPER = 0.042; // [0, 1]
+
     // Intake Arm PID config
     private static final double ARM_kP = 0.9;
     private static final double ARM_kD = 0.1;

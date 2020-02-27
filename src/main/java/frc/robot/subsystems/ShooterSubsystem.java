@@ -14,14 +14,13 @@ import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.TalonPIDConfig;
+import frc.robot.VisionData;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -60,9 +59,6 @@ public class ShooterSubsystem extends SubsystemBase {
     private static TalonPIDConfig config;
 
   }
-
-  // Creates new NetworkTable object
-  public static NetworkTable table = NetworkTableInstance.getDefault().getTable("SmartDashboard");
 
   /**
   * Create an instance of ShooterSubsystem
@@ -153,7 +149,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   /**
    * Moves turret to position
-   * @param setpoint inputs position to move to (in degrees)
+   * @param setpoint inputs position to move to (in ticks)
    */
   public void moveTurretPID(double setpoint) {
     // Normalise setpoint
@@ -168,22 +164,15 @@ public class ShooterSubsystem extends SubsystemBase {
    * Automatically aim at vision target
    */
   public void turretVisionPID() {
-    if (table.getEntry("detected?").getBoolean(false)) {
-      relativeMoveTurretPID(convertTurretTicksToDegrees(table.getEntry("xAngle").getDouble(0.0)));
+    if (VisionData.isDetected()) {
+      double ticks = convertTurretDegreesToTicks(Constants.TURRET_TURN_DAMPER * VisionData.getXAngle());
+      relativeMoveTurretPID(ticks);
     }
   }
 
   /**
-   * Is the vision target detected
-   * @return True if target is detected else false
-   */
-  public boolean isDetected() {
-    return table.getEntry("detected?").getBoolean(false);
-  }
-
-  /**
    * Adds angle to current setpoint
-   * @param setpoint inputs position to move to (in degrees)
+   * @param setpoint inputs position to move to (in ticks)
    */
   public void relativeMoveTurretPID(double setpoint) {
     // Normalise setpoint
@@ -268,6 +257,13 @@ public class ShooterSubsystem extends SubsystemBase {
   private double convertTurretTicksToDegrees(double ticks) {
     return (ticks / Turret.TICKS_PER_DEGREE);
   }
+
+  /**
+   * @return current angle of the turret relative to the robot
+   */
+  public double getAngle() {
+    return convertTurretTicksToDegrees(Turret.MOTOR.getSelectedSensorPosition());
+  }
   
   /**
    * Moves subsystem motors manually
@@ -313,7 +309,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
 
     // Automatically move turret to vision target
-    //turretVisionPID();
+    if (RobotContainer.doVision) turretVisionPID();
 
     // Reset the turret encoder to the front position
     if (this.turretLimitFront() && Turret.needsReset) {

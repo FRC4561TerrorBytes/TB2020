@@ -8,13 +8,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.VisionData;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class TurretSetpointCommand extends CommandBase {
   
   ShooterSubsystem subsystem;
   int setpoint;
-  boolean detected = false;
 
   /**
    * Creates a new TurretSetpointCommand.
@@ -35,20 +35,18 @@ public class TurretSetpointCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    this.detected = subsystem.isDetected();
+    // Pass, no need to constantly update a detected variable when it automatically updates anyway
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    //TODO: uncomment for vision
-    //if (this.detected) subsystem.turretVisionPID();
+    if (VisionData.isDetected()) subsystem.turretVisionPID();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    //return subsystem.turretCheckIfMotionComplete() || this.detected;
-    return true;
+    return subsystem.turretCheckIfMotionComplete() || !VisionData.isDetected();
   }
 }

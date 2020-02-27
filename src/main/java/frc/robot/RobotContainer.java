@@ -62,6 +62,7 @@ public class RobotContainer {
 
   public static UsbCamera camera1;
   public static UsbCamera camera2;
+  public static boolean doVision = true;
   
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -175,10 +176,14 @@ public class RobotContainer {
     //   .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(0), MAGAZINE_SUBSYSTEM));
 
     // Left joystick intake button 1
-    new JoystickButton(LEFT_JOYSTICK, 1)
-      .whileHeld(new IntakeCommand(MAGAZINE_SUBSYSTEM, -Constants.OUTTAKE_MOTOR_SPEED))
-      .whenReleased(new IntakeCommand(MAGAZINE_SUBSYSTEM, Constants.MOTOR_STOP));
+    // new JoystickButton(LEFT_JOYSTICK, 1)
+    //   .whileHeld(new IntakeCommand(MAGAZINE_SUBSYSTEM, -Constants.OUTTAKE_MOTOR_SPEED))
+    //   .whenReleased(new IntakeCommand(MAGAZINE_SUBSYSTEM, Constants.MOTOR_STOP));
 
+    // Auto drive button 1
+    // new JoystickButton(LEFT_JOYSTICK, 1)
+    //   .whileHeld(new AutoDriveCommand(DRIVE_SUBSYSTEM, SHOOTER_SUBSYSTEM));
+    
     // Right joystick Arm Toggle button 2
     new JoystickButton(LEFT_JOYSTICK, 2)
       .whenPressed(new InstantCommand(() -> MAGAZINE_SUBSYSTEM.toggleArmPosition(), MAGAZINE_SUBSYSTEM));
@@ -212,6 +217,10 @@ public class RobotContainer {
     new JoystickButton(XBOX_CONTROLLER, Button.kBumperRight.value)
       .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armPositionRelative(Constants.ARM_MANUAL_INCREMENT), MAGAZINE_SUBSYSTEM));
 
+    // Vision toggle
+    new JoystickButton(XBOX_CONTROLLER, Button.kStart.value)
+      .whenPressed(new InstantCommand(() -> doVision = !doVision));
+    
     new POVButton(XBOX_CONTROLLER, 0).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
       .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MOTOR_STOP)));
 
