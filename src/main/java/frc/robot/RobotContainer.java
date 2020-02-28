@@ -62,7 +62,7 @@ public class RobotContainer {
   private static final Joystick RIGHT_JOYSTICK = new Joystick(Constants.RIGHT_JOYSTICK_PORT);
 
   public static UsbCamera camera1;
-  public static UsbCamera camera2;
+  //public static UsbCamera camera2;
   public static boolean doVision = true;
   
   /**
@@ -219,9 +219,11 @@ public class RobotContainer {
       .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armPositionRelative(Constants.ARM_MANUAL_INCREMENT), MAGAZINE_SUBSYSTEM));
 
     // Vision toggle
+    VisionData.setEnabled(false);
     new JoystickButton(XBOX_CONTROLLER, Button.kStart.value)
-      .whenPressed(new InstantCommand(() -> doVision = !doVision));
-    
+      .whenPressed(new InstantCommand(() -> VisionData.toggle()));
+
+    // Uptake
     new POVButton(XBOX_CONTROLLER, 0).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
       .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MOTOR_STOP)));
 
@@ -296,7 +298,7 @@ public class RobotContainer {
    }
 
    /**
-    * Initializes the intake camera
+    * Initializes the camera(s)
     */
    public void initializeCamera() {
     try {
@@ -318,7 +320,7 @@ public class RobotContainer {
       // camera2.setBrightness(25);
       // camera2.setExposureManual(10);
       // camera2.setWhiteBalanceManual(10);
-      
+
     } catch (VideoException e) {
       e.printStackTrace();
     }

@@ -205,6 +205,9 @@ public final class Constants {
     public static final int HOOD_MOTOR_PORT = 9;
     public static final int TURRET_MOTOR_PORT = 8;
 
+    // Digital ports
+    public static final int LED_RING_PORT = 7;
+
     // Motor Speeds - @author utkarsh
     public static final double MOTOR_STOP = 0;
     public static final double INTAKE_MOTOR_SPEED = 0.4;

@@ -164,7 +164,7 @@ public class ShooterSubsystem extends SubsystemBase {
    * Automatically aim at vision target
    */
   public void turretVisionPID() {
-    if (VisionData.isDetected()) {
+    if (VisionData.isReady() && VisionData.isDetected()) {
       double ticks = convertTurretDegreesToTicks(Constants.TURRET_TURN_DAMPER * VisionData.getXAngle());
       relativeMoveTurretPID(ticks);
     }
