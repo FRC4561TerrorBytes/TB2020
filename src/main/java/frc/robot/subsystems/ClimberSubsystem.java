@@ -9,10 +9,12 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 
 public class ClimberSubsystem extends SubsystemBase {
 
@@ -21,7 +23,7 @@ public class ClimberSubsystem extends SubsystemBase {
   // Declaration of motors
   private final WPI_TalonSRX CLIMBER_LIFT_MOTOR = new WPI_TalonSRX(Constants.CLIMBER_LIFT_MOTOR_PORT);
   private final WPI_TalonSRX CLIMBER_HOOK_MOTOR = new WPI_TalonSRX(Constants.CLIMBER_HOOK_MOTOR_PORT);
-  //private final WPI_TalonSRX CLIMBER_BALANCE_MOTOR = new WPI_TalonSRX(Constants.CLIMBER_BALANCE_MOTOR_PORT);
+  private final WPI_TalonSRX CLIMBER_BALANCE_MOTOR = new WPI_TalonSRX(Constants.CLIMBER_BALANCE_MOTOR_PORT);
 
 
   public ClimberSubsystem() {
@@ -83,5 +85,19 @@ public class ClimberSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    if (Math.abs(RobotContainer.XBOX_CONTROLLER.getY(Hand.kLeft)) > Constants.DEADBAND) {
+      CLIMBER_HOOK_MOTOR.set(RobotContainer.XBOX_CONTROLLER.getY(Hand.kLeft));
+    }
+    if (Math.abs(RobotContainer.XBOX_CONTROLLER.getY(Hand.kRight)) > Constants.DEADBAND) {
+      CLIMBER_LIFT_MOTOR.set(RobotContainer.XBOX_CONTROLLER.getY(Hand.kRight));
+
+    // if (RobotContainer.XBOX_CONTROLLER.getPOV() == 90) {
+    //   CLIMBER_BALANCE_MOTOR.set(1);
+    // } else if (RobotContainer.XBOX_CONTROLLER.getPOV() == 270) {
+    //   CLIMBER_BALANCE_MOTOR.set(-1);
+    // } else CLIMBER_BALANCE_MOTOR.set(0);
+    
+    }
   }
 }

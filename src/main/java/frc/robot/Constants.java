@@ -40,7 +40,7 @@ public final class Constants {
     public static final double AUTO_STOPPING_DISTANCE = 0.0; // Inches
     public static final double AUTO_SPEED = 0.0; // [0, 1]
     public static final double TURN_DAMPER = 0.1; // [0, 1]
-	public static final double TURRET_TURN_DAMPER = 0.042; // [0, 1]
+	public static final double TURRET_TURN_DAMPER = 0.1; // [0, 1]
 
     // Intake Arm PID config
     private static final double ARM_kP = 0.9;
@@ -213,8 +213,9 @@ public final class Constants {
     public static final double INTAKE_MOTOR_SPEED = 0.4;
     public static final double OUTTAKE_MOTOR_SPEED = 0.5;
     public static final double LIFT_MOTOR_SPEED = 0.6;
-    public static final double MAGAZINE_UP_MOTOR_SPEED = 0.4;
+    public static final double MAGAZINE_UP_MOTOR_SPEED = 0.6;
     public static final double MAGAZINE_DOWN_MOTOR_SPEED = 0.2;
     public static final double MOUSE_DROID_SPEED = .5;
 
+    public static boolean VISION_ENABLE = true;
 }

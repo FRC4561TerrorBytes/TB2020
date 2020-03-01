@@ -1,7 +1,9 @@
 package frc.robot;
 
+import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.TableEntryListener;
 import edu.wpi.first.wpilibj.DigitalOutput;
 
 /**
@@ -37,6 +39,7 @@ public class VisionData {
      */
     public static void toggle() {
         LED_RING.set(!isEnabled());
+        Constants.VISION_ENABLE = LED_RING.get();
     }
 
     /**
@@ -58,6 +61,10 @@ public class VisionData {
      */
     public static double getDistance() {
         return table.getEntry("distance").getDouble(0.0);
+    }
+
+    public static void setXAngleListener(TableEntryListener listener) {
+        table.addEntryListener("xAngle", listener, EntryListenerFlags.kUpdate);
     }
     
 }

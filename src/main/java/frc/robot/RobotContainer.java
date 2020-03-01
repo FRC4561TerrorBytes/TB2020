@@ -56,14 +56,13 @@ public class RobotContainer {
 
   private static final ShooterSubsystem SHOOTER_SUBSYSTEM = new ShooterSubsystem(Constants.FLYWHEEL_MASTER_CONFIG, Constants.HOOD_CONFIG, Constants.TURRET_CONFIG);
   
-  private static final XboxController XBOX_CONTROLLER = new XboxController(Constants.XBOX_CONTROLLER_PORT);
+  public static final XboxController XBOX_CONTROLLER = new XboxController(Constants.XBOX_CONTROLLER_PORT);
 
   private static final Joystick LEFT_JOYSTICK = new Joystick(Constants.LEFT_JOYSTICK_PORT);
   private static final Joystick RIGHT_JOYSTICK = new Joystick(Constants.RIGHT_JOYSTICK_PORT);
 
   public static UsbCamera camera1;
-  //public static UsbCamera camera2;
-  public static boolean doVision = true;
+  public static UsbCamera camera2;
   
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -177,9 +176,9 @@ public class RobotContainer {
     //   .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(0), MAGAZINE_SUBSYSTEM));
 
     // Left joystick intake button 1
-    // new JoystickButton(LEFT_JOYSTICK, 1)
-    //   .whileHeld(new IntakeCommand(MAGAZINE_SUBSYSTEM, -Constants.OUTTAKE_MOTOR_SPEED))
-    //   .whenReleased(new IntakeCommand(MAGAZINE_SUBSYSTEM, Constants.MOTOR_STOP));
+    new JoystickButton(LEFT_JOYSTICK, 1)
+      .whileHeld(new IntakeCommand(MAGAZINE_SUBSYSTEM, -Constants.OUTTAKE_MOTOR_SPEED))
+      .whenReleased(new IntakeCommand(MAGAZINE_SUBSYSTEM, Constants.MOTOR_STOP));
 
     // Auto drive button 1
     // new JoystickButton(LEFT_JOYSTICK, 1)
@@ -251,15 +250,21 @@ public class RobotContainer {
     new Trigger(() -> (XBOX_CONTROLLER.getTriggerAxis(Hand.kRight) > Constants.DEADBAND))
       .whenActive(new MoveTurretManualCommand(SHOOTER_SUBSYSTEM, () -> XBOX_CONTROLLER.getTriggerAxis(Hand.kRight) * 25));
 
-    // Controller Hook left stick
-    new Trigger(() -> (Math.abs(XBOX_CONTROLLER.getY(Hand.kLeft)) > Constants.DEADBAND))
-      .whenActive(new HookCommand(CLIMBER_SUBSYSTEM, () -> XBOX_CONTROLLER.getY(Hand.kLeft)))
-      .whenInactive(new HookCommand(CLIMBER_SUBSYSTEM, () -> Constants.MOTOR_STOP));
+    // new POVButton(XBOX_CONTROLLER, 90).whileHeld(new HoodCommand(SHOOTER_SUBSYSTEM, -0.3))
+    //   .whenReleased(new HoodCommand(SHOOTER_SUBSYSTEM, Constants.MOTOR_STOP));
+
+    // new POVButton(XBOX_CONTROLLER, 270).whileHeld(new HoodCommand(SHOOTER_SUBSYSTEM, 0.3))
+    //   .whenReleased(new HoodCommand(SHOOTER_SUBSYSTEM, Constants.MOTOR_STOP));
 
     // Controller Lift right stick
-    new Trigger(() -> (Math.abs(XBOX_CONTROLLER.getY(Hand.kRight)) > Constants.DEADBAND))
-      .whenActive(new WinchCommand(CLIMBER_SUBSYSTEM, () -> -XBOX_CONTROLLER.getY(Hand.kRight)))
-      .whenInactive(new WinchCommand(CLIMBER_SUBSYSTEM, () -> Constants.MOTOR_STOP));
+    // new Trigger(() -> (Math.abs(XBOX_CONTROLLER.getY(Hand.kRight)) > Constants.DEADBAND))
+    //   .whenActive(new WinchCommand(CLIMBER_SUBSYSTEM, () -> -Math.abs(XBOX_CONTROLLER.getY(Hand.kRight))))
+    //   .whenInactive(new WinchCommand(CLIMBER_SUBSYSTEM, () -> Constants.MOTOR_STOP));
+
+      // Controller Hook left stick
+    // new Trigger(() -> (Math.abs(XBOX_CONTROLLER.getY(Hand.kLeft)) > Constants.DEADBAND))
+    //   .whenActive(new HookCommand(CLIMBER_SUBSYSTEM, () -> XBOX_CONTROLLER.getY(Hand.kLeft)))
+    //   .whenInactive(new HookCommand(CLIMBER_SUBSYSTEM, () -> Constants.MOTOR_STOP));
   }
 
 
@@ -298,6 +303,14 @@ public class RobotContainer {
    }
 
    /**
+    * Get ClimberSubsystem
+    * @return climbersubsystem
+    */
+    public ClimberSubsystem getClimberSubsystem() {
+      return CLIMBER_SUBSYSTEM;
+    }
+
+   /**
     * Initializes the camera(s)
     */
    public void initializeCamera() {
@@ -313,13 +326,13 @@ public class RobotContainer {
       camera1.setWhiteBalanceManual(10);
       
       // Shooter
-      // camera2 = CameraServer.getInstance().startAutomaticCapture();
-      // camera2.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
-      // camera2.setResolution(176, 144);
-      // camera2.setFPS(15); // Can go up to 30
-      // camera2.setBrightness(25);
-      // camera2.setExposureManual(10);
-      // camera2.setWhiteBalanceManual(10);
+      camera2 = CameraServer.getInstance().startAutomaticCapture();
+      camera2.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
+      camera2.setResolution(176, 144);
+      camera2.setFPS(15); // Can go up to 30
+      camera2.setBrightness(25);
+      camera2.setExposureManual(10);
+      camera2.setWhiteBalanceManual(10);
 
     } catch (VideoException e) {
       e.printStackTrace();

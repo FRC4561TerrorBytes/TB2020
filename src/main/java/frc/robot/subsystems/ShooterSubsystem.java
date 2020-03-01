@@ -17,6 +17,10 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableValue;
+import edu.wpi.first.networktables.TableEntryListener;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.TalonPIDConfig;
@@ -113,13 +117,22 @@ public class ShooterSubsystem extends SubsystemBase {
       tab.addNumber("Turret Encoder Setpoint", () -> Turret.MOTOR.getClosedLoopTarget());
       tab.addNumber("Turret Error", () -> Turret.MOTOR.getClosedLoopError());
     }
+    
+    // Move turret to vision target
+    VisionData.setXAngleListener(new TableEntryListener(){
+      @Override
+      public void valueChanged(NetworkTable table, String key, NetworkTableEntry entry, NetworkTableValue value,
+          int flags) {
+        turretVisionPID();
+      }
+    });
   }
   
   /**
    * Reset the Turret and Hood setpoints
    */
   public void reset() {
-    this.moveTurretPID(Turret.leftPosition);
+    Turret.MOTOR.setSelectedSensorPosition(Constants.TURRET_STRAIGHT_POSITION);
     this.moveHoodPID(Hood.bottomPosition);
   }
 
@@ -307,9 +320,6 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
-    // Automatically move turret to vision target
-    if (RobotContainer.doVision) turretVisionPID();
 
     // Reset the turret encoder to the front position
     if (this.turretLimitFront() && Turret.needsReset) {
