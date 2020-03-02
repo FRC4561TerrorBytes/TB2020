@@ -92,7 +92,7 @@ public class Robot extends TimedRobot {
 
     switch (this.autoID) {
       case 0:
-      auto0();
+      auto1(this.autoVision);
       robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
       break;
 
@@ -102,13 +102,13 @@ public class Robot extends TimedRobot {
       break;
 
       case 2:
-      auto2(this.autoVision);
+      auto1(this.autoVision);
       robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
       break;
 
       case 3:
-      auto3(this.autoVision);
-      robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION); 
+      auto1(this.autoVision);
+      robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
       break;
     }
 
@@ -179,6 +179,70 @@ public class Robot extends TimedRobot {
   private void auto1(boolean useVision) {
     robotContainer.getShooterSubsystem().toggleHoodPosition();
     robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_BACK_POSITION);
+    robotContainer.getShooterSubsystem().flywheelManual(-.72);
+    try {Thread.sleep(2000);} catch (Exception e){}
+    robotContainer.getMagazineSubsystem().ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED);
+    try {Thread.sleep(500);} catch (Exception e){}
+    robotContainer.getMagazineSubsystem().ballUptake(Constants.MOTOR_STOP);
+    try {Thread.sleep(500);} catch (Exception e){}
+    robotContainer.getMagazineSubsystem().ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED);
+    try {Thread.sleep(500);} catch (Exception e){}
+    robotContainer.getMagazineSubsystem().ballUptake(Constants.MOTOR_STOP);
+    try {Thread.sleep(500);} catch (Exception e){}
+    robotContainer.getMagazineSubsystem().ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED);
+    try {Thread.sleep(500);} catch (Exception e){}
+    robotContainer.getMagazineSubsystem().ballUptake(Constants.MOTOR_STOP);
+    try {Thread.sleep(500);} catch (Exception e){}
+    robotContainer.getMagazineSubsystem().ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED);
+    long start = System.currentTimeMillis();
+    while (System.currentTimeMillis() - start < 3000) {
+      robotContainer.getDriveSubsystem().teleop(.2, 0, 1);
+    }
+    robotContainer.getDriveSubsystem().teleop(0, 0, 1);
+    robotContainer.getShooterSubsystem().toggleHoodPosition();
+    robotContainer.getShooterSubsystem().flywheelManual(Constants.MOTOR_STOP);
+    robotContainer.getMagazineSubsystem().ballUptake(Constants.MOTOR_STOP);
+  }
+
+  /**
+   * Robot starts on the line, intake facing away, shoots 3 balls and drives straight off line.
+   * @param useVision input if wanting to use vision
+   */
+  private void auto2(boolean useVision) {
+    robotContainer.getShooterSubsystem().toggleHoodPosition();
+    robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_BACK_POSITION);
+    robotContainer.getShooterSubsystem().flywheelManual(-.72);
+    try {Thread.sleep(2000);} catch (Exception e){}
+    robotContainer.getMagazineSubsystem().ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED);
+    try {Thread.sleep(500);} catch (Exception e){}
+    robotContainer.getMagazineSubsystem().ballUptake(Constants.MOTOR_STOP);
+    try {Thread.sleep(500);} catch (Exception e){}
+    robotContainer.getMagazineSubsystem().ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED);
+    try {Thread.sleep(500);} catch (Exception e){}
+    robotContainer.getMagazineSubsystem().ballUptake(Constants.MOTOR_STOP);
+    try {Thread.sleep(500);} catch (Exception e){}
+    robotContainer.getMagazineSubsystem().ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED);
+    try {Thread.sleep(500);} catch (Exception e){}
+    robotContainer.getMagazineSubsystem().ballUptake(Constants.MOTOR_STOP);
+    try {Thread.sleep(500);} catch (Exception e){}
+    robotContainer.getMagazineSubsystem().ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED);
+    long start = System.currentTimeMillis();
+    while (System.currentTimeMillis() - start < 1500) {
+      robotContainer.getDriveSubsystem().teleop(-.2, 0, 1);
+    }
+    robotContainer.getDriveSubsystem().teleop(0, 0, 1);
+    robotContainer.getShooterSubsystem().toggleHoodPosition();
+    robotContainer.getShooterSubsystem().flywheelManual(Constants.MOTOR_STOP);
+    robotContainer.getMagazineSubsystem().ballUptake(Constants.MOTOR_STOP);
+  }
+
+  /**
+   * Robot starts on the line, intake facing away, shoots 3 balls and drives straight off line.
+   * @param useVision input if wanting to use vision
+   */
+  private void auto3(boolean useVision) {
+    robotContainer.getShooterSubsystem().toggleHoodPosition();
+    robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_BACK_POSITION);
     robotContainer.getShooterSubsystem().flywheelManual(-1);
     try {Thread.sleep(2000);} catch (Exception e){}
     robotContainer.getMagazineSubsystem().ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED);
@@ -229,7 +293,7 @@ public class Robot extends TimedRobot {
    * Robot starts on the left side, intake facing away, shoots 3 balls and drives slightly to the right off the line
    * @param useVision
    */
-  private void auto2(boolean useVision) {
+  private void auto4(boolean useVision) {
     robotContainer.getShooterSubsystem().toggleHoodPosition();
     robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_BACK_POSITION);
     try {Thread.sleep(500);} catch (Exception e){}
@@ -254,7 +318,7 @@ public class Robot extends TimedRobot {
    * Robot starts on the right side, intake facing away, shoots 3 balls and drives slightly to the left off the line
    * @param useVision
    */
-  private void auto3(boolean useVision) {
+  private void auto5(boolean useVision) {
     robotContainer.getShooterSubsystem().toggleHoodPosition();
     robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_BACK_POSITION);
     try {Thread.sleep(500);} catch (Exception e){}

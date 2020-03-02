@@ -222,6 +222,10 @@ public class RobotContainer {
     new JoystickButton(XBOX_CONTROLLER, Button.kStart.value)
       .whenPressed(new InstantCommand(() -> VisionData.toggle()));
 
+    new JoystickButton(XBOX_CONTROLLER, Button.kBack.value)
+      .whenHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(.6)))
+      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armPositionRelative(0)));
+
     // Uptake
     new POVButton(XBOX_CONTROLLER, 0).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
       .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MOTOR_STOP)));
