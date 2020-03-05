@@ -20,89 +20,175 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    // Show Debug
+    public static final boolean SHOOTER_DEBUG = true;
+    public static final boolean MAGAZINE_DEBUG = true;
+    public static final boolean CLIMBER_DEBUG = true;
     
-     // Show Debug
-     public static final boolean SHOOTER_DEBUG = true;
-
-     // Shooter PID Values
-    //TODO: Set these
-    private static final double FLYWHEEL_kP = 0.3;
-    private static final double FLYWHEEL_kD = 0.0;
-    private static final double FLYWHEEL_kF = 0.01;
-    private static final double FLYWHEEL_TOLERANCE = 0.0;
-    private static final boolean FLYWHEEL_ENCODER_SENSOR_PHASE = true;
-    private static final boolean FLYWHEEL_MOTOR_INVERTED = true;
-    private static final double HOOD_kP = 0.0;
-    private static final double HOOD_kD = 0.0;
-    private static final double HOOD_TOLERANCE = 0.0;
-    private static final double HOOD_VELOCITY_RPM = 0.0;
-    private static final double HOOD_ACCELERATION_RPM_PER_SEC = 0.0;
-    private static final int HOOD_MOTION_SMOOTHING = 0; // between [0, 7]
-    private static final boolean HOOD_ENCODER_SENSOR_PHASE = true;
-    private static final boolean HOOD_MOTOR_INVERTED = true;
-    private static final double TURRET_kP = 0.0;
-    private static final double TURRET_kD = 0.0;
-    private static final double TURRET_TOLERANCE = 0.0;
-    private static final double TURRET_VELOCITY_RPM = 0.0;
-    private static final double TURRET_ACCELERATION_RPM_PER_SEC = 0.0;
-    private static final int TURRET_MOTION_SMOOTHING = 0; // between [0, 7]
-    private static final boolean TURRET_ENCODER_SENSOR_PHASE = true;
-    private static final boolean TURRET_MOTOR_INVERTED = true;
-    
-    // Shooter Positions
-    public static final int HOOD_BOTTOM_POSITION = 0;
-    public static final int HOOD_TOP_POSITION = 1000; //TODO: set this
-    public static final int TURRET_FRONT_POSITION = 0;
-    public static final int TURRET_MIDDLE_POSITION = 9626; //TODO: set this
-    public static final int TURRET_BACK_POSITION = 19251; //TODO: set this
-
-    // Set PID for Flywheel
-    public static final TalonPIDConfig FLYWHEEL_CONFIG = new TalonPIDConfig(FLYWHEEL_ENCODER_SENSOR_PHASE,
-                                                        FLYWHEEL_MOTOR_INVERTED,
-                                                        FLYWHEEL_kP,
-                                                        0,
-                                                        FLYWHEEL_kD,
-                                                        FLYWHEEL_kF,
-                                                        FLYWHEEL_TOLERANCE);
-    // Set PID for Hood
-    public static final TalonPIDConfig HOOD_CONFIG = new TalonPIDConfig(HOOD_ENCODER_SENSOR_PHASE,
-                                                    HOOD_MOTOR_INVERTED,
-                                                    HOOD_kP,
-                                                    0,
-                                                    HOOD_kD,
-                                                    0,
-                                                    HOOD_TOLERANCE,
-                                                    HOOD_BOTTOM_POSITION,
-                                                    HOOD_TOP_POSITION,
-                                                    HOOD_VELOCITY_RPM,
-                                                    HOOD_ACCELERATION_RPM_PER_SEC,
-                                                    HOOD_MOTION_SMOOTHING);
-
-    // Set PID for Turret
-    public static final TalonPIDConfig TURRET_CONFIG = new TalonPIDConfig(TURRET_ENCODER_SENSOR_PHASE,
-                                                        TURRET_MOTOR_INVERTED,
-                                                        TURRET_kP,
-                                                        0,
-                                                        TURRET_kD,
-                                                        0,
-                                                        TURRET_TOLERANCE,
-                                                        TURRET_FRONT_POSITION,
-                                                        TURRET_BACK_POSITION,
-                                                        TURRET_VELOCITY_RPM,
-                                                        TURRET_ACCELERATION_RPM_PER_SEC,
-                                                        TURRET_MOTION_SMOOTHING);
+    // Robot tick rate in seconds
+    public static final double ROBOT_TICK_RATE = 1 / 60;
 
     // Drive PID values
-    public static final double DRIVE_kP = 0.010;
-    public static final double DRIVE_kD = 0.0005;
-    public static final double DRIVE_PERIOD_SECONDS = 0.01667; // 60Hz
-    public static final double DRIVE_TURN_SCALAR = 10.0;
-    public static final double DRIVE_TOLERANCE = 1.0;
+    public static final double DRIVE_kP = 0.005;
+    public static final double DRIVE_kD = 0.001;
+    public static final double DRIVE_PERIOD_SECONDS = 1 / 480;
+    public static final double DRIVE_TURN_SCALAR = 5.0;
+    public static final double DRIVE_TOLERANCE = 2.0;
+    public static final int DRIVE_RESPONSE_EXPONENT = 2;
+
+    // Auto drive config values
+    // TODO Set
+    public static final double ANGLE_TOLERANCE = 15.0; // Degrees
+    public static final double TARGET_DISTANCE = 0.0; // Inches
+    public static final double AUTO_STOPPING_DISTANCE = 0.0; // Inches
+    public static final double AUTO_SPEED = 0.0; // [0, 1]
+    public static final double TURN_DAMPER = 0.1; // [0, 1]
+	public static final double TURRET_TURN_DAMPER = 0.15; // [0, 1]
+
+    // Intake Arm PID config
+    private static final double ARM_kP = 0.9;
+    private static final double ARM_kD = 0.1;
+    private static final double ARM_kF = 0.000;
+    private static final double ARM_TOLERANCE = 5.0;
+    private static final double ARM_LOWER_LIMIT = -1500;
+    private static final double ARM_UPPER_LIMIT = 0;
+    private static final double ARM_VELOCITY = 1;
+    private static final double ARM_ACCLERATION = 0.1;
+    private static final int ARM_MOTION_SMOOTHING = 7;
+    private static final boolean ARM_SOFT_LIMITS = true;
+    private static final boolean ARM_SENSOR_PHASE = true;
+    private static final boolean ARM_INVERT_MOTOR = false;
+
+    // Intake Arm Positions
+    public static final int ARM_TOP_POSITION = -1450;
+    public static final int ARM_BOTTOM_POSITION = 0;
+    public static final double ARM_MANUAL_INCREMENT = 75;
+
+
+    // Shooter PID Values
+    private static final double FLYWHEEL_kP = 0.05;
+    private static final double FLYWHEEL_kD = 0.0;
+    private static final double FLYWHEEL_kF = 2;
+    private static final double FLYWHEEL_TOLERANCE = 100;
+    private static final boolean FLYWHEEL_MASTER_ENCODER_SENSOR_PHASE = true;
+    private static final boolean FLYWHEEL_MASTER_MOTOR_INVERTED = true;
+
+    private static final double HOOD_kP = 1;
+    private static final double HOOD_kD = 0.01;
+    private static final double HOOD_TOLERANCE = 5.0;
+    private static final boolean HOOD_SOFT_LIMITS = false;
+    private static final double HOOD_VELOCITY = 100;
+    private static final double HOOD_ACCELERATION = 50;
+    private static final int HOOD_MOTION_SMOOTHING = 3;
+    private static final boolean HOOD_ENCODER_SENSOR_PHASE = false;
+    private static final boolean HOOD_MOTOR_INVERTED = false;
+    public static final int HOOD_BOTTOM_POSITION = 0;
+    public static final int HOOD_TOP_POSITION = -4770;
+
+    private static final double TURRET_kP = 0.75;
+    private static final double TURRET_kD = 0.02;
+    private static final double TURRET_TOLERANCE = 2;
+    private static final boolean TURRET_SOFT_LIMITS = true;
+    private static final double TURRET_VELOCITY = 150;
+    private static final double TURRET_ACCELERATION = 50;
+    private static final int TURRET_MOTION_SMOOTHING = 4; // between [0, 7]
+    private static final boolean TURRET_ENCODER_SENSOR_PHASE = false;
+    private static final boolean TURRET_MOTOR_INVERTED = false;
+    
+    // Shooter Positions
+    public static final int TURRET_FRONT_LIMIT_POSITION = 0;
+    public static final int TURRET_STRAIGHT_POSITION = 3300;
+    public static final int TURRET_MIDDLE_POSITION = 9700; //TODO: set this
+    public static final int TURRET_BACK_POSITION = 16100;
+    public static final int TURRET_BACK_LIMIT_POSITION = 22000; //TODO: set this
+
+    public static final double kTrackwidthMeters = 0.53975;
+    public static final DifferentialDriveKinematics kDriveKinematics =
+        new DifferentialDriveKinematics(kTrackwidthMeters);
+
+    public static final int kEncoderTPR = 4096;
+    
+  
+
+    public static final double kWheelDiameterMeters = 0.1524;
+    public static final double kEncoderDistancePerPulse = (kWheelDiameterMeters * Math.PI) / (double) kEncoderTPR;
+
+    public static final boolean kGyroReversed = true;
+
+    public static final double ksVolts = 0.0;
+    public static final double kvVoltSecondsPerMeter = 0.0;
+    public static final double kaVoltSecondsSquaredPerMeter = 0.0;
+    public static final double kPDriveVel = 0.0;
+
+    public static final double kMaxSpeedMetersPerSecond = 0;
+    
+    public static final double kMaxAccelerationMetersPerSecondSquared = 0;
+   
+    
+    public static final double kRamseteB = 2;
+    public static final double kRamseteZeta = 0.7;
 
     public static final double kMetersToTicks = 0.000116889336037;
     public static final double kTicksToMeters = 8555.10035308;
-    public static final double AUTO_SPEED = 0.5;
-    
+
+    // Set PID for Flywheel
+    public static final TalonPIDConfig FLYWHEEL_MASTER_CONFIG = new TalonPIDConfig(FLYWHEEL_MASTER_ENCODER_SENSOR_PHASE,
+                                                                                    FLYWHEEL_MASTER_MOTOR_INVERTED,
+                                                                                    FLYWHEEL_kP,
+                                                                                    0,
+                                                                                    FLYWHEEL_kD,
+                                                                                    FLYWHEEL_kF,
+                                                                                    FLYWHEEL_TOLERANCE);
+                                   
+    // Set PID for Hood
+    public static final TalonPIDConfig HOOD_CONFIG = new TalonPIDConfig(HOOD_ENCODER_SENSOR_PHASE,
+                                                                        HOOD_MOTOR_INVERTED,
+                                                                        HOOD_kP,
+                                                                        0,
+                                                                        HOOD_kD,
+                                                                        0,
+                                                                        HOOD_TOLERANCE,
+                                                                        HOOD_TOP_POSITION,
+                                                                        HOOD_BOTTOM_POSITION,
+                                                                        HOOD_SOFT_LIMITS,
+                                                                        HOOD_VELOCITY,
+                                                                        HOOD_ACCELERATION,
+                                                                        HOOD_MOTION_SMOOTHING);
+
+    // Set PID for Turret
+    public static final TalonPIDConfig TURRET_CONFIG = new TalonPIDConfig(TURRET_ENCODER_SENSOR_PHASE,
+                                                                            TURRET_MOTOR_INVERTED,
+                                                                            TURRET_kP,
+                                                                            0,
+                                                                            TURRET_kD,
+                                                                            0,
+                                                                            TURRET_TOLERANCE,
+                                                                            TURRET_FRONT_LIMIT_POSITION,
+                                                                            TURRET_BACK_LIMIT_POSITION,
+                                                                            TURRET_SOFT_LIMITS,
+                                                                            TURRET_VELOCITY,
+                                                                            TURRET_ACCELERATION,
+                                                                            TURRET_MOTION_SMOOTHING);
+    // Mouse Droid PID values
+    public static final double MOUSE_kP = 0.0;
+    public static final double MOUSE_kD = 0.0;
+
+    // Arm Config
+    public static final TalonPIDConfig ARM_CONFIG = new TalonPIDConfig(ARM_SENSOR_PHASE,
+                                                                        ARM_INVERT_MOTOR,
+                                                                        ARM_kP,
+                                                                        0.0,
+                                                                        ARM_kD,
+                                                                        ARM_kF,
+                                                                        ARM_TOLERANCE,
+                                                                        ARM_LOWER_LIMIT,
+                                                                        ARM_UPPER_LIMIT,
+                                                                        ARM_SOFT_LIMITS,
+                                                                        ARM_VELOCITY,
+                                                                        ARM_ACCLERATION,
+                                                                        ARM_MOTION_SMOOTHING);
+
     // Analog stick deadband value
     public static final double DEADBAND = 0.005;
     
@@ -119,49 +205,50 @@ public final class Constants {
 
     public static final int FRONT_RIGHT_MOTOR_PORT = 2;
     public static final int REAR_RIGHT_MOTOR_PORT = 3;
-    
-    //Motor ports for lowering and raising intake arm
-    public static final int MAGAZINE_MOTOR_PORT = 13; //TODO:Change these to actual safe values
 
-    /**
-     * TODO: ADD COMMENTS ONCE FINISHED
-     */
+    // Climber Motor Ports
+    public static final int CLIMBER_LIFT_MOTOR_PORT = 6;
+    public static final int CLIMBER_HOOK_MOTOR_PORT = 11;
+    public static final int CLIMBER_BALANCE_MOTOR_PORT = 7;
 
-    public static final double kTrackwidthMeters = 0.53975;
-    public static final DifferentialDriveKinematics kDriveKinematics =
-        new DifferentialDriveKinematics(kTrackwidthMeters);
+    // Climber Movement Constants
+    public static final double CLIMBER_LIFT_CONSTANT = 0.5;
+    public static final double CLIMBER_HOOK_CONSTANT = 0.69;
 
-    public static final int kEncoderTPR = 4096;
-    
-  
+    // Climber I2C port
+    //public static final int CLIMBER_GYRO_PORT = 0x6B;
 
-    public static final double kWheelDiameterMeters = 0.1524;
-    public static final double kEncoderDistancePerPulse = (kWheelDiameterMeters * Math.PI) / (double) kEncoderTPR;
+    // Speed limiting [0.0, 1.0]
+    public static final double CLIMBER_SPEED_LIMIT = 1.0; 
 
-    public static final boolean kGyroReversed = true;
+    //Magazine Motor Port
+    public static final int MAGAZINE_MOTOR_PORT = 10;
 
-    /**
-     * TODO: CHANGE TO ACTUAL VALUES
-     */
+    //Intake Motor Port
+    public static final int INTAKE_MOTOR_PORT = 13;
+    public static final int ARM_MOTOR_PORT = 12;
 
-    public static final double ksVolts = 0.0;
-    public static final double kvVoltSecondsPerMeter = 0.0;
-    public static final double kaVoltSecondsSquaredPerMeter = 0.0;
-    public static final double kPDriveVel = 0.0;
+    //Magazine proximity sensor ports
+    public static final int MAGAZINE_ULTRASONIC_BOT = 0;
+    public static final int MAGAZINE_ULTRASONIC_TOP = 1;
 
-    public static final double kMaxSpeedMetersPerSecond = 0;
-    
-    public static final double kMaxAccelerationMetersPerSecondSquared = 0;
-   
-    
-    public static final double kRamseteB = 2;
-    public static final double kRamseteZeta = 0.7;
+    // Shooter Motor Ports
+    public static final int FLYWHEEL_MASTER_MOTOR_PORT = 5;
+    public static final int FLYWHEEL_SLAVE_MOTOR_PORT = 4;
+    public static final int HOOD_MOTOR_PORT = 9;
+    public static final int TURRET_MOTOR_PORT = 8;
 
-    public static final double MagazineMotorSpeed = 0.5;
+    // Digital ports
+    public static final int LED_RING_PORT = 7;
 
-       // Shooter Motor Ports
-       public static final int FLYWHEEL_MASTER_MOTOR_PORT = 4;
-       public static final int FLYWHEEL_SLAVE_MOTOR_PORT = 5;
-       public static final int HOOD_MOTOR_PORT = 6;
-       public static final int TURRET_MOTOR_PORT = 7;
+    // Motor Speeds - @author utkarsh
+    public static final double MOTOR_STOP = 0;
+    public static final double INTAKE_MOTOR_SPEED = 0.4;
+    public static final double OUTTAKE_MOTOR_SPEED = 0.5;
+    public static final double LIFT_MOTOR_SPEED = 0.6;
+    public static final double MAGAZINE_UP_MOTOR_SPEED = 0.6;
+    public static final double MAGAZINE_DOWN_MOTOR_SPEED = 0.2;
+    public static final double MOUSE_DROID_SPEED = .5;
+
+    public static boolean VISION_ENABLE = true;
 }

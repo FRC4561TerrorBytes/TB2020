@@ -25,13 +25,12 @@ public class DriveSubsystem extends PIDSubsystem {
 
   private DifferentialDrive drivetrain;
 
-
   private final WPI_TalonFX LEFT_MASTER_MOTOR = new WPI_TalonFX(Constants.FRONT_LEFT_MOTOR_PORT);
   private final WPI_TalonFX LEFT_REAR_SLAVE = new WPI_TalonFX(Constants.REAR_LEFT_MOTOR_PORT);
 
   private final WPI_TalonFX RIGHT_MASTER_MOTOR = new WPI_TalonFX(Constants.FRONT_RIGHT_MOTOR_PORT);
   private final WPI_TalonFX RIGHT_REAR_SLAVE = new WPI_TalonFX(Constants.REAR_RIGHT_MOTOR_PORT);
-  
+
   private final double MIN_TOLERANCE = 1.0;
 
   private final AHRS NAVX = new AHRS(SPI.Port.kMXP);
@@ -39,12 +38,12 @@ public class DriveSubsystem extends PIDSubsystem {
   private double speed = 0.0;
   private double turn_scalar = 1.0;
   private double deadband = 0.0; 
-  private double auto_speed = 0.0;
 
   private boolean was_turning = false;
 
-  // Odometry class for tracking robot pose
+  //Odometry class for tracking robot pose
   private final DifferentialDriveOdometry odometry;
+
 
   /**
    * Create an instance of DriveSubsystem
@@ -58,7 +57,7 @@ public class DriveSubsystem extends PIDSubsystem {
    * @param turn_scalar Turn sensitivity
    * @param deadband Deadzone for joystick
    */
-  public DriveSubsystem(double kP, double kD, double period, double tolerance, double turn_scalar, double deadband, double auto_speed) {
+  public DriveSubsystem(double kP, double kD, double period, double tolerance, double turn_scalar, double deadband) {
       // The PIDController used by the subsystem
       super(new PIDController(kP, 0, kD, period));
 
@@ -69,7 +68,7 @@ public class DriveSubsystem extends PIDSubsystem {
       RIGHT_REAR_SLAVE.set(ControlMode.Follower, RIGHT_MASTER_MOTOR.getDeviceID());
 
       // Wait for Robot init before finishing DriveSubsystem init
-      try { Thread.sleep(10000); }
+      try { Thread.sleep(7000); }
       catch (Exception e) { e.printStackTrace(); }
 
       // Initialise PID subsystem setpoint and input
@@ -88,9 +87,9 @@ public class DriveSubsystem extends PIDSubsystem {
 
       odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
 
+
       this.turn_scalar = turn_scalar;
       this.deadband = deadband;
-      this.auto_speed = auto_speed;
   }
 
   @Override
@@ -113,22 +112,26 @@ public class DriveSubsystem extends PIDSubsystem {
   }
 
   /**
-   * Controls the left and right sides of the drive directly with voltages.
-   *
-   * @param leftVolts  the commanded left output
-   * @param rightVolts the commanded right output
-   */
-  public void tankDriveVolts(double leftVolts, double rightVolts) {
-    LEFT_MASTER_MOTOR.setVoltage(leftVolts);
-    RIGHT_MASTER_MOTOR.setVoltage(-rightVolts);
-  }
+  * Controls the left and right sides of the drive directly with voltages.
+  *
+  * @param leftVolts  the commanded left output
+  * @param rightVolts the commanded right output
+  */
+ public void tankDriveVolts(double leftVolts, double rightVolts) {
+   LEFT_MASTER_MOTOR.setVoltage(leftVolts);
+   RIGHT_MASTER_MOTOR.setVoltage(-rightVolts);
+ }
 
   /**
    * Call this repeatedly to drive using PID during teleoperation
    * @param speed Desired speed from -1.0 to 1.0
    * @param turn_request Turn input from -1.0 to 1.0
+   * @param power exponent for drive response curve. 1 is linear response
    */
-  public void teleopPID(double speed, double turn_request) {
+  public void teleopPID(double speed, double turn_request, int power) {
+    speed = Math.copySign(Math.pow(speed, power), speed);
+    turn_request = Math.copySign(Math.pow(turn_request, power), turn_request);
+
     // Set drive speed if it is more than the deadband
     if (Math.abs(speed) >= this.deadband) this.setSpeed(speed);
     else this.stop();
@@ -146,8 +149,9 @@ public class DriveSubsystem extends PIDSubsystem {
       }
     }
   }
+  
 
-  /**
+/**
    * Returns the current wheel speeds of the robot.
    *
    * @return The current wheel speeds.
@@ -168,6 +172,19 @@ public class DriveSubsystem extends PIDSubsystem {
   }
 
   /**
+   * Call this repeatedly to drive without PID during teleoperation
+   * @param speed Desired speed from -1.0 to 1.0
+   * @param turn_request Turn input from -1.0 to 1.0
+   * @param power exponent for drive response curve. 1 is linear response
+   */
+	public void teleop(double speed, double turn_request, int power) {
+    speed = Math.copySign(Math.pow(speed, power), speed);
+    turn_request = Math.copySign(Math.pow(turn_request, power), turn_request);
+
+    this.drivetrain.curvatureDrive(speed, -turn_request, true);
+	}
+
+  /**
    * Set DriveSubsystem speed
    * @param speed Desired speed from -1.0 to 1.0
    */
@@ -180,26 +197,6 @@ public class DriveSubsystem extends PIDSubsystem {
   }
 
   /**
-   * Drives the robot straight for a given
-   * @param distance distance to travel in inches
-   */
-  public void driveStraight(double distance) {
-    // Convert meters to ticks
-    double rotation = distance * Constants.kMetersToTicks;
-    
-    // Reset encoder, angle, and setpoint
-    LEFT_MASTER_MOTOR.setSelectedSensorPosition(0);
-    this.resetAngle();
-    this.setSetpoint(0);
-
-    // Sets the speed as long as Sensor Position is less than distance
-    while(LEFT_MASTER_MOTOR.getSelectedSensorPosition() < rotation) this.setSpeed(this.auto_speed);
-    
-    // Stop the motor at the end of the command 
-    this.stop();
-  }
-
-  /**
    * Returns the heading of the robot.
    * @return the robot's heading in degrees, from 180 to 180
    */
@@ -207,13 +204,14 @@ public class DriveSubsystem extends PIDSubsystem {
     return Math.IEEEremainder(NAVX.getAngle(), 360) * (Constants.kGyroReversed ? -1.0 : 1.0);
   }
 
-  /**
+   /**
    * Returns the turn rate of the robot.
    * @return The turn rate of the robot, in degrees per second
    */
   public double getTurnRate() {
     return NAVX.getRate() * (Constants.kGyroReversed ? -1.0 : 1.0);
   }
+
 
   /**
    * Converts encoder position to meters
@@ -240,6 +238,8 @@ public class DriveSubsystem extends PIDSubsystem {
     this.setSpeed(0);
   }
 
+   
+
   /**
    * Get DriveSubsystem speed
    * @return Speed
@@ -257,13 +257,15 @@ public class DriveSubsystem extends PIDSubsystem {
     double raw_angle = NAVX.getAngle();
 
     // Get fused heading and convert from [0, 360] to [-180, 180]
-    double normalized_heading = ((NAVX.getFusedHeading() - 180) % 360) - 180;
+    //double normalized_heading = ((NAVX.getFusedHeading() - 180) % 360) - 180;
 
     // Get number of whole rotations in degrees
-    double num_rotations_degrees = Math.copySign(Math.abs(raw_angle) - (Math.abs(raw_angle) % 360), raw_angle);
+    //double num_rotations_degrees = Math.copySign(Math.abs(raw_angle) - (Math.abs(raw_angle) % 360), raw_angle);
 
     // Return the sum of whole rotations and heading
-    return num_rotations_degrees + normalized_heading;
+    //return num_rotations_degrees + normalized_heading;
+    
+    return raw_angle;
   }
 
   /**

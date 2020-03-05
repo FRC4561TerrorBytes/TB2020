@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
+/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,7 +7,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -15,16 +14,22 @@ import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableValue;
+import edu.wpi.first.networktables.TableEntryListener;
 import frc.robot.Constants;
+//import frc.robot.RobotContainer;
 import frc.robot.TalonPIDConfig;
-/**
- * Add your docs here.
- */
+import frc.robot.VisionData;
 
 public class ShooterSubsystem extends SubsystemBase {
+
+  private final String SUBSYSTEM_NAME = "Shooter Subsystem";
+
   private static class Flywheel {
     private static double kF;
     private static final int TICKS_PER_ROTATION = 2048;
@@ -32,12 +37,14 @@ public class ShooterSubsystem extends SubsystemBase {
     public static final double GEAR_RATIO = 1.0;
     private static final WPI_TalonFX MASTER_MOTOR = new WPI_TalonFX(Constants.FLYWHEEL_MASTER_MOTOR_PORT);
     private static final WPI_TalonFX SLAVE_MOTOR = new WPI_TalonFX(Constants.FLYWHEEL_SLAVE_MOTOR_PORT);
-    private static TalonPIDConfig config;
+    private static TalonPIDConfig masterConfig;
+    private static double speed = 0;
   }
 
   private static class Hood {
-    private static int topPosition;
-    private static double bottomPosition = 0;
+    private static boolean needsReset = true;
+    private static int topPosition = Constants.HOOD_TOP_POSITION;
+    private static double bottomPosition = Constants.HOOD_BOTTOM_POSITION;
     private static final int TICKS_PER_ROTATION = 4096;
     public static final double GEAR_RATIO = 298 / 25;
     private static final WPI_TalonSRX MOTOR = new WPI_TalonSRX(Constants.HOOD_MOTOR_PORT);
@@ -45,18 +52,17 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   private static class Turret {
-    private static int leftPosition;
-    private static int middlePosition;
-    private static int rightPosition = 0;
+    private static boolean needsReset = true;
+    private static int leftPosition = Constants.TURRET_FRONT_LIMIT_POSITION;
+    private static int straightPosition = Constants.TURRET_STRAIGHT_POSITION;
+    private static int rightPosition = Constants.TURRET_BACK_LIMIT_POSITION;
     private static final int TICKS_PER_ROTATION = 4096;
     public static final int GEAR_RATIO = 94 / 15;
     private static final double TICKS_PER_DEGREE = (TICKS_PER_ROTATION * GEAR_RATIO) / 360;
     private static final WPI_TalonSRX MOTOR = new WPI_TalonSRX(Constants.TURRET_MOTOR_PORT);
     private static TalonPIDConfig config;
-  }
 
-  // Creates new NetworkTable object
-  public static NetworkTable table = NetworkTableInstance.getDefault().getTable("SmartDashboard");
+  }
 
   /**
   * Create an instance of ShooterSubsystem
@@ -71,34 +77,63 @@ public class ShooterSubsystem extends SubsystemBase {
    * @param hoodConfig PID config for Hood
    * @param turretConfig PID config for Turret
    */
-  public ShooterSubsystem(TalonPIDConfig flywheelConfig, TalonPIDConfig hoodConfig, TalonPIDConfig turretConfig) {
+  public ShooterSubsystem(TalonPIDConfig flywheelMasterConfig, TalonPIDConfig hoodConfig, TalonPIDConfig turretConfig) {
 
-    Flywheel.config = flywheelConfig;
+    Flywheel.masterConfig = flywheelMasterConfig;
     Hood.config = hoodConfig;
     Turret.config = turretConfig;
 
-    // Set one of the flywheel motors as a slave of the other flywheel motor
-    Flywheel.SLAVE_MOTOR.set(ControlMode.Follower, Flywheel.MASTER_MOTOR.getDeviceID());
+    
 
-    Flywheel.config.initializeTalonPID(Flywheel.MASTER_MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, false, false);
-    Hood.config.initializeTalonPID(Hood.MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, false, false);
-    Turret.config.initializeTalonPID(Turret.MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, false, false);
+    Flywheel.masterConfig.initializeTalonPID(Flywheel.MASTER_MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, false, false);
+    Flywheel.SLAVE_MOTOR.set(ControlMode.Follower, Flywheel.MASTER_MOTOR.getDeviceID());
+    Flywheel.SLAVE_MOTOR.setInverted(false);
+
+    Hood.config.initializeTalonPID(Hood.MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, true, false);
+    Turret.config.initializeTalonPID(Turret.MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, true, true);
 
     // Reset encoders to 0 on initialisation
     this.resetEncoder(Flywheel.MASTER_MOTOR);
     this.resetEncoder(Hood.MOTOR);
     
-    // TODO: Comment this
-    Turret.middlePosition = Turret.MOTOR.getSensorCollection().getPulseWidthPosition();
+    // Initialize Turret to 0
+    this.moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
 
-		/* Mask out overflows, keep bottom 12 bits */
-		Turret.middlePosition &= 0xFFF;
-		if (Turret.config.getSensorPhase())  Turret.middlePosition *= -1;
-		if (Turret.config.getInvertMotor()) Turret.middlePosition *= -1;
-		
-		/* Set the quadrature (relative) sensor to match absolute */
-		Turret.MOTOR.setSelectedSensorPosition(Turret.middlePosition);
+     // Prints debug statements on SmartDashboard
+     if (Constants.SHOOTER_DEBUG) {
+      ShuffleboardTab tab = Shuffleboard.getTab(this.SUBSYSTEM_NAME);
+      tab.addNumber("Flywheel Motor Output", () -> Flywheel.MASTER_MOTOR.getMotorOutputPercent());
+      tab.addNumber("Flywheel Motor Velocity", () -> Flywheel.MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity());
+      tab.addNumber("Flywheel Motor Setpoint", () -> Flywheel.speed);
+      tab.addNumber("Flywheel Error", () -> flywheelError());
+      tab.addBoolean("Flywheel at Speed?", () -> isFlywheelAtSpeed());
 
+      tab.addNumber("Hood Motor Output", () -> Hood.MOTOR.getMotorOutputPercent());
+      tab.addNumber("Hood Encoder Position", () -> Hood.MOTOR.getSelectedSensorPosition());
+      tab.addNumber("Hood Error", () -> Hood.MOTOR.getClosedLoopError());
+      
+      tab.addNumber("Turret Motor Output", () -> Turret.MOTOR.getMotorOutputPercent());
+      tab.addNumber("Turret Encoder Position", () -> Turret.MOTOR.getSelectedSensorPosition());
+      tab.addNumber("Turret Encoder Setpoint", () -> Turret.MOTOR.getClosedLoopTarget());
+      tab.addNumber("Turret Error", () -> Turret.MOTOR.getClosedLoopError());
+    }
+    
+    // Move turret to vision target
+    VisionData.setXAngleListener(new TableEntryListener(){
+      @Override
+      public void valueChanged(NetworkTable table, String key, NetworkTableEntry entry, NetworkTableValue value,
+          int flags) {
+        turretVisionPID();
+      }
+    });
+  }
+  
+  /**
+   * Reset the Turret and Hood setpoints
+   */
+  public void reset() {
+    Turret.MOTOR.setSelectedSensorPosition(Constants.TURRET_STRAIGHT_POSITION);
+    this.moveHoodPID(Hood.bottomPosition);
   }
 
   /**
@@ -107,60 +142,94 @@ public class ShooterSubsystem extends SubsystemBase {
    */
   public void moveHoodPID(double setpoint) {
     // Normalise setpoint
-    if (setpoint > Hood.topPosition) setpoint = Hood.topPosition;
-    else if (setpoint < Hood.bottomPosition) setpoint = Hood.bottomPosition;
+    if (setpoint < Hood.topPosition) setpoint = Hood.topPosition;
+    else if (setpoint > Hood.bottomPosition) setpoint = Hood.bottomPosition;
 
     // Move hood toward setpoint
     Hood.MOTOR.set(ControlMode.MotionMagic, setpoint);
   }
 
   /**
+   * Toggles Hood between top and bottom positions
+   */
+  public void toggleHoodPosition() {
+    if (Hood.MOTOR.getClosedLoopTarget() == Constants.HOOD_TOP_POSITION) {
+      moveHoodPID(Constants.HOOD_BOTTOM_POSITION);
+    } else if (Hood.MOTOR.getClosedLoopTarget() == Constants.HOOD_BOTTOM_POSITION) {
+      moveHoodPID(Constants.HOOD_TOP_POSITION);
+    }
+  }
+
+  /**
    * Moves turret to position
-   * @param setpoint inputs position to move to (in degrees)
+   * @param setpoint inputs position to move to (in ticks)
    */
   public void moveTurretPID(double setpoint) {
     // Normalise setpoint
-    if (setpoint > Turret.leftPosition) setpoint = Turret.leftPosition;
-    else if (setpoint < Turret.rightPosition) setpoint = Turret.rightPosition;
+    if (setpoint < Turret.leftPosition) setpoint = Turret.leftPosition;
+    else if (setpoint > Turret.rightPosition) setpoint = Turret.rightPosition;
 
     // Move turret toward setpoint
-    Turret.MOTOR.set(ControlMode.MotionMagic, convertTurretDegreesToTicks(setpoint) + Turret.middlePosition);
+    Turret.MOTOR.set(ControlMode.MotionMagic, setpoint);
   }
 
   /**
    * Automatically aim at vision target
    */
   public void turretVisionPID() {
-    if (table.getEntry("detected?").getBoolean(false)) {
-      relativeMoveTurretPID(convertTurretTicksToDegrees(table.getEntry("xAngle").getDouble(0.0)));
+    if (VisionData.isReady() && VisionData.isDetected()) {
+      double ticks = convertTurretDegreesToTicks(Constants.TURRET_TURN_DAMPER * VisionData.getXAngle());
+      relativeMoveTurretPID(ticks);
     }
   }
 
   /**
    * Adds angle to current setpoint
-   * @param setpoint inputs position to move to (in degrees)
+   * @param setpoint inputs position to move to (in ticks)
    */
   public void relativeMoveTurretPID(double setpoint) {
     // Normalise setpoint
-    if (Turret.MOTOR.getSelectedSensorPosition() + convertTurretDegreesToTicks(setpoint) > Turret.config.getUpperLimit()) setpoint = 0;
-    else if (Turret.MOTOR.getSelectedSensorPosition() + convertTurretDegreesToTicks(setpoint) < Turret.config.getUpperLimit()) setpoint = 0;
+    if (Turret.MOTOR.getSelectedSensorPosition() + setpoint > Turret.config.getUpperLimit()) setpoint = 0;
+    else if (Turret.MOTOR.getSelectedSensorPosition() + setpoint < Turret.config.getLowerLimit()) setpoint = 0;
 
     // Move turret toward setpoint
-    Turret.MOTOR.set(ControlMode.MotionMagic, Turret.MOTOR.getClosedLoopTarget() + convertTurretDegreesToTicks(setpoint));
+    this.moveTurretPID(Turret.MOTOR.getClosedLoopTarget() + setpoint);
+  }
+
+  /**
+   * Checks if turret PID motion is complete
+   * @return True if motion is completed else false
+   */
+  public boolean turretCheckIfMotionComplete() {
+    return Math.abs(Turret.MOTOR.getSelectedSensorPosition() - Turret.MOTOR.getClosedLoopTarget()) < Turret.config.getTolerance();
   }
 
   /**
    * Moves flywheel to a speed
-   * @param speed input RPM to keep the motor at
+   * @param speed input speed to keep the motor at (ticks per 100 ms)
    */
   public void setFlywheelSpeed(double speed) {
-    SmartDashboard.putNumber("flywheel speed: ", speed);
+    Flywheel.speed = speed;
     Flywheel.MASTER_MOTOR.set(ControlMode.Velocity, speed, DemandType.ArbitraryFeedForward, Flywheel.kF);
   }
 
   // TODO: Delete this once moveMotorManual works
   public void flywheelManual(double speed) {
     Flywheel.MASTER_MOTOR.set(speed);
+    //Flywheel.SLAVE_MOTOR.set(-speed);
+  }
+
+  /**
+   * Checks if flywheel is at set speed
+   * @return True if flywheel is at speed else false
+   */
+  public boolean isFlywheelAtSpeed() {
+    boolean atSpeed = (Math.abs(flywheelError()) > Flywheel.masterConfig.getTolerance());
+    return atSpeed;
+  }
+
+  public double flywheelError() {
+    return Flywheel.speed - Flywheel.MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity();
   }
 
     // TODO: Delete this once moveMotorManual works
@@ -203,27 +272,10 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   /**
-   * Gets flywheel motor
-   * @return WPI_TalonFX flywheel motor
+   * @return current angle of the turret relative to the robot
    */
-  public WPI_TalonFX getFlywheelMotor() {
-    return Flywheel.MASTER_MOTOR;
-  }
-
-  /**
-   * Gets hood motor
-   * @return WPI_TalonSRX hood motor
-   */
-  public WPI_TalonSRX getHoodMotor() {
-    return Hood.MOTOR;
-  }
-
-  /**
-   * Gets turret motor
-   * @return WPI_TalonSRX turret motor
-   */
-  public  WPI_TalonSRX getTurretMotor() {
-    return Turret.MOTOR;
+  public double getAngle() {
+    return convertTurretTicksToDegrees(Turret.MOTOR.getSelectedSensorPosition());
   }
   
   /**
@@ -248,14 +300,14 @@ public class ShooterSubsystem extends SubsystemBase {
    * @return if the front limit switch is pressed
    */
   public boolean turretLimitFront() {
-    return Turret.MOTOR.getSensorCollection().isFwdLimitSwitchClosed(); // TODO: Figure out if this is right
+    return Turret.MOTOR.getSensorCollection().isRevLimitSwitchClosed(); // TODO: Figure out if this is right
   }
 
   /**
    * @return if the back limit switch is pressed
    */
   public boolean turretLimitBack() {
-    return Turret.MOTOR.getSensorCollection().isRevLimitSwitchClosed(); // TODO: Figure out if this is right
+    return Turret.MOTOR.getSensorCollection().isFwdLimitSwitchClosed(); // TODO: Figure out if this is right
   }
 
   /**
@@ -269,25 +321,22 @@ public class ShooterSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    // Automatically move turret to vision target
-    turretVisionPID();
+    // Reset the turret encoder to the front position
+    if (this.turretLimitFront() && Turret.needsReset) {
+      Turret.needsReset = false;
+      Turret.MOTOR.setSelectedSensorPosition(Constants.TURRET_FRONT_LIMIT_POSITION);
+    } else if (!this.turretLimitFront() && !this.turretLimitBack()) Turret.needsReset = true;
 
-    // Prints debug statements on SmartDashboard
-    if (Constants.SHOOTER_DEBUG) {
-      SmartDashboard.putNumber("Flywheel Motor Output", Flywheel.MASTER_MOTOR.getMotorOutputPercent());
-      SmartDashboard.putNumber("Flywheel Motor Velocity", Flywheel.MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity());
-      SmartDashboard.putNumber("Flywheel Error", convertTicksToRPM(Flywheel.MASTER_MOTOR.getClosedLoopError()));
+    // Reset the turret encoder to the back position
+    if (this.turretLimitBack() && Turret.needsReset) {
+      Turret.needsReset = false;
+      Turret.MOTOR.setSelectedSensorPosition(Constants.TURRET_BACK_LIMIT_POSITION);
+    } else if (!this.turretLimitBack() && !this.turretLimitFront()) Turret.needsReset = true;
 
-      SmartDashboard.putNumber("Hood Motor Output", Hood.MOTOR.getMotorOutputPercent());
-      SmartDashboard.putNumber("Hood Encoder Position", Hood.MOTOR.getSensorCollection().getQuadraturePosition());
-      SmartDashboard.putNumber("Hood Error", Hood.MOTOR.getClosedLoopError());
-      
-      SmartDashboard.putNumber("Turret Motor Output", Turret.MOTOR.getMotorOutputPercent());
-      SmartDashboard.putNumber("Turret Encoder Position", convertTicksToRPM(Turret.MOTOR.getSensorCollection().getQuadraturePosition()));
-      SmartDashboard.putNumber("Turret Error", Turret.MOTOR.getClosedLoopError());
-    }
+    // Reset the hood encoder to the back position
+    if (this.hoodLimit() && Hood.needsReset) {
+      Hood.needsReset = false;
+      Hood.MOTOR.setSelectedSensorPosition(Constants.HOOD_BOTTOM_POSITION);
+    } else if (!this.hoodLimit()) Hood.needsReset = true;
   }
 }
-
-
-

@@ -19,7 +19,7 @@ package frc.robot;
 
  //An enum of the .json files for the Auto Mode Trajectories. Is like a list, and has an object that has a 
  //String attributed to it.
-public enum AutoModeConstants {
+ public enum AutoModeConstants {
     BlueSideTrenchBalls("BlueSideTrenchBalls"),
     BlueFroTrenchReverse("BlueTrenchReverse"),
     BlueA("bluea"),
