@@ -16,9 +16,9 @@ import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Transform2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+//import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
-import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
+//import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
@@ -39,22 +39,22 @@ public class AutoTrajectory extends CommandBase {
 
     
      //Create a voltage constraint to ensure we don't accelerate too fast
-    var autoVoltageConstraint =
-        new DifferentialDriveVoltageConstraint(
-            new SimpleMotorFeedforward(Constants.ksVolts,
-                                       Constants.kvVoltSecondsPerMeter,
-                                       Constants.kaVoltSecondsSquaredPerMeter),
-            Constants.kDriveKinematics,
-            10);
+    // var autoVoltageConstraint =
+    //     new DifferentialDriveVoltageConstraint(
+    //         new SimpleMotorFeedforward(Constants.ksVolts,
+    //                                    Constants.kvVoltSecondsPerMeter,
+    //                                    Constants.kaVoltSecondsSquaredPerMeter),
+    //         Constants.kDriveKinematics,
+    //         10);
 
-    // Create config for trajectory
-    TrajectoryConfig config =
-        new TrajectoryConfig(Constants.kMaxSpeedMetersPerSecond,
-                             Constants.kMaxAccelerationMetersPerSecondSquared)
-            // Add kinematics to ensure max speed is actually obeyed
-            .setKinematics(Constants.kDriveKinematics)
-            // Apply the voltage constraint
-            .addConstraint(autoVoltageConstraint);
+    // // Create config for trajectory
+    // TrajectoryConfig config =
+    //     new TrajectoryConfig(Constants.kMaxSpeedMetersPerSecond,
+    //                          Constants.kMaxAccelerationMetersPerSecondSquared)
+    //         // Add kinematics to ensure max speed is actually obeyed
+    //         .setKinematics(Constants.kDriveKinematics)
+    //         // Apply the voltage constraint
+    //         .addConstraint(autoVoltageConstraint);
 
 
             // Trajectory AMtrajectory = TrajectoryGenerator.generateTrajectory(

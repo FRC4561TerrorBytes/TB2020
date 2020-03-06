@@ -16,46 +16,43 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.HookCommand;
+import frc.robot.commands.AutoTest;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.MoveTurretManualCommand;
 import frc.robot.commands.TurretSetpointCommand;
-import frc.robot.commands.WinchCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.MagazineSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 /**
- * This class is where the bulk of the robot should be declared.  Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls).  Instead, the structure of the robot
- * (including subsystems, commands, and button mappings) should be declared here.
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a "declarative" paradigm, very little robot logic should
+ * actually be handled in the {@link Robot} periodic methods (other than the
+ * scheduler calls). Instead, the structure of the robot (including subsystems,
+ * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
-
-  
-  private final DriveSubsystem DRIVE_SUBSYSTEM = new DriveSubsystem(Constants.DRIVE_kP,
-                                                                    Constants.DRIVE_kD, 
-                                                                    Constants.DRIVE_PERIOD_SECONDS,
-                                                                    Constants.DRIVE_TOLERANCE,
-                                                                    Constants.DRIVE_TURN_SCALAR,
-                                                                    Constants.DEADBAND);
+  private final DriveSubsystem DRIVE_SUBSYSTEM = new DriveSubsystem(Constants.DRIVE_kP, Constants.DRIVE_kD,
+      Constants.DRIVE_PERIOD_SECONDS, Constants.DRIVE_TOLERANCE, Constants.DRIVE_TURN_SCALAR, Constants.DEADBAND);
 
   private static final ClimberSubsystem CLIMBER_SUBSYSTEM = new ClimberSubsystem();
 
   public static final MagazineSubsystem MAGAZINE_SUBSYSTEM = new MagazineSubsystem(Constants.ARM_CONFIG);
 
-  private static final ShooterSubsystem SHOOTER_SUBSYSTEM = new ShooterSubsystem(Constants.FLYWHEEL_MASTER_CONFIG, Constants.HOOD_CONFIG, Constants.TURRET_CONFIG);
-  
+  private static final ShooterSubsystem SHOOTER_SUBSYSTEM = new ShooterSubsystem(Constants.FLYWHEEL_MASTER_CONFIG,
+      Constants.HOOD_CONFIG, Constants.TURRET_CONFIG);
+
   public static final XboxController XBOX_CONTROLLER = new XboxController(Constants.XBOX_CONTROLLER_PORT);
 
   private static final Joystick LEFT_JOYSTICK = new Joystick(Constants.LEFT_JOYSTICK_PORT);
@@ -63,6 +60,10 @@ public class RobotContainer {
 
   public static UsbCamera camera1;
   public static UsbCamera camera2;
+
+  
+  
+  
   
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -80,7 +81,11 @@ public class RobotContainer {
     // Set default commands for subsystems
     DRIVE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> DRIVE_SUBSYSTEM.teleop(LEFT_JOYSTICK.getY(), RIGHT_JOYSTICK.getX(), Constants.DRIVE_RESPONSE_EXPONENT), DRIVE_SUBSYSTEM));
     MAGAZINE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(), MAGAZINE_SUBSYSTEM));
+
+    chooser.addOption("Auto test", new AutoTest(DRIVE_SUBSYSTEM));
   }
+
+   static SendableChooser<SequentialCommandGroup> chooser = new SendableChooser<>();
 
   /**
    * Use this method to define your button->command mappings.  Buttons can be created by
@@ -279,7 +284,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return null;
+    return chooser.getSelected();
   }
 
   /**

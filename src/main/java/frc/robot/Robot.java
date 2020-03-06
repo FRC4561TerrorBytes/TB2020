@@ -8,8 +8,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -25,11 +23,13 @@ public class Robot extends TimedRobot {
   private Command autonomousCommand;
 
   private RobotContainer robotContainer;
+  
+
 
   private int autoID = 0;
   private boolean autoVision = false;
 
-  private SendableChooser chooser = new SendableChooser<>();
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -40,6 +40,8 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
+
+    SmartDashboard.putData("Auto mode", RobotContainer.chooser);
 
     SmartDashboard.setDefaultNumber("Choose Auto", 0);
     SmartDashboard.setDefaultBoolean("Auto Vision?", false);
@@ -77,6 +79,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    System.out.println(AutoModeConstants.BlueA.trajectoryJSON);
     // Reset DriveSubsystem PID
     robotContainer.getDriveSubsystem().resetAngle();
     robotContainer.getDriveSubsystem().setSetpoint(0);
@@ -85,12 +88,19 @@ public class Robot extends TimedRobot {
     robotContainer.getShooterSubsystem().reset();
 
     autonomousCommand = robotContainer.getAutonomousCommand();
+    //new RunCommand(() -> robotContainer.getAutonomousCommand());
+    CommandScheduler.getInstance().schedule(autonomousCommand);
 
     this.autoID = (int)SmartDashboard.getNumber("Choose Auto", 0);
     this.autoVision = SmartDashboard.getBoolean("Auto Vision?", false);
 
 
-    switch (this.autoID) {
+    // switch (this.autoID) {
+    //   case 0:
+    //   auto0();
+    //   break;
+    // }
+      /*
       case 0:
       auto1(this.autoVision);
       robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
@@ -110,7 +120,8 @@ public class Robot extends TimedRobot {
       auto1(this.autoVision);
       robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
       break;
-    }
+      
+    } */
 
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
@@ -161,16 +172,18 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
   }
 
+  
+
   /**
    * Default auto that moves robot off line.
    */
-  private void auto0() {
-    long start = System.currentTimeMillis();
-    while (System.currentTimeMillis() - start < 3000) {
-      robotContainer.getDriveSubsystem().teleop(-.2, 0, 1);
-    }
-    robotContainer.getDriveSubsystem().teleop(0, 0, 1);
-  }
+  // private void auto0() {
+  //   long start = System.currentTimeMillis();
+  //   while (System.currentTimeMillis() - start < 3000) {
+  //     robotContainer.getDriveSubsystem().teleop(-.2, 0, 1);
+  //   }
+  //   robotContainer.getDriveSubsystem().teleop(0, 0, 1);
+  // }
 
   /**
    * Robot starts on the line, intake facing away, shoots 3 balls and drives straight off line.
