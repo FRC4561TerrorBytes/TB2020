@@ -104,18 +104,15 @@ public final class Constants {
     public static final int TURRET_BACK_POSITION = 16100;
     public static final int TURRET_BACK_LIMIT_POSITION = 22000; //TODO: set this
 
+    // Ramsete Command values
     public static final double kTrackwidthMeters = 0.53975;
-    public static final DifferentialDriveKinematics kDriveKinematics =
-        new DifferentialDriveKinematics(kTrackwidthMeters);
-
+    public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
     public static final double kWheelDiameterMeters = 0.1524;
-
     public static final double ksVolts = 0.240;
     public static final double kvVoltSecondsPerMeter = 2.39;
     public static final double kaVoltSecondsSquaredPerMeter = 0.140;
     public static final double kPDriveVel = 2.6e-5;
     public static final double kDDriveVel = 2.21e-5;
-    
     public static final double kRamseteB = 0.75;
     public static final double kRamseteZeta = 0.0;
 
