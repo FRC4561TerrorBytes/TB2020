@@ -20,17 +20,10 @@ package frc.robot;
  //An enum of the .json files for the Auto Mode Trajectories. Is like a list, and has an object that has a 
  //String attributed to it.
  public enum AutoModeConstants {
-    BlueA("bluea"),
-    BlueAtoFromSG("BlueAtoFroShield"),
-    BlueAtoTrench("BlueAtoTrench"),
-    BlueB("blueB"),
-    BlueBtoFromSG("BlueBtoFroShield"),
-    BlueBtoTrench("BlueBtoTrench"),
-    BlueC("bluec"); //TODO: add other paths to here
-
+  DriveStraightTest("DriveStraightTest");
   
     public final String trajectoryJSON;
     AutoModeConstants(String name) {
-      trajectoryJSON = "autopaths/" + name + ".wpilib.json"; // Sets the Strings above to be part of the relative path.
+      trajectoryJSON = "output/" + name + ".wpilib.json"; // Sets the Strings above to be part of the relative path.
     }
   }

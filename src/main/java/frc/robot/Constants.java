@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 public final class Constants {
 
     // Show Debug
+    public static final boolean DRIVE_DEBUG = true;
     public static final boolean SHOOTER_DEBUG = true;
     public static final boolean MAGAZINE_DEBUG = true;
     public static final boolean CLIMBER_DEBUG = true;
@@ -107,30 +108,16 @@ public final class Constants {
     public static final DifferentialDriveKinematics kDriveKinematics =
         new DifferentialDriveKinematics(kTrackwidthMeters);
 
-    public static final int kEncoderTPR = 4096;
-    
-  
-
     public static final double kWheelDiameterMeters = 0.1524;
-    public static final double kEncoderDistancePerPulse = (kWheelDiameterMeters * Math.PI) / (double) kEncoderTPR;
 
-    public static final boolean kGyroReversed = true;
-
-    public static final double ksVolts = 0.0;
-    public static final double kvVoltSecondsPerMeter = 0.0;
-    public static final double kaVoltSecondsSquaredPerMeter = 0.0;
-    public static final double kPDriveVel = 0.0;
-
-    public static final double kMaxSpeedMetersPerSecond = 0;
+    public static final double ksVolts = 0.240;
+    public static final double kvVoltSecondsPerMeter = 2.39;
+    public static final double kaVoltSecondsSquaredPerMeter = 0.140;
+    public static final double kPDriveVel = 2.6e-5;
+    public static final double kDDriveVel = 2.21e-5;
     
-    public static final double kMaxAccelerationMetersPerSecondSquared = 0;
-   
-    
-    public static final double kRamseteB = 2;
-    public static final double kRamseteZeta = 0.7;
-
-    public static final double kMetersToTicks = 0.000116889336037;
-    public static final double kTicksToMeters = 8555.10035308;
+    public static final double kRamseteB = 0.75;
+    public static final double kRamseteZeta = 0.0;
 
     // Set PID for Flywheel
     public static final TalonPIDConfig FLYWHEEL_MASTER_CONFIG = new TalonPIDConfig(FLYWHEEL_MASTER_ENCODER_SENSOR_PHASE,

@@ -19,9 +19,9 @@ public class AutoTest extends SequentialCommandGroup {
    * Creates a new AutoTest.
    */
   public AutoTest(DriveSubsystem subsystem) {
-    addCommands(
-      new AutoTrajectory(subsystem, AutoModeConstants.BlueA.trajectoryJSON)
-    );
+    // addCommands(
+    //   new AutoTrajectory(subsystem, AutoModeConstants.BlueA.trajectoryJSON)
+    // );
     // Add your commands in the super() call, e.g.
     // super(new FooCommand(), new BarCommand());
     //super();

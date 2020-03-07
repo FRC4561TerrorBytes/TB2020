@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 
@@ -18,10 +19,14 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.robot.Constants;
 
 public class DriveSubsystem extends PIDSubsystem {
+
+  private String SUBSYSTEM_NAME = "Drive Subsystem";
 
   private DifferentialDrive drivetrain;
 
@@ -30,6 +35,11 @@ public class DriveSubsystem extends PIDSubsystem {
 
   private final WPI_TalonFX RIGHT_MASTER_MOTOR = new WPI_TalonFX(Constants.FRONT_RIGHT_MOTOR_PORT);
   private final WPI_TalonFX RIGHT_REAR_SLAVE = new WPI_TalonFX(Constants.REAR_RIGHT_MOTOR_PORT);
+
+  private final double TICKS_PER_ROTATION = 2048;
+  private final double GEAR_RATIO = 120 / 11;
+  private final double TICKS_PER_METER = TICKS_PER_ROTATION * GEAR_RATIO * (1 / Math.PI * Constants.kWheelDiameterMeters);
+  private final double METERS_PER_TICK = 1 / TICKS_PER_METER;
 
   private final double MIN_TOLERANCE = 1.0;
 
@@ -61,6 +71,18 @@ public class DriveSubsystem extends PIDSubsystem {
       // The PIDController used by the subsystem
       super(new PIDController(kP, 0, kD, period));
 
+      // Set all drive motors to brake
+      LEFT_MASTER_MOTOR.setNeutralMode(NeutralMode.Brake);
+      LEFT_REAR_SLAVE.setNeutralMode(NeutralMode.Brake);
+      RIGHT_MASTER_MOTOR.setNeutralMode(NeutralMode.Brake);
+      RIGHT_REAR_SLAVE.setNeutralMode(NeutralMode.Brake);
+
+      // Invert all motors
+      LEFT_MASTER_MOTOR.setInverted(false);
+      LEFT_REAR_SLAVE.setInverted(false);
+      RIGHT_MASTER_MOTOR.setInverted(false);
+      RIGHT_REAR_SLAVE.setInverted(false);
+
       // Make mid and rear left motor controllers follow left master
       LEFT_REAR_SLAVE.set(ControlMode.Follower, LEFT_MASTER_MOTOR.getDeviceID());
 
@@ -87,9 +109,14 @@ public class DriveSubsystem extends PIDSubsystem {
 
       odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
 
-
       this.turn_scalar = turn_scalar;
       this.deadband = deadband;
+
+      if (Constants.DRIVE_DEBUG) {
+        ShuffleboardTab tab = Shuffleboard.getTab(this.SUBSYSTEM_NAME);
+        tab.addNumber("Drive Angle", () -> getHeading());
+       
+      }
   }
 
   @Override
@@ -107,8 +134,8 @@ public class DriveSubsystem extends PIDSubsystem {
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
-    odometry.update(Rotation2d.fromDegrees(getHeading()), LEFT_MASTER_MOTOR.getSelectedSensorPosition() * Constants.kTicksToMeters,
-    RIGHT_MASTER_MOTOR.getSelectedSensorPosition() * Constants.kTicksToMeters);
+    odometry.update(Rotation2d.fromDegrees(getHeading()), LEFT_MASTER_MOTOR.getSensorCollection().getIntegratedSensorPosition() * this.METERS_PER_TICK,
+    RIGHT_MASTER_MOTOR.getSensorCollection().getIntegratedSensorPosition() * this.METERS_PER_TICK);
   }
 
   /**
@@ -120,6 +147,7 @@ public class DriveSubsystem extends PIDSubsystem {
  public void tankDriveVolts(double leftVolts, double rightVolts) {
    LEFT_MASTER_MOTOR.setVoltage(leftVolts);
    RIGHT_MASTER_MOTOR.setVoltage(-rightVolts);
+   drivetrain.feed();
  }
 
   /**
@@ -148,6 +176,8 @@ public class DriveSubsystem extends PIDSubsystem {
         this.was_turning = false;
       }
     }
+
+    drivetrain.feed();
   }
   
 
@@ -157,7 +187,7 @@ public class DriveSubsystem extends PIDSubsystem {
    * @return The current wheel speeds.
    */
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(LEFT_MASTER_MOTOR.getSelectedSensorVelocity(), RIGHT_MASTER_MOTOR.getSelectedSensorVelocity());
+    return new DifferentialDriveWheelSpeeds(LEFT_MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity(), RIGHT_MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity());
   }
 
   /**
@@ -201,7 +231,7 @@ public class DriveSubsystem extends PIDSubsystem {
    * @return the robot's heading in degrees, from 180 to 180
    */
   public double getHeading() {
-    return Math.IEEEremainder(NAVX.getAngle(), 360) * (Constants.kGyroReversed ? -1.0 : 1.0);
+    return Math.IEEEremainder(NAVX.getAngle(), 360);
   }
 
    /**
@@ -209,7 +239,7 @@ public class DriveSubsystem extends PIDSubsystem {
    * @return The turn rate of the robot, in degrees per second
    */
   public double getTurnRate() {
-    return NAVX.getRate() * (Constants.kGyroReversed ? -1.0 : 1.0);
+    return NAVX.getRate();
   }
 
 
@@ -219,7 +249,7 @@ public class DriveSubsystem extends PIDSubsystem {
    * @return Return distance in meters
    */
   public double getDistance(double ticks) {
-    return ticks * Constants.kTicksToMeters;
+    return ticks * this.METERS_PER_TICK;
   }
 
   /**
@@ -228,7 +258,8 @@ public class DriveSubsystem extends PIDSubsystem {
    * @return the average of the two encoder readings
    */
   public double getAverageEncoderDistance() {
-    return ((LEFT_MASTER_MOTOR.getSelectedSensorPosition() * Constants.kTicksToMeters) + (LEFT_MASTER_MOTOR.getSelectedSensorPosition() * Constants.kTicksToMeters) / 2);
+    return ((LEFT_MASTER_MOTOR.getSensorCollection().getIntegratedSensorPosition() * this.METERS_PER_TICK) + 
+      (LEFT_MASTER_MOTOR.getSensorCollection().getIntegratedSensorPosition() * this.METERS_PER_TICK) / 2);
   }
 
   /**

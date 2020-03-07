@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.AutoTrajectory;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -28,6 +29,7 @@ public class Robot extends TimedRobot {
 
   private int autoID = 0;
   private boolean autoVision = false;
+  
 
 
 
@@ -79,20 +81,23 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    System.out.println(AutoModeConstants.BlueA.trajectoryJSON);
     // Reset DriveSubsystem PID
-    robotContainer.getDriveSubsystem().resetAngle();
-    robotContainer.getDriveSubsystem().setSetpoint(0);
+    //robotContainer.getDriveSubsystem().resetAngle();
+    //robotContainer.getDriveSubsystem().setSetpoint(0);
 
     // Reset Shooter Turret to front limit switch
     robotContainer.getShooterSubsystem().reset();
 
-    autonomousCommand = robotContainer.getAutonomousCommand();
-    //new RunCommand(() -> robotContainer.getAutonomousCommand());
-    CommandScheduler.getInstance().schedule(autonomousCommand);
+    //autonomousCommand = robotContainer.getAutonomousCommand();
+    autonomousCommand = new AutoTrajectory(robotContainer.getDriveSubsystem(), AutoModeConstants.DriveStraightTest.trajectoryJSON).getCommand().andThen(() -> robotContainer.getDriveSubsystem().stop());
 
     this.autoID = (int)SmartDashboard.getNumber("Choose Auto", 0);
     this.autoVision = SmartDashboard.getBoolean("Auto Vision?", false);
+    
+   
+
+    
+    // new AutoTrajectory(robotContainer.getDriveSubsystem(), AutoModeConstants.BlueA.trajectoryJSON).initialize();
 
 
     // switch (this.autoID) {
@@ -134,7 +139,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-
+    
+    
+    
   }
 
   @Override

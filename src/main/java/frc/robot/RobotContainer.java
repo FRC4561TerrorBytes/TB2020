@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.AutoTest;
+import frc.robot.commands.AutoTrajectory;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.MoveTurretManualCommand;
 import frc.robot.commands.TurretSetpointCommand;
@@ -82,10 +82,12 @@ public class RobotContainer {
     DRIVE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> DRIVE_SUBSYSTEM.teleop(LEFT_JOYSTICK.getY(), RIGHT_JOYSTICK.getX(), Constants.DRIVE_RESPONSE_EXPONENT), DRIVE_SUBSYSTEM));
     MAGAZINE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(), MAGAZINE_SUBSYSTEM));
 
-    chooser.addOption("Auto test", new AutoTest(DRIVE_SUBSYSTEM));
+    // chooser.addOption("Auto test", new AutoTest(DRIVE_SUBSYSTEM));
+    chooser.addOption("Auto test", new RunCommand(() -> new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.DriveStraightTest.trajectoryJSON), DRIVE_SUBSYSTEM));
   }
 
-   static SendableChooser<SequentialCommandGroup> chooser = new SendableChooser<>();
+  //  static SendableChooser<SequentialCommandGroup> chooser = new SendableChooser<>();
+  static SendableChooser<Command> chooser = new SendableChooser<>();
 
   /**
    * Use this method to define your button->command mappings.  Buttons can be created by
