@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.AutoTrajectory;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -89,7 +88,7 @@ public class Robot extends TimedRobot {
     robotContainer.getShooterSubsystem().reset();
 
     //autonomousCommand = robotContainer.getAutonomousCommand();
-    autonomousCommand = new AutoTrajectory(robotContainer.getDriveSubsystem(), AutoModeConstants.DriveStraightTest.trajectoryJSON).getCommand().andThen(() -> robotContainer.getDriveSubsystem().stop());
+    autonomousCommand = new AutoTrajectory(robotContainer.getDriveSubsystem(), AutoModeConstants.DriveStraightTest.trajectoryJSON).getCommand();
 
     this.autoID = (int)SmartDashboard.getNumber("Choose Auto", 0);
     this.autoVision = SmartDashboard.getBoolean("Auto Vision?", false);

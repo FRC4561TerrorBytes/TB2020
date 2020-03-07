@@ -36,9 +36,10 @@ public class DriveSubsystem extends PIDSubsystem {
   private final WPI_TalonFX RIGHT_MASTER_MOTOR = new WPI_TalonFX(Constants.FRONT_RIGHT_MOTOR_PORT);
   private final WPI_TalonFX RIGHT_REAR_SLAVE = new WPI_TalonFX(Constants.REAR_RIGHT_MOTOR_PORT);
 
+  private final double WHEEL_DIAMETER_METERS = 0.1524;
   private final double TICKS_PER_ROTATION = 2048;
   private final double GEAR_RATIO = 120 / 11;
-  private final double TICKS_PER_METER = TICKS_PER_ROTATION * GEAR_RATIO * (1 / Math.PI * Constants.kWheelDiameterMeters);
+  private final double TICKS_PER_METER = TICKS_PER_ROTATION * GEAR_RATIO * (1 / Math.PI * WHEEL_DIAMETER_METERS);
   private final double METERS_PER_TICK = 1 / TICKS_PER_METER;
 
   private final double MIN_TOLERANCE = 1.0;
