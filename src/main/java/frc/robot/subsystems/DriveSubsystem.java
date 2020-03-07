@@ -54,7 +54,6 @@ public class DriveSubsystem extends PIDSubsystem {
   //Odometry class for tracking robot pose
   private final DifferentialDriveOdometry odometry;
 
-
   /**
    * Create an instance of DriveSubsystem
    * <p>
@@ -77,7 +76,7 @@ public class DriveSubsystem extends PIDSubsystem {
       RIGHT_MASTER_MOTOR.setNeutralMode(NeutralMode.Brake);
       RIGHT_REAR_SLAVE.setNeutralMode(NeutralMode.Brake);
 
-      // Invert all motors
+      // Do NOT invert motors
       LEFT_MASTER_MOTOR.setInverted(false);
       LEFT_REAR_SLAVE.setInverted(false);
       RIGHT_MASTER_MOTOR.setInverted(false);
@@ -107,14 +106,14 @@ public class DriveSubsystem extends PIDSubsystem {
       // Disable built in deadband application
       this.drivetrain.setDeadband(0);
 
-      odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+      this.odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
 
       this.turn_scalar = turn_scalar;
       this.deadband = deadband;
 
       if (Constants.DRIVE_DEBUG) {
         ShuffleboardTab tab = Shuffleboard.getTab(this.SUBSYSTEM_NAME);
-        tab.addNumber("Drive Angle", () -> getHeading());
+        tab.addNumber("Drive Angle", () -> getAngle());
        
       }
   }
@@ -135,20 +134,21 @@ public class DriveSubsystem extends PIDSubsystem {
   public void periodic() {
     // Update the odometry in the periodic block
     odometry.update(Rotation2d.fromDegrees(getHeading()), LEFT_MASTER_MOTOR.getSensorCollection().getIntegratedSensorPosition() * this.METERS_PER_TICK,
-    RIGHT_MASTER_MOTOR.getSensorCollection().getIntegratedSensorPosition() * this.METERS_PER_TICK);
+                                                          RIGHT_MASTER_MOTOR.getSensorCollection().getIntegratedSensorPosition() * this.METERS_PER_TICK);
   }
 
   /**
-  * Controls the left and right sides of the drive directly with voltages.
-  *
-  * @param leftVolts  the commanded left output
-  * @param rightVolts the commanded right output
-  */
- public void tankDriveVolts(double leftVolts, double rightVolts) {
-   LEFT_MASTER_MOTOR.setVoltage(leftVolts);
-   RIGHT_MASTER_MOTOR.setVoltage(-rightVolts);
-   drivetrain.feed();
- }
+   * Call this repeatedly to drive without PID during teleoperation
+   * @param speed Desired speed from -1.0 to 1.0
+   * @param turn_request Turn input from -1.0 to 1.0
+   * @param power exponent for drive response curve. 1 is linear response
+   */
+	public void teleop(double speed, double turn_request, int power) {
+    speed = Math.copySign(Math.pow(speed, power), speed);
+    turn_request = Math.copySign(Math.pow(turn_request, power), turn_request);
+
+    this.drivetrain.curvatureDrive(speed, -turn_request, true);
+	}
 
   /**
    * Call this repeatedly to drive using PID during teleoperation
@@ -179,11 +179,20 @@ public class DriveSubsystem extends PIDSubsystem {
 
     drivetrain.feed();
   }
-  
 
-/**
+  /**
+  * Controls the left and right sides of the drive directly with voltages.
+  * @param leftVolts  the commanded left output
+  * @param rightVolts the commanded right output
+  */
+  public void tankDriveVolts(double leftVolts, double rightVolts) {
+    LEFT_MASTER_MOTOR.setVoltage(-leftVolts);
+    RIGHT_MASTER_MOTOR.setVoltage(rightVolts);
+    drivetrain.feed();
+  }
+
+  /**
    * Returns the current wheel speeds of the robot.
-   *
    * @return The current wheel speeds.
    */
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
@@ -192,7 +201,6 @@ public class DriveSubsystem extends PIDSubsystem {
 
   /**
    * Resets the odometry to the specified pose.
-   *
    * @param pose The pose to which to set the odometry.
    */
   public void resetOdometry(Pose2d pose) {
@@ -202,27 +210,10 @@ public class DriveSubsystem extends PIDSubsystem {
   }
 
   /**
-   * Call this repeatedly to drive without PID during teleoperation
-   * @param speed Desired speed from -1.0 to 1.0
-   * @param turn_request Turn input from -1.0 to 1.0
-   * @param power exponent for drive response curve. 1 is linear response
+   * Returns the currently-estimated pose of the robot
+   * @return The pose
    */
-	public void teleop(double speed, double turn_request, int power) {
-    speed = Math.copySign(Math.pow(speed, power), speed);
-    turn_request = Math.copySign(Math.pow(turn_request, power), turn_request);
-
-    this.drivetrain.curvatureDrive(speed, -turn_request, true);
-	}
-
-  /**
-   * Set DriveSubsystem speed
-   * @param speed Desired speed from -1.0 to 1.0
-   */
-  public void setSpeed(double speed) {
-    this.speed = speed;
-  }
-
-  public  Pose2d getPose() {
+  public Pose2d getPose() {
     return odometry.getPoseMeters();
   }
 
@@ -233,15 +224,21 @@ public class DriveSubsystem extends PIDSubsystem {
   public double getHeading() {
     return Math.IEEEremainder(NAVX.getAngle(), 360);
   }
+  
+  /**
+   * Zeros the heading of the robot
+   */
+  public void zeroHeading() {
+    this.resetAngle();
+  }
 
-   /**
+  /**
    * Returns the turn rate of the robot.
    * @return The turn rate of the robot, in degrees per second
    */
   public double getTurnRate() {
     return NAVX.getRate();
   }
-
 
   /**
    * Converts encoder position to meters
@@ -254,7 +251,6 @@ public class DriveSubsystem extends PIDSubsystem {
 
   /**
    * Gets the average distance of the two encoders.
-   *
    * @return the average of the two encoder readings
    */
   public double getAverageEncoderDistance() {
@@ -269,7 +265,13 @@ public class DriveSubsystem extends PIDSubsystem {
     this.setSpeed(0);
   }
 
-   
+  /**
+   * Set DriveSubsystem speed
+   * @param speed Desired speed from -1.0 to 1.0
+   */
+  public void setSpeed(double speed) {
+    this.speed = speed;
+  }
 
   /**
    * Get DriveSubsystem speed
@@ -284,27 +286,7 @@ public class DriveSubsystem extends PIDSubsystem {
    * @return Total accumulated yaw angle
    */
   public double getAngle() {
-    // Get accumulated yaw angle
-    double raw_angle = NAVX.getAngle();
-
-    // Get fused heading and convert from [0, 360] to [-180, 180]
-    //double normalized_heading = ((NAVX.getFusedHeading() - 180) % 360) - 180;
-
-    // Get number of whole rotations in degrees
-    //double num_rotations_degrees = Math.copySign(Math.abs(raw_angle) - (Math.abs(raw_angle) % 360), raw_angle);
-
-    // Return the sum of whole rotations and heading
-    //return num_rotations_degrees + normalized_heading;
-    
-    return raw_angle;
-  }
-
-  /**
-   * Get DriveSubsystem turn scalar
-   * @return Turn scalar
-   */
-  public double getTurnScalar() {
-    return this.turn_scalar;
+    return NAVX.getAngle();
   }
 
   /**
