@@ -15,14 +15,17 @@ public class TurretSetpointCommand extends CommandBase {
   
   ShooterSubsystem subsystem;
   int setpoint;
+  boolean visionInterrupt = false;
 
   /**
    * Creates a new TurretSetpointCommand.
    */
-  public TurretSetpointCommand(ShooterSubsystem subsystem, int setpoint) {
+  public TurretSetpointCommand(ShooterSubsystem subsystem, int setpoint, boolean visionInterrupt) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.subsystem = subsystem;
     this.setpoint = setpoint;
+    this.visionInterrupt = visionInterrupt;
+
     addRequirements(this.subsystem);
   }
 
@@ -41,12 +44,12 @@ public class TurretSetpointCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    if (VisionData.isDetected()) subsystem.turretVisionPID();
+    if (this.visionInterrupt && VisionData.isDetected()) subsystem.turretVisionPID();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return subsystem.turretCheckIfMotionComplete() || !VisionData.isDetected();
+    return subsystem.turretCheckIfMotionComplete() || (this.visionInterrupt ? VisionData.isDetected() : false);
   }
 }

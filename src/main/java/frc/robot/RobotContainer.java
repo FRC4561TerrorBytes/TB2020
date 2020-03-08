@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -26,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.MoveTurretManualCommand;
 import frc.robot.commands.TurretSetpointCommand;
+import frc.robot.commands.automodes.ShootDriveStraightAuto;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.MagazineSubsystem;
@@ -59,10 +61,11 @@ public class RobotContainer {
   public static UsbCamera camera1;
   public static UsbCamera camera2;
 
+  private static SendableChooser<Command> chooser = new SendableChooser<>();
+
+  private final boolean TURRET_SETPOINT_VISION_INTERRUPT = false;
   
-  
-  
-  
+
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
@@ -80,12 +83,12 @@ public class RobotContainer {
     DRIVE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> DRIVE_SUBSYSTEM.teleop(LEFT_JOYSTICK.getY(), RIGHT_JOYSTICK.getX(), Constants.DRIVE_RESPONSE_EXPONENT), DRIVE_SUBSYSTEM));
     MAGAZINE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(), MAGAZINE_SUBSYSTEM));
 
-    // chooser.addOption("Auto test", new AutoTest(DRIVE_SUBSYSTEM));
-    chooser.addOption("Auto test", new RunCommand(() -> new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.DriveStraightTest.trajectoryJSON), DRIVE_SUBSYSTEM));
-  }
 
-  //  static SendableChooser<SequentialCommandGroup> chooser = new SendableChooser<>();
-  static SendableChooser<Command> chooser = new SendableChooser<>();
+    chooser.setDefaultOption("ShootDriveForward", new ShootDriveStraightAuto(DRIVE_SUBSYSTEM, SHOOTER_SUBSYSTEM, MAGAZINE_SUBSYSTEM));
+    // chooser.addOption("ShootDriveBack", new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.ShootDriveBack.trajectoryJSON).getCommand());
+    // chooser.addOption("SIX BALL BOIS", new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.SixBallTrench.trajectoryJSON).getCommand());
+    SmartDashboard.putData("Auto mode", chooser);
+  }
 
   /**
    * Use this method to define your button->command mappings.  Buttons can be created by
@@ -195,26 +198,26 @@ public class RobotContainer {
 
     // Right joystick turret to 180 button 3
     new JoystickButton(LEFT_JOYSTICK, 3)
-      .whenPressed(new TurretSetpointCommand(SHOOTER_SUBSYSTEM, Constants.TURRET_BACK_POSITION));
+      .whenPressed(new TurretSetpointCommand(SHOOTER_SUBSYSTEM, Constants.TURRET_BACK_POSITION, TURRET_SETPOINT_VISION_INTERRUPT));
 
     // Right joystick turret to 0 button 4
     new JoystickButton(LEFT_JOYSTICK, 4)
-      .whenPressed(new TurretSetpointCommand(SHOOTER_SUBSYSTEM, Constants.TURRET_STRAIGHT_POSITION));
+      .whenPressed(new TurretSetpointCommand(SHOOTER_SUBSYSTEM, Constants.TURRET_STRAIGHT_POSITION, TURRET_SETPOINT_VISION_INTERRUPT));
 
     // Controller turret to 180 button 1
     new JoystickButton(XBOX_CONTROLLER, 1)
-      .whenPressed(new TurretSetpointCommand(SHOOTER_SUBSYSTEM, Constants.TURRET_BACK_POSITION));
+      .whenPressed(new TurretSetpointCommand(SHOOTER_SUBSYSTEM, Constants.TURRET_BACK_POSITION, TURRET_SETPOINT_VISION_INTERRUPT));
     // Controller turret to 90 button 2
     new JoystickButton(XBOX_CONTROLLER, 2)
-      .whenPressed(new TurretSetpointCommand(SHOOTER_SUBSYSTEM, Constants.TURRET_MIDDLE_POSITION));
+      .whenPressed(new TurretSetpointCommand(SHOOTER_SUBSYSTEM, Constants.TURRET_MIDDLE_POSITION, TURRET_SETPOINT_VISION_INTERRUPT));
 
     // Controller turret to front limit button 3
     new JoystickButton(XBOX_CONTROLLER, 3)
-      .whenPressed(new TurretSetpointCommand(SHOOTER_SUBSYSTEM, Constants.TURRET_FRONT_LIMIT_POSITION));
+      .whenPressed(new TurretSetpointCommand(SHOOTER_SUBSYSTEM, Constants.TURRET_FRONT_LIMIT_POSITION, TURRET_SETPOINT_VISION_INTERRUPT));
 
     // Controller turret to 0 button 4
     new JoystickButton(XBOX_CONTROLLER, 4)
-      .whenPressed(new TurretSetpointCommand(SHOOTER_SUBSYSTEM, Constants.TURRET_STRAIGHT_POSITION));
+      .whenPressed(new TurretSetpointCommand(SHOOTER_SUBSYSTEM, Constants.TURRET_STRAIGHT_POSITION, TURRET_SETPOINT_VISION_INTERRUPT));
 
     new JoystickButton(XBOX_CONTROLLER, Button.kBumperLeft.value)
       .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armPositionRelative(-Constants.ARM_MANUAL_INCREMENT), MAGAZINE_SUBSYSTEM));
@@ -284,7 +287,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return chooser.getSelected();
+    //return chooser.getSelected();
+    return new ShootDriveStraightAuto(DRIVE_SUBSYSTEM, SHOOTER_SUBSYSTEM, MAGAZINE_SUBSYSTEM);
   }
 
   /**

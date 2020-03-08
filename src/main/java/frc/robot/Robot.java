@@ -23,13 +23,6 @@ public class Robot extends TimedRobot {
   private Command autonomousCommand;
 
   private RobotContainer robotContainer;
-  
-
-
-  private int autoID = 0;
-  private boolean autoVision = false;
-  
-
 
 
   /**
@@ -41,11 +34,6 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
-
-    SmartDashboard.putData("Auto mode", RobotContainer.chooser);
-
-    SmartDashboard.setDefaultNumber("Choose Auto", 0);
-    SmartDashboard.setDefaultBoolean("Auto Vision?", false);
   }
 
   /**
@@ -84,14 +72,15 @@ public class Robot extends TimedRobot {
     //robotContainer.getDriveSubsystem().resetAngle();
     //robotContainer.getDriveSubsystem().setSetpoint(0);
 
+    robotContainer.getDriveSubsystem().stop();
+
     // Reset Shooter Turret to front limit switch
     robotContainer.getShooterSubsystem().reset();
 
-    //autonomousCommand = robotContainer.getAutonomousCommand();
-    autonomousCommand = new AutoTrajectory(robotContainer.getDriveSubsystem(), AutoModeConstants.DriveStraightTest.trajectoryJSON).getCommand();
+    autonomousCommand = robotContainer.getAutonomousCommand();
 
-    this.autoID = (int)SmartDashboard.getNumber("Choose Auto", 0);
-    this.autoVision = SmartDashboard.getBoolean("Auto Vision?", false);
+    // this.autoID = (int)SmartDashboard.getNumber("Choose Auto", 0);
+    // this.autoVision = SmartDashboard.getBoolean("Auto Vision?", false);
     
    
 

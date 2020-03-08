@@ -89,7 +89,7 @@ public final class Constants {
 
     private static final double TURRET_kP = 0.75;
     private static final double TURRET_kD = 0.02;
-    private static final double TURRET_TOLERANCE = 2;
+    private static final double TURRET_TOLERANCE = 80;
     private static final boolean TURRET_SOFT_LIMITS = true;
     private static final double TURRET_VELOCITY = 150;
     private static final double TURRET_ACCELERATION = 50;
