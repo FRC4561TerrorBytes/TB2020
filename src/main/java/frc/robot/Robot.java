@@ -8,7 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+//import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -78,6 +78,7 @@ public class Robot extends TimedRobot {
     robotContainer.getShooterSubsystem().reset();
 
     autonomousCommand = robotContainer.getAutonomousCommand();
+    
 
     // this.autoID = (int)SmartDashboard.getNumber("Choose Auto", 0);
     // this.autoVision = SmartDashboard.getBoolean("Auto Vision?", false);

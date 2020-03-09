@@ -11,14 +11,13 @@ package frc.robot;
 
 //This is a list of Strings of AutoMode Trajectories (which are strings of .json files for each trajectory)
 //Auto Mode folder has been made in Deploy (to RoboRIO) folder for Auto Mode .json files
-// ALL PATHS WILL BE IN FORMAT OF "src/main/deploy/paths/AutoPaths/"
-//ALL PATHS WILL ALSO HAVE TO BE MOVED INTO THE AUTO MODE FOLDER IN DEPLOY
+// ALL PATHS WILL BE IN FORMAT OF "src/main/deploy/output"
+
 /**
  * Add your docs here.
  */
 
- //An enum of the .json files for the Auto Mode Trajectories. Is like a list, and has an object that has a 
- //String attributed to it.
+ //An enum of the .json files for the Auto Mode Trajectories. 
  public enum AutoModeConstants {
   DriveStraightTest("DriveStraightTest"),
   ShootDriveStraight("InFrontGoalDriveStraight"),

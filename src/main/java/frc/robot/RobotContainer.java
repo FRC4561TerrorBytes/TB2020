@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+//import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -62,6 +63,7 @@ public class RobotContainer {
   public static UsbCamera camera2;
 
   private static SendableChooser<Command> chooser = new SendableChooser<>();
+ // private static SendableChooser<SequentialCommandGroup> chooser = new SendableChooser<>();
 
   private final boolean TURRET_SETPOINT_VISION_INTERRUPT = false;
   
@@ -290,6 +292,12 @@ public class RobotContainer {
     //return chooser.getSelected();
     return new ShootDriveStraightAuto(DRIVE_SUBSYSTEM, SHOOTER_SUBSYSTEM, MAGAZINE_SUBSYSTEM);
   }
+
+  // public SequentialCommandGroup AutonomousCommand() {
+  //   // An ExampleCommand will run in autonomous
+    
+  //   return chooser.getSelected();;
+  // }
 
   /**
    * Get DriveSubsystem
