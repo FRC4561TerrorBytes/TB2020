@@ -83,6 +83,13 @@ public class MagazineSubsystem extends SubsystemBase {
   }
 
   /**
+   * Stop magazine
+   */
+  public void ballUptakeStop() {
+    MAGAZINE_MOTOR.set(0);
+  }
+
+  /**
    * Move arm manually at specified speed
    * @param speed speed to move arm at [-1, 1]
    */

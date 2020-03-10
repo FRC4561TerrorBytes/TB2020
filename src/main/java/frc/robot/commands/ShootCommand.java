@@ -39,14 +39,14 @@ public class ShootCommand extends CommandBase {
   @Override
   public void execute() {
     if (this.shooterSubsystem.isFlywheelAtSpeed()) this.magazineSubsystem.ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED);
-    else this.magazineSubsystem.ballUptake(Constants.MOTOR_STOP);
+    else this.magazineSubsystem.ballUptakeStop();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    this.shooterSubsystem.flywheelManual(Constants.MOTOR_STOP);
-    this.magazineSubsystem.ballUptake(Constants.MOTOR_STOP);
+    this.shooterSubsystem.flywheelStop();
+    this.magazineSubsystem.ballUptakeStop();
   }
 
   // Returns true when the command should end.

@@ -32,13 +32,18 @@ public class ShooterSubsystem extends SubsystemBase {
   private final String SUBSYSTEM_NAME = "Shooter Subsystem";
 
   private static class Flywheel {
-    private static double kF;
+    private static double MAX_kF = 1.0;
+    private static double MAX_SPEED_RPM = 5600;
     private static final int TICKS_PER_ROTATION = 2048;
-    // public static final double GEAR_RATIO = 3 / 4; The real thing
-    public static final double GEAR_RATIO = 1.0;
+    // private static final double GEAR_RATIO = 3 / 4; The real thing
+    private static final double GEAR_RATIO = 1.0;
     private static final WPI_TalonFX MASTER_MOTOR = new WPI_TalonFX(Constants.FLYWHEEL_MASTER_MOTOR_PORT);
     private static final WPI_TalonFX SLAVE_MOTOR = new WPI_TalonFX(Constants.FLYWHEEL_SLAVE_MOTOR_PORT);
     private static TalonPIDConfig masterConfig;
+
+    private static double rpmToTicksPer100ms(double speed) {
+      return (speed * GEAR_RATIO * TICKS_PER_ROTATION) / 600;
+    }
   }
 
   private static class Hood {
@@ -62,6 +67,13 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final WPI_TalonSRX MOTOR = new WPI_TalonSRX(Constants.TURRET_MOTOR_PORT);
     private static TalonPIDConfig config;
 
+    private static double degreesToTicks(double degrees) {
+      return (TICKS_PER_DEGREE * degrees);
+    }
+
+    private static double ticksToDegrees(double ticks) {
+      return (ticks / TICKS_PER_DEGREE);
+    }
   }
 
   /**
@@ -78,17 +90,16 @@ public class ShooterSubsystem extends SubsystemBase {
    * @param turretConfig PID config for Turret
    */
   public ShooterSubsystem(TalonPIDConfig flywheelMasterConfig, TalonPIDConfig hoodConfig, TalonPIDConfig turretConfig) {
-
     Flywheel.masterConfig = flywheelMasterConfig;
     Hood.config = hoodConfig;
     Turret.config = turretConfig;
 
-    
-
+    // Initialize config for flywheel PID
     Flywheel.masterConfig.initializeTalonPID(Flywheel.MASTER_MOTOR, TalonFXFeedbackDevice.IntegratedSensor, false, false);
     Flywheel.SLAVE_MOTOR.set(ControlMode.Follower, Flywheel.MASTER_MOTOR.getDeviceID());
     Flywheel.SLAVE_MOTOR.setInverted(true);
 
+    // Initialize config for hood and turret PID
     Hood.config.initializeTalonPID(Hood.MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, true, false);
     Turret.config.initializeTalonPID(Turret.MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, true, true);
 
@@ -150,7 +161,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   /**
-   * Toggles Hood between top and bottom positions
+   * Toggles hood between top and bottom positions
    */
   public void toggleHoodPosition() {
     if (Hood.MOTOR.getClosedLoopTarget() == Constants.HOOD_TOP_POSITION) {
@@ -158,6 +169,14 @@ public class ShooterSubsystem extends SubsystemBase {
     } else if (Hood.MOTOR.getClosedLoopTarget() == Constants.HOOD_BOTTOM_POSITION) {
       moveHoodPID(Constants.HOOD_TOP_POSITION);
     }
+  }
+
+  /**
+   * Move hood at specified speed
+   * @param speed speed to move hood at [-1, 1]
+   */
+  public void hoodManual(double speed) {
+    Hood.MOTOR.set(speed);
   }
 
   /**
@@ -178,7 +197,7 @@ public class ShooterSubsystem extends SubsystemBase {
    */
   public void turretVisionPID() {
     if (VisionData.isReady() && VisionData.isDetected()) {
-      double ticks = convertTurretDegreesToTicks(Constants.TURRET_TURN_DAMPER * VisionData.getXAngle());
+      double ticks = Turret.degreesToTicks(Constants.TURRET_TURN_DAMPER * VisionData.getXAngle());
       relativeMoveTurretPID(ticks);
     }
   }
@@ -205,16 +224,37 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   /**
-   * Moves flywheel to a speed
-   * @param speed input speed to keep the motor at (ticks per 100 ms)
+   * Get the angle of the turret relative to the robot
+   * @return current angle of the turret in degrees
    */
-  public void setFlywheelSpeed(double speed) {
-    Flywheel.MASTER_MOTOR.set(ControlMode.Velocity, speed, DemandType.ArbitraryFeedForward, Flywheel.kF);
+  public double getTurretAngle() {
+    return Turret.ticksToDegrees(Turret.MOTOR.getSelectedSensorPosition());
   }
 
-  // TODO: Delete this once moveMotorManual works
+  /**
+   * Moves flywheel to a speed
+   * @param speed input speed to keep the motor at (RPM)
+   */
+  public void setFlywheelSpeed(double speed) {
+    speed = Flywheel.rpmToTicksPer100ms(Math.abs(speed));
+    double kF = Flywheel.MAX_kF * (speed / Flywheel.MAX_SPEED_RPM);
+
+    Flywheel.MASTER_MOTOR.set(ControlMode.Velocity, speed, DemandType.ArbitraryFeedForward, kF);
+  }
+
+  /**
+   * Move flywheel at specified speed
+   * @param speed flywheel speed [-1, 1]
+   */
   public void flywheelManual(double speed) {
     Flywheel.MASTER_MOTOR.set(speed);
+  }
+
+  /**
+   * Stop flywheel motor
+   */
+  public void flywheelStop() {
+    Flywheel.MASTER_MOTOR.set(0);
   }
 
   /**
@@ -229,62 +269,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public double flywheelError() {
     return Flywheel.MASTER_MOTOR.getClosedLoopTarget() - Flywheel.MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity();
-  }
-
-    // TODO: Delete this once moveMotorManual works
-  public void hoodManual(double speed) {
-    Hood.MOTOR.set(speed);
-  }
-
-  /**
-   * Converts RPM to ticks per 100ms
-   * @param RPM
-   * @return ticks per 100ms
-   */
-  public double convertRPMToTicks(double RPM) {
-    return Flywheel.TICKS_PER_ROTATION * RPM / (Flywheel.GEAR_RATIO * 600);
-  }
-
-  /**
-   * Converts ticks per 100ms to RPM
-   * @param ticks
-   * @return RPM
-   */
-  public double convertTicksToRPM(double ticks) {
-    return (ticks * (Flywheel.GEAR_RATIO * 600)) / Flywheel.TICKS_PER_ROTATION;
-  }
-
-  /**
-   * Converts degrees to ticks for Turret
-   * @param degrees input degrees to convert
-   * @return position in ticks
-   */
-  private double convertTurretDegreesToTicks(double degrees) {
-    return (Turret.TICKS_PER_DEGREE * degrees);
-  }
-
-  /**
-   * @return converts ticks to degrees on the turret
-   */
-  private double convertTurretTicksToDegrees(double ticks) {
-    return (ticks / Turret.TICKS_PER_DEGREE);
-  }
-
-  /**
-   * @return current angle of the turret relative to the robot
-   */
-  public double getAngle() {
-    return convertTurretTicksToDegrees(Turret.MOTOR.getSelectedSensorPosition());
-  }
-  
-  /**
-   * Moves subsystem motors manually
-   * TODO: Test if this works, then delete other manual methods
-   * @param motor Input motor
-   * @param value Percentage power to motor [-1.0, 1.0]
-   */
-  public void moveMotorManual(BaseTalon motor, double value) {
-    motor.set(ControlMode.PercentOutput, value);
   }
 
   /**

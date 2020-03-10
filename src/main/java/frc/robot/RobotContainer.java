@@ -171,7 +171,7 @@ public class RobotContainer {
       .whileHeld(new RunCommand(() -> SHOOTER_SUBSYSTEM.flywheelManual(1), SHOOTER_SUBSYSTEM));
 
     new JoystickButton(RIGHT_JOYSTICK, 3)
-      .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.flywheelManual(0), SHOOTER_SUBSYSTEM));
+      .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.flywheelStop(), SHOOTER_SUBSYSTEM));
       // .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(0), MAGAZINE_SUBSYSTEM));
 
     // Right joystick shoot button 4
@@ -231,10 +231,10 @@ public class RobotContainer {
 
     // Uptake
     new POVButton(XBOX_CONTROLLER, 0).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
-      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MOTOR_STOP)));
+      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptakeStop()));
 
     new POVButton(XBOX_CONTROLLER, 180).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(-Constants.MAGAZINE_DOWN_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
-      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MOTOR_STOP)));;
+      .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptakeStop()));
 
       /*
     // Controller mouse droid left/right button 5 // TODO: change to left or right

@@ -70,8 +70,7 @@ public final class Constants {
     // Shooter PID Values
     private static final double FLYWHEEL_kP = 1.6;
     private static final double FLYWHEEL_kD = 0.0;
-    private static final double FLYWHEEL_kF = 0;
-    private static final double FLYWHEEL_TOLERANCE = 1000;
+    private static final double FLYWHEEL_TOLERANCE = 500;
     private static final boolean FLYWHEEL_MASTER_ENCODER_SENSOR_PHASE = false;
     private static final boolean FLYWHEEL_MASTER_MOTOR_INVERTED = false;
 
@@ -110,7 +109,7 @@ public final class Constants {
                                                                                     FLYWHEEL_kP,
                                                                                     0,
                                                                                     FLYWHEEL_kD,
-                                                                                    FLYWHEEL_kF,
+                                                                                    0,
                                                                                     FLYWHEEL_TOLERANCE);
                                    
     // Set PID for Hood

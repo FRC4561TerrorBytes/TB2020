@@ -7,14 +7,12 @@
 
 package frc.robot.commands.automodes;
 
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 //import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.AutoModeConstants;
 import frc.robot.AutoTrajectory;
 import frc.robot.Constants;
+import frc.robot.commands.ShootCommand;
 import frc.robot.commands.TurretSetpointCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.MagazineSubsystem;
@@ -30,19 +28,11 @@ public class ShootDriveStraightAuto extends SequentialCommandGroup {
   public ShootDriveStraightAuto(DriveSubsystem driveSubsystem, ShooterSubsystem shooterSubsystem, MagazineSubsystem magazineSubsystem) {
     // Add your commands in the super() call, e.g.
     // super(new FooCommand(), new BarCommand());
-    super(new TurretSetpointCommand(shooterSubsystem, Constants.TURRET_BACK_POSITION, false),
-          race(
-            new RunCommand(() -> shooterSubsystem.setFlywheelSpeed(-17600), shooterSubsystem),
-            new ConditionalCommand(new RunCommand(() -> magazineSubsystem.ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED), magazineSubsystem),
-                                   new RunCommand(() -> magazineSubsystem.ballUptake(Constants.MOTOR_STOP), magazineSubsystem),
-                                   () -> shooterSubsystem.isFlywheelAtSpeed())
-          ).withTimeout(7),
-          new AutoTrajectory(driveSubsystem, AutoModeConstants.ShootDriveStraight.trajectoryJSON).getCommand(),
-          race(
-            new InstantCommand(() -> shooterSubsystem.setFlywheelSpeed(Constants.MOTOR_STOP), shooterSubsystem),
-            new InstantCommand(() -> magazineSubsystem.ballUptake(Constants.MOTOR_STOP), magazineSubsystem)
-          ),
-          new TurretSetpointCommand(shooterSubsystem, Constants.TURRET_FRONT_LIMIT_POSITION, false)
+    super(
+      new TurretSetpointCommand(shooterSubsystem, Constants.TURRET_BACK_POSITION, false),
+      new ShootCommand(shooterSubsystem, magazineSubsystem, 17000).withTimeout(7),
+      new AutoTrajectory(driveSubsystem, AutoModeConstants.ShootDriveStraight.trajectoryJSON).getCommand(),
+      new TurretSetpointCommand(shooterSubsystem, Constants.TURRET_FRONT_LIMIT_POSITION, false)
     );
   }
 }

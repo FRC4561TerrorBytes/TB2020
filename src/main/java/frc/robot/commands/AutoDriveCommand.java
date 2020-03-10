@@ -29,7 +29,7 @@ public class AutoDriveCommand extends CommandBase {
     if (!VisionData.isDetected()) return;
 
     // Find angle of robot relative to target by using shooter camera as reference
-    double robotToTargetAngle = SHOOTER_SUBSYSTEM.getAngle() + VisionData.getXAngle();
+    double robotToTargetAngle = SHOOTER_SUBSYSTEM.getTurretAngle() + VisionData.getXAngle();
     // Damper required to not burn the carpet again
     // Turns the robot towards xAngle
     DRIVE_SUBSYSTEM.setSetpoint(
