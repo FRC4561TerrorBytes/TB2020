@@ -236,7 +236,7 @@ public class ShooterSubsystem extends SubsystemBase {
    * @param speed input speed to keep the motor at (RPM)
    */
   public void setFlywheelSpeed(double speed) {
-    speed = Flywheel.rpmToTicksPer100ms(Math.abs(speed));
+    speed = Flywheel.rpmToTicksPer100ms(Math.min(Math.abs(speed), Flywheel.MAX_SPEED_RPM));
     double kF = Flywheel.MAX_kF * (speed / Flywheel.MAX_SPEED_RPM);
 
     Flywheel.MASTER_MOTOR.set(ControlMode.Velocity, speed, DemandType.ArbitraryFeedForward, kF);
