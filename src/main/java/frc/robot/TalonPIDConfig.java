@@ -10,7 +10,9 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.BaseTalon;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 /** 
  * Automates the configuration of Talon PID and MotionMagic parameters
@@ -146,6 +148,51 @@ public class TalonPIDConfig {
 
     // Configure feedback sensor
     talon.configSelectedFeedbackSensor(feedbackDevice);
+    
+    // Configure forward and reverse soft limits
+    if (this.enableSoftLimits) {
+      talon.configForwardSoftLimitThreshold((int)this.upperLimit);
+      talon.configForwardSoftLimitEnable(true);
+      talon.configReverseSoftLimitThreshold((int)this.lowerLimit);
+      talon.configReverseSoftLimitEnable(true);
+    }
+
+    // Configure forward and reverse limit switches if required
+    if (forwardLimitSwitch) 
+      talon.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+    if (reverseLimitSwitch)
+      talon.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+
+    // Set sensor phase and invert motor if required
+    talon.setSensorPhase(this.sensorPhase);
+    talon.setInverted(this.invertMotor);
+
+    // Configure PID values
+    talon.config_kP(PID_SLOT, this.kP);
+    talon.config_kI(PID_SLOT, this.kI);
+    talon.config_kD(PID_SLOT, this.kD);
+    talon.config_kF(PID_SLOT, this.kF);
+    talon.configAllowableClosedloopError(PID_SLOT, (int)this.tolerance);
+    talon.configClosedLoopPeakOutput(PID_SLOT, 1);
+
+    // Configure MotionMagic values
+    if (this.motionMagic) {
+      talon.configMotionCruiseVelocity(rpmToTicksPer100ms(this.velocityRPM));
+      talon.configMotionAcceleration(rpmToTicksPer100ms(this.accelerationRPMPerSec));
+      talon.configMotionSCurveStrength(this.motionSmoothing);
+    }
+  }
+
+   /**
+   * Initializes Talon PID and/or MotionMagic parameters
+   * @param feedbackDevice Feedback device to use for Talon PID
+   */
+  public void initializeTalonPID(WPI_TalonFX talon, TalonFXFeedbackDevice feedbackDevice, boolean forwardLimitSwitch, boolean reverseLimitSwitch) {
+    // Reset Talon to default
+    talon.configFactoryDefault();
+
+    // Configure feedback sensor
+    talon.configSelectedFeedbackSensor(feedbackDevice, 0, 0);
     
     // Configure forward and reverse soft limits
     if (this.enableSoftLimits) {

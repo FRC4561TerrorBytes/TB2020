@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.MoveTurretManualCommand;
+import frc.robot.commands.ShootCommand;
 import frc.robot.commands.TurretSetpointCommand;
 import frc.robot.commands.automodes.ShootDriveStraightAuto;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -167,23 +168,15 @@ public class RobotContainer {
 
     // Right joystick shoot button 3
     new JoystickButton(RIGHT_JOYSTICK, 3)
-      .whileHeld(new RunCommand(() -> SHOOTER_SUBSYSTEM.flywheelManual(-1), SHOOTER_SUBSYSTEM));
+      .whileHeld(new RunCommand(() -> SHOOTER_SUBSYSTEM.flywheelManual(1), SHOOTER_SUBSYSTEM));
 
     new JoystickButton(RIGHT_JOYSTICK, 3)
-      .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(0), SHOOTER_SUBSYSTEM));
+      .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.flywheelManual(0), SHOOTER_SUBSYSTEM));
       // .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(0), MAGAZINE_SUBSYSTEM));
 
     // Right joystick shoot button 4
-    // new JoystickButton(RIGHT_JOYSTICK, 4)
-    //   .whileHeld(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(-17600), SHOOTER_SUBSYSTEM).alongWith(
-    //     new ConditionalCommand(
-    //       new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MAGAZINE_MOTOR_SPEED)), 
-    //       new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(Constants.MOTOR_STOP)), 
-    //       () -> SHOOTER_SUBSYSTEM.isFlywheelAtSpeed())));
-      
-    // new JoystickButton(RIGHT_JOYSTICK, 4)
-    //   .whenReleased(new RunCommand(() -> SHOOTER_SUBSYSTEM.setFlywheelSpeed(0), SHOOTER_SUBSYSTEM))
-    //   .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(0), MAGAZINE_SUBSYSTEM));
+    new JoystickButton(RIGHT_JOYSTICK, 4)
+      .whileHeld(new ShootCommand(SHOOTER_SUBSYSTEM, MAGAZINE_SUBSYSTEM, 10000));
 
     // Left joystick intake button 1
     new JoystickButton(LEFT_JOYSTICK, 1)

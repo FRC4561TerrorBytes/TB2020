@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -38,7 +39,6 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final WPI_TalonFX MASTER_MOTOR = new WPI_TalonFX(Constants.FLYWHEEL_MASTER_MOTOR_PORT);
     private static final WPI_TalonFX SLAVE_MOTOR = new WPI_TalonFX(Constants.FLYWHEEL_SLAVE_MOTOR_PORT);
     private static TalonPIDConfig masterConfig;
-    private static double speed = 0;
   }
 
   private static class Hood {
@@ -85,9 +85,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
     
 
-    Flywheel.masterConfig.initializeTalonPID(Flywheel.MASTER_MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, false, false);
+    Flywheel.masterConfig.initializeTalonPID(Flywheel.MASTER_MOTOR, TalonFXFeedbackDevice.IntegratedSensor, false, false);
     Flywheel.SLAVE_MOTOR.set(ControlMode.Follower, Flywheel.MASTER_MOTOR.getDeviceID());
-    Flywheel.SLAVE_MOTOR.setInverted(false);
+    Flywheel.SLAVE_MOTOR.setInverted(true);
 
     Hood.config.initializeTalonPID(Hood.MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, true, false);
     Turret.config.initializeTalonPID(Turret.MOTOR, FeedbackDevice.CTRE_MagEncoder_Relative, true, true);
@@ -104,7 +104,7 @@ public class ShooterSubsystem extends SubsystemBase {
       ShuffleboardTab tab = Shuffleboard.getTab(this.SUBSYSTEM_NAME);
       tab.addNumber("Flywheel Motor Output", () -> Flywheel.MASTER_MOTOR.getMotorOutputPercent());
       tab.addNumber("Flywheel Motor Velocity", () -> Flywheel.MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity());
-      tab.addNumber("Flywheel Motor Setpoint", () -> Flywheel.speed);
+      tab.addNumber("Flywheel Motor Setpoint", () -> Flywheel.MASTER_MOTOR.getClosedLoopTarget());
       tab.addNumber("Flywheel Error", () -> flywheelError());
       tab.addBoolean("Flywheel at Speed?", () -> isFlywheelAtSpeed());
 
@@ -209,14 +209,12 @@ public class ShooterSubsystem extends SubsystemBase {
    * @param speed input speed to keep the motor at (ticks per 100 ms)
    */
   public void setFlywheelSpeed(double speed) {
-    Flywheel.speed = speed;
     Flywheel.MASTER_MOTOR.set(ControlMode.Velocity, speed, DemandType.ArbitraryFeedForward, Flywheel.kF);
   }
 
   // TODO: Delete this once moveMotorManual works
   public void flywheelManual(double speed) {
     Flywheel.MASTER_MOTOR.set(speed);
-    //Flywheel.SLAVE_MOTOR.set(-speed);
   }
 
   /**
@@ -224,12 +222,13 @@ public class ShooterSubsystem extends SubsystemBase {
    * @return True if flywheel is at speed else false
    */
   public boolean isFlywheelAtSpeed() {
-    boolean atSpeed = (Math.abs(flywheelError()) > Flywheel.masterConfig.getTolerance());
+    boolean atSpeed = (Math.abs(flywheelError()) < Flywheel.masterConfig.getTolerance())
+                      && Flywheel.MASTER_MOTOR.getClosedLoopTarget() != 0;
     return atSpeed;
   }
 
   public double flywheelError() {
-    return Flywheel.speed - Flywheel.MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity();
+    return Flywheel.MASTER_MOTOR.getClosedLoopTarget() - Flywheel.MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity();
   }
 
     // TODO: Delete this once moveMotorManual works
