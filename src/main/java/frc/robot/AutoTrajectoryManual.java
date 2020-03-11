@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Transform2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
@@ -50,12 +51,17 @@ public class AutoTrajectoryManual {
     TrajectoryConfig config = new TrajectoryConfig(MAX_VELOCITY_METERS_PER_SECOND, MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
     config.setReversed(isReversed);
     
+    // This transforms the starting position of the trajectory to match the starting position of the actual 
+    // roboto. Prevents robot from moving to first X,Y of trajectory and then following the path.
+    // Changes the first point(s) of the trajectory to the X,Y point of where the robot currently is
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(startPoint, null, endPoint, config);
+    Transform2d transform = subsystem.getPose().minus(trajectory.getInitialPose());
+    Trajectory transformedTrajectory =  trajectory.transformBy(transform);
 
     // This is a method used to get the desired trajectory, put it into the command, have the command calculate the 
     // actual route relative to one plotted in Pathweaver, and then follow it the best it can, based on characterization given to it.
     this.ramseteCommand = new RamseteCommand(
-        trajectory,  // This had been changed to be the transformed trajecotry so that it calculates trajectory 
+        transformedTrajectory,  // This had been changed to be the transformed trajecotry so that it calculates trajectory 
                                 // from final (transformed) trajectory
         subsystem::getPose,
         new RamseteController(this.kRamseteB, this.kRamseteZeta),
