@@ -7,6 +7,9 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
@@ -47,14 +50,20 @@ public class AutoTrajectoryManual {
    */
   public AutoTrajectoryManual(DriveSubsystem subsystem, Pose2d startPoint, Pose2d endPoint, boolean isReversed) {
     this.subsystem = subsystem;
-
+    List<Pose2d> waypoints = new ArrayList<Pose2d>() {
+      {
+        add(startPoint);
+        add(endPoint);
+      }
+    };
+    
     TrajectoryConfig config = new TrajectoryConfig(MAX_VELOCITY_METERS_PER_SECOND, MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
     config.setReversed(isReversed);
     
     // This transforms the starting position of the trajectory to match the starting position of the actual 
     // roboto. Prevents robot from moving to first X,Y of trajectory and then following the path.
     // Changes the first point(s) of the trajectory to the X,Y point of where the robot currently is
-    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(startPoint, null, endPoint, config);
+    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(waypoints, config);
     Transform2d transform = subsystem.getPose().minus(trajectory.getInitialPose());
     Trajectory transformedTrajectory =  trajectory.transformBy(transform);
 
