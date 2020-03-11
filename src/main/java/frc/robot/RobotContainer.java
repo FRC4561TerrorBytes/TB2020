@@ -176,7 +176,7 @@ public class RobotContainer {
 
     // Right joystick shoot button 4
     new JoystickButton(RIGHT_JOYSTICK, 4)
-      .whileHeld(new ShootCommand(SHOOTER_SUBSYSTEM, MAGAZINE_SUBSYSTEM, 10000));
+      .whileHeld(new ShootCommand(SHOOTER_SUBSYSTEM, MAGAZINE_SUBSYSTEM, 5400));
 
     // Left joystick intake button 1
     new JoystickButton(LEFT_JOYSTICK, 1)
