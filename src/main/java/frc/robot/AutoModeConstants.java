@@ -20,9 +20,20 @@ package frc.robot;
  //An enum of the .json files for the Auto Mode Trajectories. 
  public enum AutoModeConstants {
   DriveStraightTest("DriveStraightTest"),
+  FrontGoalDriveBack("InFrontGoalDriveBack"),
+  FrontGoalDriveStraight("InFrontGoalDriveStraight"),
+  LeftShieldGenPath1("LeftShieldPt1"),
+  LeftShieldGenPath2("LeftShieldPt2"),
+  LeftShieldGenPath3("LeftShieldPt3"),
+  LeftShieldGenPath4("LeftShieldPt4"),
+  ShieldGenPath1("ShieldGeneratorPt1"),
+  ShieldGenPath2("ShieldGeneratorPt2"),
+  ShieldGenPath3("ShieldGeneratorPt3"),
+  ShieldGenPath4("ShieldGeneratorPt4"),
   ShootDriveStraight("InFrontGoalDriveStraight"),
   ShootDriveBack("InFrontGoalDriveBack"),
   SixBallTrench("TrenchThreeBall"),
+  SixBallTrenchPt1("TrenchThreeBallPt1"),
   SixBallTrenchPt2("TrenchThreeBallPt2");
   
     public final String trajectoryJSON;
