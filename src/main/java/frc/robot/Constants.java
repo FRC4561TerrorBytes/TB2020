@@ -68,8 +68,9 @@ public final class Constants {
 
 
     // Shooter PID Values
-    private static final double FLYWHEEL_kP = 1.6;
-    private static final double FLYWHEEL_kD = 0.0;
+    private static final double FLYWHEEL_kP = 0.8;
+    private static final double FLYWHEEL_kI = 0.7;
+    private static final double FLYWHEEL_kD = 0.1;
     private static final double FLYWHEEL_TOLERANCE = 500;
     private static final boolean FLYWHEEL_MASTER_ENCODER_SENSOR_PHASE = false;
     private static final boolean FLYWHEEL_MASTER_MOTOR_INVERTED = false;
@@ -107,7 +108,7 @@ public final class Constants {
     public static final TalonPIDConfig FLYWHEEL_MASTER_CONFIG = new TalonPIDConfig(FLYWHEEL_MASTER_ENCODER_SENSOR_PHASE,
                                                                                     FLYWHEEL_MASTER_MOTOR_INVERTED,
                                                                                     FLYWHEEL_kP,
-                                                                                    0,
+                                                                                    FLYWHEEL_kI,
                                                                                     FLYWHEEL_kD,
                                                                                     0,
                                                                                     FLYWHEEL_TOLERANCE);
@@ -214,8 +215,8 @@ public final class Constants {
 
     // Motor Speeds - @author utkarsh
     public static final double MOTOR_STOP = 0;
-    public static final double INTAKE_MOTOR_SPEED = 0.4;
-    public static final double OUTTAKE_MOTOR_SPEED = 0.5;
+    public static final double INTAKE_MOTOR_SPEED = 0.75;
+    public static final double OUTTAKE_MOTOR_SPEED = 1;
     public static final double LIFT_MOTOR_SPEED = 0.6;
     public static final double MAGAZINE_UP_MOTOR_SPEED = 0.6;
     public static final double MAGAZINE_DOWN_MOTOR_SPEED = 0.2;

@@ -23,17 +23,19 @@ public class ClimberSubsystem extends SubsystemBase {
   // Declaration of motors
   private final WPI_TalonSRX CLIMBER_LIFT_MOTOR = new WPI_TalonSRX(Constants.CLIMBER_LIFT_MOTOR_PORT);
   private final WPI_TalonSRX CLIMBER_HOOK_MOTOR = new WPI_TalonSRX(Constants.CLIMBER_HOOK_MOTOR_PORT);
-  //rivate final WPI_TalonSRX CLIMBER_BALANCE_MOTOR = new WPI_TalonSRX(Constants.CLIMBER_BALANCE_MOTOR_PORT);
+  private final WPI_TalonSRX CLIMBER_BALANCE_MOTOR = new WPI_TalonSRX(Constants.CLIMBER_BALANCE_MOTOR_PORT);
 
 
   public ClimberSubsystem() {
-    //gyro.write(ENABLE_GYRO_REG, ENABLE_GYRO_VALUE);
 
     if (Constants.CLIMBER_DEBUG) {
       ShuffleboardTab tab = Shuffleboard.getTab(this.SUBSYSTEM_NAME);
       tab.addNumber("Hook Percent Output", () -> CLIMBER_HOOK_MOTOR.getMotorOutputPercent());
+      tab.addNumber("Hook Motor Current", () -> CLIMBER_HOOK_MOTOR.getSupplyCurrent());
       tab.addNumber("Lift Percent Output", () -> CLIMBER_LIFT_MOTOR.getMotorOutputPercent());
-      //tab.addNumber("Mouse Droid position", () -> CLIMBER_BALANCE_MOTOR.getSensorCollection().getQuadraturePosition());
+      tab.addNumber("Lift Motor Current", () -> CLIMBER_LIFT_MOTOR.getSupplyCurrent());
+
+      tab.addNumber("Balance Motor Current", () -> CLIMBER_BALANCE_MOTOR.getSupplyCurrent());
     }
   }
   
@@ -58,7 +60,7 @@ public class ClimberSubsystem extends SubsystemBase {
    * @param speed speed at which the mouse droid moves at [-1, 1]
    */
   public void mouseDroidManual(double speed) {
-    //CLIMBER_BALANCE_MOTOR.set(speed);
+    CLIMBER_BALANCE_MOTOR.set(speed);
   }
 
   /**
@@ -72,7 +74,7 @@ public class ClimberSubsystem extends SubsystemBase {
    * Stops the balance motor
    */
   public void stopBalance() {
-    //CLIMBER_BALANCE_MOTOR.set(0);
+    CLIMBER_BALANCE_MOTOR.set(0);
   }
 
   /**
