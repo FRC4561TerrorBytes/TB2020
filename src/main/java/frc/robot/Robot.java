@@ -26,8 +26,8 @@ public class Robot extends TimedRobot {
 
   private RobotContainer robotContainer;
 
-  private int autoID = 0;
-  private boolean autoVision = false;
+  // private int autoID = 0;
+  // private boolean autoVision = false;
 
 
   /**
