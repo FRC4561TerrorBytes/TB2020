@@ -68,8 +68,8 @@ public final class Constants {
 
 
     // Shooter PID Values
-    private static final double FLYWHEEL_kP = 0.8;
-    private static final double FLYWHEEL_kI = 0.7;
+    private static final double FLYWHEEL_kP = 0.9;
+    private static final double FLYWHEEL_kI = 0.8;
     private static final double FLYWHEEL_kD = 0.1;
     private static final double FLYWHEEL_TOLERANCE = 500;
     private static final boolean FLYWHEEL_MASTER_ENCODER_SENSOR_PHASE = false;

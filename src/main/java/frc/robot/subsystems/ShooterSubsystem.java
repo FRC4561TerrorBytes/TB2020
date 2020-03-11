@@ -119,7 +119,7 @@ public class ShooterSubsystem extends SubsystemBase {
       tab.addNumber("Flywheel Current", () -> Flywheel.MASTER_MOTOR.getSupplyCurrent());
       tab.addNumber("Flywheel Motor Velocity", () -> Flywheel.ticksToRPM(Flywheel.MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity()));
       tab.addNumber("Flywheel Motor Setpoint", () -> Flywheel.ticksToRPM(Flywheel.MASTER_MOTOR.getClosedLoopTarget()));
-      tab.addNumber("Flywheel Error", () -> Flywheel.ticksToRPM(flywheelError()));
+      tab.addNumber("Flywheel Error", () -> flywheelError());
       tab.addBoolean("Flywheel at Speed?", () -> isFlywheelAtSpeed());
 
       tab.addNumber("Hood Motor Output", () -> Hood.MOTOR.getMotorOutputPercent());

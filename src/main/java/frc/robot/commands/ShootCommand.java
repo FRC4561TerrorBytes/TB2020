@@ -38,8 +38,15 @@ public class ShootCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (this.shooterSubsystem.isFlywheelAtSpeed()) this.magazineSubsystem.ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED);
-    else this.magazineSubsystem.ballUptakeStop();
+    if (this.shooterSubsystem.isFlywheelAtSpeed()) {
+      this.magazineSubsystem.ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED);
+      System.out.println("RUNNING MAGAZINE");
+    }
+
+    else {
+      this.magazineSubsystem.ballUptakeStop();
+      System.out.println("STOPPING...");
+    }
   }
 
   // Called once the command ends or is interrupted.
