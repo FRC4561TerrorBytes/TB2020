@@ -58,8 +58,10 @@ public class MagazineSubsystem extends SubsystemBase {
       tab.addNumber("Arm Motor Output", () -> ARM_MOTOR.getMotorOutputPercent());
       tab.addNumber("Arm Motor Position", () -> ARM_MOTOR.getSelectedSensorPosition());
       tab.addNumber("Arm Motor Setpoint", () -> ARM_MOTOR.getClosedLoopTarget());
+      tab.addNumber("Arm Motor Current", () -> ARM_MOTOR.getSupplyCurrent());
       tab.addBoolean("Arm limit switch", () -> ARM_MOTOR.getSensorCollection().isFwdLimitSwitchClosed());
       tab.addNumber("Intake speed", () -> INTAKE_MOTOR.get());
+      tab.addNumber("Intake current", () -> INTAKE_MOTOR.getOutputCurrent());
       tab.addNumber("Top sensor", () -> this.magazineSensorTop());
       tab.addNumber("Bottom sensor", () -> this.magazineSensorBottom());
     }

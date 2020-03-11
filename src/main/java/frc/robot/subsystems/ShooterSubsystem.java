@@ -32,17 +32,19 @@ public class ShooterSubsystem extends SubsystemBase {
   private final String SUBSYSTEM_NAME = "Shooter Subsystem";
 
   private static class Flywheel {
-    private static double MAX_kF = 1.0;
-    private static double MAX_SPEED_RPM = 5600;
+    private static double MAX_kF = 0.9;
+    private static double MAX_SPEED_RPM = 5400;
     private static final int TICKS_PER_ROTATION = 2048;
-    // private static final double GEAR_RATIO = 3 / 4; The real thing
-    private static final double GEAR_RATIO = 1.0;
     private static final WPI_TalonFX MASTER_MOTOR = new WPI_TalonFX(Constants.FLYWHEEL_MASTER_MOTOR_PORT);
     private static final WPI_TalonFX SLAVE_MOTOR = new WPI_TalonFX(Constants.FLYWHEEL_SLAVE_MOTOR_PORT);
     private static TalonPIDConfig masterConfig;
 
     private static double rpmToTicksPer100ms(double speed) {
-      return (speed * GEAR_RATIO * TICKS_PER_ROTATION) / 600;
+      return (speed * TICKS_PER_ROTATION) / 600;
+    }
+
+    private static double ticksToRPM(double speed) {
+      return (speed * 600) / TICKS_PER_ROTATION;
     }
   }
 
@@ -51,7 +53,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private static int topPosition = Constants.HOOD_TOP_POSITION;
     private static double bottomPosition = Constants.HOOD_BOTTOM_POSITION;
     private static final int TICKS_PER_ROTATION = 4096;
-    public static final double GEAR_RATIO = 298 / 25;
+    private static final double GEAR_RATIO = 298 / 25;
     private static final WPI_TalonSRX MOTOR = new WPI_TalonSRX(Constants.HOOD_MOTOR_PORT);
     private static TalonPIDConfig config;
   }
@@ -62,7 +64,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private static int straightPosition = Constants.TURRET_STRAIGHT_POSITION;
     private static int rightPosition = Constants.TURRET_BACK_LIMIT_POSITION;
     private static final int TICKS_PER_ROTATION = 4096;
-    public static final int GEAR_RATIO = 94 / 15;
+    private static final int GEAR_RATIO = 94 / 15;
     private static final double TICKS_PER_DEGREE = (TICKS_PER_ROTATION * GEAR_RATIO) / 360;
     private static final WPI_TalonSRX MOTOR = new WPI_TalonSRX(Constants.TURRET_MOTOR_PORT);
     private static TalonPIDConfig config;
@@ -114,16 +116,19 @@ public class ShooterSubsystem extends SubsystemBase {
      if (Constants.SHOOTER_DEBUG) {
       ShuffleboardTab tab = Shuffleboard.getTab(this.SUBSYSTEM_NAME);
       tab.addNumber("Flywheel Motor Output", () -> Flywheel.MASTER_MOTOR.getMotorOutputPercent());
-      tab.addNumber("Flywheel Motor Velocity", () -> Flywheel.MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity());
-      tab.addNumber("Flywheel Motor Setpoint", () -> Flywheel.MASTER_MOTOR.getClosedLoopTarget());
-      tab.addNumber("Flywheel Error", () -> flywheelError());
+      tab.addNumber("Flywheel Current", () -> Flywheel.MASTER_MOTOR.getSupplyCurrent());
+      tab.addNumber("Flywheel Motor Velocity", () -> Flywheel.ticksToRPM(Flywheel.MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity()));
+      tab.addNumber("Flywheel Motor Setpoint", () -> Flywheel.ticksToRPM(Flywheel.MASTER_MOTOR.getClosedLoopTarget()));
+      tab.addNumber("Flywheel Error", () -> Flywheel.ticksToRPM(flywheelError()));
       tab.addBoolean("Flywheel at Speed?", () -> isFlywheelAtSpeed());
 
       tab.addNumber("Hood Motor Output", () -> Hood.MOTOR.getMotorOutputPercent());
+      tab.addNumber("Hood Motor Current", () -> Hood.MOTOR.getSupplyCurrent());
       tab.addNumber("Hood Encoder Position", () -> Hood.MOTOR.getSelectedSensorPosition());
       tab.addNumber("Hood Error", () -> Hood.MOTOR.getClosedLoopError());
       
       tab.addNumber("Turret Motor Output", () -> Turret.MOTOR.getMotorOutputPercent());
+      tab.addNumber("Turret Motor Current", () -> Turret.MOTOR.getSupplyCurrent());
       tab.addNumber("Turret Encoder Position", () -> Turret.MOTOR.getSelectedSensorPosition());
       tab.addNumber("Turret Encoder Setpoint", () -> Turret.MOTOR.getClosedLoopTarget());
       tab.addNumber("Turret Error", () -> Turret.MOTOR.getClosedLoopError());
@@ -267,6 +272,10 @@ public class ShooterSubsystem extends SubsystemBase {
     return atSpeed;
   }
 
+  /**
+   * Get error in flywheel speed
+   * @return flywheel error (ticks per 100ms)
+   */
   public double flywheelError() {
     return Flywheel.MASTER_MOTOR.getClosedLoopTarget() - Flywheel.MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity();
   }
