@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+//import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 //import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -29,6 +30,7 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.MoveTurretManualCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.TurretSetpointCommand;
+import frc.robot.commands.automodes.CurveAutoTest;
 import frc.robot.commands.automodes.ShootDriveStraightAuto;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -64,7 +66,7 @@ public class RobotContainer {
   public static UsbCamera camera2;
 
   private static SendableChooser<Command> chooser = new SendableChooser<>();
- // private static SendableChooser<SequentialCommandGroup> chooser = new SendableChooser<>();
+ //private static SendableChooser<SequentialCommandGroup> chooser = new SendableChooser<>();//TODO: Uncomment and try for chooser testing
 
   private final boolean TURRET_SETPOINT_VISION_INTERRUPT = false;
   
@@ -88,6 +90,7 @@ public class RobotContainer {
 
 
     chooser.setDefaultOption("ShootDriveForward", new ShootDriveStraightAuto(DRIVE_SUBSYSTEM, SHOOTER_SUBSYSTEM, MAGAZINE_SUBSYSTEM));
+    chooser.addOption("CurveAutotest", new CurveAutoTest(DRIVE_SUBSYSTEM));
     // chooser.addOption("ShootDriveBack", new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.ShootDriveBack.trajectoryJSON).getCommand());
     // chooser.addOption("SIX BALL BOIS", new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.SixBallTrench.trajectoryJSON).getCommand());
     SmartDashboard.putData("Auto mode", chooser);
@@ -282,15 +285,38 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    //return chooser.getSelected();
+    //return chooser.getSelected(); //TODO: Uncomment and comment line below to test SendableChooser
+    //return new CurveAutoTest(DRIVE_SUBSYSTEM);//TODO: Uncomment this to test Curved Paths in Auto
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     return new ShootDriveStraightAuto(DRIVE_SUBSYSTEM, SHOOTER_SUBSYSTEM, MAGAZINE_SUBSYSTEM);
   }
 
-  // public SequentialCommandGroup AutonomousCommand() {
-  //   // An ExampleCommand will run in autonomous
-    
-  //   return chooser.getSelected();;
-  // }
+ 
 
   /**
    * Get DriveSubsystem

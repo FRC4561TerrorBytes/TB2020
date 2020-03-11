@@ -77,18 +77,11 @@ public class Robot extends TimedRobot {
     // Reset Shooter Turret to front limit switch
     robotContainer.getShooterSubsystem().reset();
 
-    autonomousCommand = robotContainer.getAutonomousCommand();
+    autonomousCommand = robotContainer.getAutonomousCommand(); //TODO: Change getAutonomousCommand to test SendableChooser/Curved Autos
     
-
     // this.autoID = (int)SmartDashboard.getNumber("Choose Auto", 0);
     // this.autoVision = SmartDashboard.getBoolean("Auto Vision?", false);
     
-   
-
-    
-    // new AutoTrajectory(robotContainer.getDriveSubsystem(), AutoModeConstants.BlueA.trajectoryJSON).initialize();
-
-
     // switch (this.autoID) {
     //   case 0:
     //   auto0();
