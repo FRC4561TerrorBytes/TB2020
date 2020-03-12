@@ -8,9 +8,11 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.automodes.ShootDriveStraightAuto;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -23,6 +25,9 @@ public class Robot extends TimedRobot {
   private Command autonomousCommand;
 
   private RobotContainer robotContainer;
+
+  // private int autoID = 0;
+  // private boolean autoVision = false;
 
 
   /**
@@ -77,45 +82,39 @@ public class Robot extends TimedRobot {
     // Reset Shooter Turret to front limit switch
     robotContainer.getShooterSubsystem().reset();
 
-    autonomousCommand = robotContainer.getAutonomousCommand();
-    
+    autonomousCommand = robotContainer.getAutonomousCommand(); //TODO: Change getAutonomousCommand to test SendableChooser
 
+    
     // this.autoID = (int)SmartDashboard.getNumber("Choose Auto", 0);
     // this.autoVision = SmartDashboard.getBoolean("Auto Vision?", false);
     
-   
-
-    
-    // new AutoTrajectory(robotContainer.getDriveSubsystem(), AutoModeConstants.BlueA.trajectoryJSON).initialize();
-
-
     // switch (this.autoID) {
-    //   case 0:
-    //   auto0();
-    //   break;
-    // }
-      /*
-      case 0:
-      auto1(this.autoVision);
-      robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
-      break;
-
-      case 1:
-      auto1(this.autoVision);
-      robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
-      break;
-
-      case 2:
-      auto1(this.autoVision);
-      robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
-      break;
-
-      case 3:
-      auto1(this.autoVision);
-      robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
-      break;
       
-    } */
+    //   // case 0:
+    //   // auto1(this.autoVision);
+    //   // robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
+      
+    //   // break;
+
+    //   // case 1:
+    //   // auto1(this.autoVision);
+    //   // robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
+    //   // break;
+
+    //   // case 2:
+    //   // auto1(this.autoVision);
+    //   // robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
+    //   // break;
+
+    //   // case 3:
+    //   // auto1(this.autoVision);
+    //   // robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
+    //   // break;
+
+    //   case 0:
+    //   autonomousCommand = new ShootDriveStraightAuto(robotContainer.getDriveSubsystem(), robotContainer.getShooterSubsystem(), robotContainer.getMagazineSubsystem());
+    //   break;
+    // } 
 
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {

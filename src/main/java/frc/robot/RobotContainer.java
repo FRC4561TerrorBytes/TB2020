@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+//import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 //import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -64,7 +65,7 @@ public class RobotContainer {
   public static UsbCamera camera2;
 
   private static SendableChooser<Command> chooser = new SendableChooser<>();
- // private static SendableChooser<SequentialCommandGroup> chooser = new SendableChooser<>();
+ //private static SendableChooser<SequentialCommandGroup> chooser = new SendableChooser<>();//TODO: Uncomment and try for chooser testing
 
   private final boolean TURRET_SETPOINT_VISION_INTERRUPT = false;
   
@@ -88,7 +89,7 @@ public class RobotContainer {
 
 
     chooser.setDefaultOption("ShootDriveForward", new ShootDriveStraightAuto(DRIVE_SUBSYSTEM, SHOOTER_SUBSYSTEM, MAGAZINE_SUBSYSTEM));
-    // chooser.addOption("ShootDriveBack", new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.ShootDriveBack.trajectoryJSON).getCommand());
+    //chooser.addOption("ShootDriveBack", new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.ShootDriveBack.trajectoryJSON).getCommand());
     // chooser.addOption("SIX BALL BOIS", new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.SixBallTrench.trajectoryJSON).getCommand());
     SmartDashboard.putData("Auto mode", chooser);
   }
@@ -282,15 +283,11 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    //return chooser.getSelected();
-    return new ShootDriveStraightAuto(DRIVE_SUBSYSTEM, SHOOTER_SUBSYSTEM, MAGAZINE_SUBSYSTEM);
+    //return chooser.getSelected(); //TODO: Uncomment and comment line below to test SendableChooser
+  return new ShootDriveStraightAuto(DRIVE_SUBSYSTEM, SHOOTER_SUBSYSTEM, MAGAZINE_SUBSYSTEM);
   }
 
-  // public SequentialCommandGroup AutonomousCommand() {
-  //   // An ExampleCommand will run in autonomous
-    
-  //   return chooser.getSelected();;
-  // }
+ 
 
   /**
    * Get DriveSubsystem
