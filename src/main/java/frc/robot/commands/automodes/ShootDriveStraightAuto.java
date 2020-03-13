@@ -7,10 +7,12 @@
 
 package frc.robot.commands.automodes;
 
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 //import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.AutoModeConstants;
+import frc.robot.AutoModePaths;
 import frc.robot.AutoTrajectory;
 import frc.robot.Constants;
 import frc.robot.commands.ShootCommand;
@@ -33,7 +35,8 @@ public class ShootDriveStraightAuto extends SequentialCommandGroup {
       new TurretSetpointCommand(shooterSubsystem, Constants.TURRET_BACK_POSITION, false),
       new InstantCommand(()-> shooterSubsystem.toggleHoodPosition(), shooterSubsystem),
       new ShootCommand(shooterSubsystem, magazineSubsystem, 5400).withTimeout(8),
-      new AutoTrajectory(driveSubsystem, AutoModeConstants.ShootDriveStraight.trajectoryJSON).getCommand(),
+      new WaitCommand(1),
+      new AutoTrajectory(driveSubsystem, AutoModePaths.ShootDriveStraight, false).getCommand(),
       new InstantCommand(()-> shooterSubsystem.toggleHoodPosition(), shooterSubsystem),
       new TurretSetpointCommand(shooterSubsystem, Constants.TURRET_FRONT_LIMIT_POSITION, false)
     );

@@ -71,7 +71,7 @@ public final class Constants {
     private static final double FLYWHEEL_kP = 0.9;
     private static final double FLYWHEEL_kI = 0.8;
     private static final double FLYWHEEL_kD = 0.1;
-    private static final double FLYWHEEL_TOLERANCE = 500;
+    private static final double FLYWHEEL_TOLERANCE = 700;
     private static final boolean FLYWHEEL_MASTER_ENCODER_SENSOR_PHASE = false;
     private static final boolean FLYWHEEL_MASTER_MOTOR_INVERTED = false;
 
@@ -100,9 +100,10 @@ public final class Constants {
     // Shooter Positions
     public static final int TURRET_FRONT_LIMIT_POSITION = 0;
     public static final int TURRET_STRAIGHT_POSITION = 3300;
-    public static final int TURRET_MIDDLE_POSITION = 9700; //TODO: set this
+    public static final int TURRET_MIDDLE_POSITION = 9700;
+    public static final int TURRET_SIXBALL_POSITION = 13000;
     public static final int TURRET_BACK_POSITION = 16100;
-    public static final int TURRET_BACK_LIMIT_POSITION = 22000; //TODO: set this
+    public static final int TURRET_BACK_LIMIT_POSITION = 22000;
 
     // Set PID for Flywheel
     public static final TalonPIDConfig FLYWHEEL_MASTER_CONFIG = new TalonPIDConfig(FLYWHEEL_MASTER_ENCODER_SENSOR_PHASE,
