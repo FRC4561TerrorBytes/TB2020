@@ -32,7 +32,6 @@ package frc.robot;
   ShieldGenPath4("ShieldGeneratorPt4"),
   ShootDriveStraight("InFrontGoalDriveStraight"),
   ShootDriveBack("InFrontGoalDriveBack"),
-  SixBallTrench("TrenchThreeBall"),
   SixBallTrenchPt1("TrenchThreeBallPt1"),
   SixBallTrenchPt2("TrenchThreeBallPt2");
   

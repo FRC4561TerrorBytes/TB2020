@@ -32,7 +32,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private final String SUBSYSTEM_NAME = "Shooter Subsystem";
 
   private static class Flywheel {
-    private static double MAX_kF = 0.9;
+    private static double MAX_kF = 0.95;
     private static double MAX_SPEED_RPM = 5400;
     private static final int TICKS_PER_ROTATION = 2048;
     private static final WPI_TalonFX MASTER_MOTOR = new WPI_TalonFX(Constants.FLYWHEEL_MASTER_MOTOR_PORT);

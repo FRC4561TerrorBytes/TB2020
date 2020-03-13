@@ -223,7 +223,7 @@ public class DriveSubsystem extends PIDSubsystem {
    * @return the robot's heading in degrees, from 180 to 180
    */
   public double getHeading() {
-    return Math.IEEEremainder(NAVX.getAngle(), 360);
+    return Math.IEEEremainder(NAVX.getAngle(), 360) * -1;
   }
   
   /**
@@ -238,7 +238,7 @@ public class DriveSubsystem extends PIDSubsystem {
    * @return The turn rate of the robot, in degrees per second
    */
   public double getTurnRate() {
-    return NAVX.getRate();
+    return NAVX.getRate() * -1;
   }
 
   /**
