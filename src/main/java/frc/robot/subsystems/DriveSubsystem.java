@@ -90,6 +90,13 @@ public class DriveSubsystem extends PIDSubsystem {
       RIGHT_REAR_SLAVE.set(ControlMode.Follower, RIGHT_MASTER_MOTOR.getDeviceID());
 
       // Wait for Robot init before finishing DriveSubsystem init
+      /* Could do this instead
+      try {
+        Thread.sleep(7000);
+      } catch (Exception e) {
+        System.out.println("Exception is: " + e.toString());
+        e.printStackTrace();
+      } */
       try { Thread.sleep(7000); }
       catch (Exception e) { e.printStackTrace(); }
 
