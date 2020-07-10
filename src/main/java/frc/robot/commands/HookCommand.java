@@ -40,6 +40,7 @@ public class HookCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    subsystem.stopHook();
   }
 
   // Returns true when the command should end.
