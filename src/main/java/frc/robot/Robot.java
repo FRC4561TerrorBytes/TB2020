@@ -8,10 +8,9 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.automodes.ShootDriveStraightAuto;
+import frc.robot.commands.AutoMotorsReversed;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -81,7 +80,8 @@ public class Robot extends TimedRobot {
     // Reset Shooter Turret to front limit switch
     robotContainer.getShooterSubsystem().reset();
 
-    autonomousCommand = robotContainer.getAutonomousCommand(); //TODO: Change getAutonomousCommand to test SendableChooser
+    //Executes the auto mode from RobotContainer (should be the one chooser returns when one is chosen from DriverStation)
+    autonomousCommand = robotContainer.getAutonomousCommand();
 
     
     // this.autoID = (int)SmartDashboard.getNumber("Choose Auto", 0);
@@ -133,6 +133,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    //Fail-safe to make sure that motors aren't still set to reversed from Autonomous
+    new AutoMotorsReversed(false);
+
     // Reset DriveSubsystem PID
     robotContainer.getDriveSubsystem().resetAngle();
     robotContainer.getDriveSubsystem().setSetpoint(0);

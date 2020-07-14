@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 //import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 //import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -31,7 +32,7 @@ import frc.robot.commands.MoveTurretManualCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.TurretSetpointCommand;
 import frc.robot.commands.automodes.ShootDriveStraightAuto;
-import frc.robot.commands.automodes.TrenchSixBallAuto;
+import frc.robot.commands.automodes.TestReversePathWeaverAuto;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.MagazineSubsystem;
@@ -46,10 +47,8 @@ import frc.robot.subsystems.ShooterSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-
   private final DriveSubsystem DRIVE_SUBSYSTEM = new DriveSubsystem(Constants.DRIVE_kP, Constants.DRIVE_kD,
       Constants.DRIVE_PERIOD_SECONDS, Constants.DRIVE_TOLERANCE, Constants.DRIVE_TURN_SCALAR, Constants.DEADBAND);
-
   private static final ClimberSubsystem CLIMBER_SUBSYSTEM = new ClimberSubsystem();
 
   public static final MagazineSubsystem MAGAZINE_SUBSYSTEM = new MagazineSubsystem(Constants.ARM_CONFIG);
@@ -57,16 +56,21 @@ public class RobotContainer {
   private static final ShooterSubsystem SHOOTER_SUBSYSTEM = new ShooterSubsystem(Constants.FLYWHEEL_MASTER_CONFIG,
       Constants.HOOD_CONFIG, Constants.TURRET_CONFIG);
 
+
   public static final XboxController XBOX_CONTROLLER = new XboxController(Constants.XBOX_CONTROLLER_PORT);
+
 
   private static final Joystick LEFT_JOYSTICK = new Joystick(Constants.LEFT_JOYSTICK_PORT);
   private static final Joystick RIGHT_JOYSTICK = new Joystick(Constants.RIGHT_JOYSTICK_PORT);
 
+
   public static UsbCamera camera1;
   public static UsbCamera camera2;
 
-  private static SendableChooser<Command> chooser = new SendableChooser<>();
- //private static SendableChooser<SequentialCommandGroup> chooser = new SendableChooser<>();//TODO: Uncomment and try for chooser testing
+
+//  private static SendableChooser<Command> chooser = new SendableChooser<>();
+ private static SendableChooser<SequentialCommandGroup> chooser = new SendableChooser<>(); //TODO:Test execution of autos with the chooser
+
 
   private final boolean TURRET_SETPOINT_VISION_INTERRUPT = false;
   
@@ -88,9 +92,15 @@ public class RobotContainer {
     DRIVE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> DRIVE_SUBSYSTEM.teleop(LEFT_JOYSTICK.getY(), RIGHT_JOYSTICK.getX(), Constants.DRIVE_RESPONSE_EXPONENT), DRIVE_SUBSYSTEM));
     MAGAZINE_SUBSYSTEM.setDefaultCommand(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(), MAGAZINE_SUBSYSTEM));
 
+    //Create Auto Mode Selection
+    AutoModeChooser();
+  }
 
+  private void AutoModeChooser(){
+    //Creates a dropdown box in the Driver Station with Auto Mode options to run during the autonomous period. See Robot for execution of chosen auto mode.
     chooser.setDefaultOption("ShootDriveForward", new ShootDriveStraightAuto(DRIVE_SUBSYSTEM, SHOOTER_SUBSYSTEM, MAGAZINE_SUBSYSTEM));
-    //chooser.addOption("ShootDriveBack", new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.ShootDriveBack.trajectoryJSON).getCommand());
+    chooser.addOption("Reverse PathWeaver Test", new TestReversePathWeaverAuto(DRIVE_SUBSYSTEM));
+        //chooser.addOption("ShootDriveBack", new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.ShootDriveBack.trajectoryJSON).getCommand());
     // chooser.addOption("SIX BALL BOIS", new AutoTrajectory(DRIVE_SUBSYSTEM, AutoModeConstants.SixBallTrench.trajectoryJSON).getCommand());
     SmartDashboard.putData("Auto mode", chooser);
   }
@@ -283,9 +293,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    //return chooser.getSelected(); //TODO: Uncomment and comment line below to test SendableChooser
-  return new TrenchSixBallAuto(DRIVE_SUBSYSTEM, SHOOTER_SUBSYSTEM, MAGAZINE_SUBSYSTEM);
+    //Sets the autonomous command to be executed to the Auto Mode chosen from the Driver Station
+    return chooser.getSelected(); //TODO: Test SendableChooser
   }
 
  

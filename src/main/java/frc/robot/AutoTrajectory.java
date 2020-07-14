@@ -7,9 +7,11 @@
 
 package frc.robot;
 
-import java.util.ArrayList;
+import java.nio.file.Path;
 import java.util.List;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
@@ -19,6 +21,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.subsystems.DriveSubsystem;
@@ -42,12 +45,51 @@ public class AutoTrajectory {
 
   DriveSubsystem subsystem;
   RamseteCommand ramseteCommand;
+  Trajectory jsonTrajectory;
   
   /**
    * Create new path trajectory using JSON file containing path
    * @param subsystem DriveSubsystem to drive the robot
    * @param trajectoryJSON JSON file containing path
    */
+
+
+   //Contructor used to generate Trajectories from Pathweaver files instead of from a list of waypoints.
+   // The AutoMotorsReversed class will need to be called in a CommandGroup in each auto mode in order for any motors to reverse
+  public AutoTrajectory(DriveSubsystem subsystem, String trajectoryJSON){
+    this.subsystem = subsystem;
+
+    try{
+      Path pathweaverTrajectory = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+       this.jsonTrajectory = TrajectoryUtil.fromPathweaverJson(pathweaverTrajectory);
+    }
+    catch(Exception e){
+        DriverStation.reportError("Unable to open .json trajectory: " + trajectoryJSON, e.getStackTrace());
+    }
+
+    Transform2d transform = subsystem.getPose().minus(jsonTrajectory.getInitialPose());
+    Trajectory transformedTrajectory =  jsonTrajectory.transformBy(transform);
+
+    this.ramseteCommand = new RamseteCommand(
+        transformedTrajectory,  // This had been changed to be the transformed trajecotry so that it calculates trajectory 
+                                // from final (transformed) trajectory
+        subsystem::getPose,
+        new RamseteController(this.kRamseteB, this.kRamseteZeta),
+        new SimpleMotorFeedforward(this.VOLTS_kS,
+                                  this.VOLT_SECONDS_PER_METER_kV,
+                                  this.VOLT_SECONDS_SQUARD_PER_METER_kA),
+        this.DRIVE_KINEMATICS,
+        subsystem::getWheelSpeeds,
+        new PIDController(this.kP, 0, this.kD),
+        new PIDController(this.kP, 0, this.kD),
+        // RamseteCommand passes volts to the callback
+        subsystem::tankDriveVolts,
+        subsystem 
+    );
+
+  }
+  //The current AutoTrajectory constructor that is used. Kept here so working code doesn't need to be changed and the constructor above can be 
+  //removed if reversed/advanced autos using PathWeaver trajectories doesn't work or isn't more efficient.
   public AutoTrajectory(DriveSubsystem subsystem, List<Pose2d> waypoints, boolean isReversed) {
     this.subsystem = subsystem;
     
