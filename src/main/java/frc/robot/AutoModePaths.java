@@ -51,4 +51,11 @@ public class AutoModePaths {
             add(new Pose2d(-5, -2, Rotation2d.fromDegrees(20)));
         }
     };
+
+    public static List<Pose2d> RedShootinRocket_Middle = new ArrayList<Pose2d>() {
+        {
+            add(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
+            add(new Pose2d(5, -2, Rotation2d.fromDegrees(30)));
+        }
+    };
 }
