@@ -24,9 +24,6 @@ public class Robot extends TimedRobot {
 
   private RobotContainer robotContainer;
 
-  // private int autoID = 0;
-  // private boolean autoVision = false;
-
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -71,9 +68,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    // Reset DriveSubsystem PID
-    //robotContainer.getDriveSubsystem().resetAngle();
-    //robotContainer.getDriveSubsystem().setSetpoint(0);
 
     robotContainer.getDriveSubsystem().stop();
 
@@ -83,37 +77,6 @@ public class Robot extends TimedRobot {
     //Executes the auto mode from RobotContainer (should be the one chooser returns when one is chosen from DriverStation)
     autonomousCommand = robotContainer.getAutonomousCommand();
 
-    
-    // this.autoID = (int)SmartDashboard.getNumber("Choose Auto", 0);
-    // this.autoVision = SmartDashboard.getBoolean("Auto Vision?", false);
-    
-    // switch (this.autoID) {
-      
-    //   // case 0:
-    //   // auto1(this.autoVision);
-    //   // robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
-      
-    //   // break;
-
-    //   // case 1:
-    //   // auto1(this.autoVision);
-    //   // robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
-    //   // break;
-
-    //   // case 2:
-    //   // auto1(this.autoVision);
-    //   // robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
-    //   // break;
-
-    //   // case 3:
-    //   // auto1(this.autoVision);
-    //   // robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_FRONT_LIMIT_POSITION);
-    //   // break;
-
-    //   case 0:
-    //   autonomousCommand = new ShootDriveStraightAuto(robotContainer.getDriveSubsystem(), robotContainer.getShooterSubsystem(), robotContainer.getMagazineSubsystem());
-    //   break;
-    // } 
 
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
@@ -170,17 +133,6 @@ public class Robot extends TimedRobot {
   }
 
   
-
-  /**
-   * Default auto that moves robot off line.
-   */
-  // private void auto0() {
-  //   long start = System.currentTimeMillis();
-  //   while (System.currentTimeMillis() - start < 3000) {
-  //     robotContainer.getDriveSubsystem().teleop(-.2, 0, 1);
-  //   }
-  //   robotContainer.getDriveSubsystem().teleop(0, 0, 1);
-  // }
 
   /**
    * Robot starts on the line, intake facing away, shoots 3 balls and drives straight off line.
@@ -277,27 +229,6 @@ public class Robot extends TimedRobot {
     robotContainer.getShooterSubsystem().flywheelManual(Constants.MOTOR_STOP);
     robotContainer.getMagazineSubsystem().ballUptake(Constants.MOTOR_STOP);
   }
-
-  // private void auto1(boolean useVision) {
-  //   robotContainer.getShooterSubsystem().toggleHoodPosition();
-  //   robotContainer.getShooterSubsystem().moveTurretPID(Constants.TURRET_BACK_POSITION);
-  //   try {Thread.sleep(1000);} catch (Exception e){}
-  //   VisionData.setEnabled(useVision);
-  //   try {Thread.sleep(3000);} catch (Exception e){}
-  //   VisionData.setEnabled(false);
-  //   robotContainer.getShooterSubsystem().flywheelManual(-1);
-  //   try {Thread.sleep(1000);} catch (Exception e){}
-  //   robotContainer.getMagazineSubsystem().ballUptake(Constants.MAGAZINE_UP_MOTOR_SPEED);
-  //   try {Thread.sleep(5000);} catch (Exception e){}
-  //   long start = System.currentTimeMillis();
-  //   while (System.currentTimeMillis() - start < 3000) {
-  //     robotContainer.getDriveSubsystem().teleop(-.2, 0, 1);
-  //   }
-  //   robotContainer.getDriveSubsystem().teleop(0, 0, 1);
-  //   robotContainer.getShooterSubsystem().toggleHoodPosition();
-  //   robotContainer.getShooterSubsystem().flywheelManual(0);
-  //   robotContainer.getMagazineSubsystem().ballUptake(0);
-  // }
 
   /**
    * Robot starts on the left side, intake facing away, shoots 3 balls and drives slightly to the right off the line

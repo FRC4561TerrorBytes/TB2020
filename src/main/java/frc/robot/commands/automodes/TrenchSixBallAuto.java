@@ -31,13 +31,11 @@ public class TrenchSixBallAuto extends SequentialCommandGroup {
    * Creates a new TrenchSixBallAuto.
    */
   public TrenchSixBallAuto(DriveSubsystem driveSubsystem, ShooterSubsystem shooterSubsystem, MagazineSubsystem magazineSubsystem) {
-    // Add your commands in the super() call, e.g.
-    // super(new FooCommand(), new BarCommand());
+
     super(
       new TurretSetpointCommand(shooterSubsystem, Constants.TURRET_SIXBALL_POSITION, false),
       new InstantCommand(() -> shooterSubsystem.toggleHoodPosition(), shooterSubsystem),
       new ShootCommand(shooterSubsystem, magazineSubsystem, 5400).withTimeout(3),
-      // new InstantCommand(() -> magazineSubsystem.armSetPosition(Constants.ARM_BOTTOM_POSITION), magazineSubsystem),
       new RunCommand(() -> magazineSubsystem.intakeMotorSpeed(Constants.INTAKE_MOTOR_SPEED), magazineSubsystem).alongWith(
         new AutoTrajectory(driveSubsystem, AutoModePaths.TrenchSixBallPt1, false).getCommand()
       ).withTimeout(5),

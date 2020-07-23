@@ -27,8 +27,7 @@ public class ShootDriveStraightAuto extends SequentialCommandGroup {
    * Creates a new ShootDriveStraightAuto.
    */
   public ShootDriveStraightAuto(DriveSubsystem driveSubsystem, ShooterSubsystem shooterSubsystem, MagazineSubsystem magazineSubsystem) {
-    // Add your commands in the super() call, e.g.
-    // super(new FooCommand(), new BarCommand());
+
     super(
       new TurretSetpointCommand(shooterSubsystem, Constants.TURRET_BACK_POSITION, false),
       new InstantCommand(()-> shooterSubsystem.toggleHoodPosition(), shooterSubsystem),

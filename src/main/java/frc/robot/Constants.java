@@ -39,7 +39,6 @@ public final class Constants {
     public static final int DRIVE_RESPONSE_EXPONENT = 2;
 
     // Auto drive config values
-    // TODO Set
     public static final double ANGLE_TOLERANCE = 15.0; // Degrees
     public static final double TARGET_DISTANCE = 0.0; // Inches
     public static final double AUTO_STOPPING_DISTANCE = 0.0; // Inches
@@ -187,9 +186,6 @@ public final class Constants {
     // Climber Movement Constants
     public static final double CLIMBER_LIFT_CONSTANT = 0.5;
     public static final double CLIMBER_HOOK_CONSTANT = 0.69;
-
-    // Climber I2C port
-    //public static final int CLIMBER_GYRO_PORT = 0x6B;
 
     // Speed limiting [0.0, 1.0]
     public static final double CLIMBER_SPEED_LIMIT = 1.0; 

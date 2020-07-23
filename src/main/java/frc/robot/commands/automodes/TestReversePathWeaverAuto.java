@@ -20,7 +20,6 @@ public class TestReversePathWeaverAuto extends SequentialCommandGroup{
  
   public TestReversePathWeaverAuto(DriveSubsystem driveSubsystem) {
 
-    
     super(
       //Drives Straight Forward
       new AutoTrajectory(driveSubsystem, AutoModeConstants.DriveStraightTest.trajectoryJSON).getCommand(),

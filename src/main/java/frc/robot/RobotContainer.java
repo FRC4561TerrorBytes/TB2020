@@ -19,11 +19,9 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-//import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-//import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -113,63 +111,6 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    // new JoystickButton(XBOX_CONTROLLER, Button.kB.value)
-    //     .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(-Constants.MAGAZINE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
-    //     .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.magazineMotorStop(), MAGAZINE_SUBSYSTEM));
-
-
-    // // Moves climber lift at 0.5 speed when X button is pressed
-    // new JoystickButton(XBOX_CONTROLLER, Button.kX.value)
-    //     .whileHeld(new RunCommand(() -> CLIMBER_SUBSYSTEM.liftManual(Constants.CLIMBER_LIFT_CONSTANT), CLIMBER_SUBSYSTEM));
-    
-    // Moves climber hook at 0.5 speed when Y button is pressed
-    // new JoystickButton(XBOX_CONTROLLER, Button.kY.value)
-    //     .whileHeld(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(Constants.CLIMBER_HOOK_CONSTANT), CLIMBER_SUBSYSTEM));
-
-    // new JoystickButton(XBOX_CONTROLLER, Button.kB.value)
-    //     .whenPressed(new InstantCommand(() -> MAGAZINE_SUBSYSTEM.toggleArmPosition()));
-
-    // new POVButton(XBOX_CONTROLLER, 90).whileHeld(new HoodCommand(SHOOTER_SUBSYSTEM, -0.3))
-    //   .whenReleased(new HoodCommand(SHOOTER_SUBSYSTEM, Constants.MOTOR_STOP));
-
-    // new POVButton(XBOX_CONTROLLER, 270).whileHeld(new HoodCommand(SHOOTER_SUBSYSTEM, 0.3))
-    //   .whenReleased(new HoodCommand(SHOOTER_SUBSYSTEM, Constants.MOTOR_STOP));
-
-    // new POVButton(XBOX_CONTROLLER, 0).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(-.5), MAGAZINE_SUBSYSTEM))
-    //   .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(Constants.MOTOR_STOP), MAGAZINE_SUBSYSTEM));
-    // new POVButton(XBOX_CONTROLLER, 180).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(.5), MAGAZINE_SUBSYSTEM))
-    //   .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.armManual(Constants.MOTOR_STOP), MAGAZINE_SUBSYSTEM));
-
-
-    // new Trigger(() -> (XBOX_CONTROLLER.getTriggerAxis(Hand.kRight) > .2))
-    //             .whenActive(new RunCommand(() -> SHOOTER_SUBSYSTEM.relativeMoveTurretPID(XBOX_CONTROLLER.getTriggerAxis(Hand.kRight) * 10), SHOOTER_SUBSYSTEM));
-
-    // new Trigger(() -> (XBOX_CONTROLLER.getTriggerAxis(Hand.kLeft) > .2))
-    //             .whenActive(new RunCommand(() -> SHOOTER_SUBSYSTEM.relativeMoveTurretPID(XBOX_CONTROLLER.getTriggerAxis(Hand.kLeft) * 10), SHOOTER_SUBSYSTEM));
-    
-  
-    // new POVButton(XBOX_CONTROLLER, 90).whenPressed(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(1), CLIMBER_SUBSYSTEM))
-    //               .whenReleased(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(Constants.MOTOR_STOP), CLIMBER_SUBSYSTEM));
-            
-    // new POVButton(XBOX_CONTROLLER, 270).whenPressed(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(-1), CLIMBER_SUBSYSTEM))
-    //               .whenReleased(new RunCommand(() -> CLIMBER_SUBSYSTEM.hookManual(Constants.MOTOR_STOP), CLIMBER_SUBSYSTEM));
-
-    // Reset the arm encoder to the back position
-    // new Trigger(() -> MAGAZINE_SUBSYSTEM.armLimit())
-    //             .whileActiveOnce(new InstantCommand(() -> MAGAZINE_SUBSYSTEM.getArmMotor().setSelectedSensorPosition(Constants.ARM_BOTTOM_POSITION),
-    //             MAGAZINE_SUBSYSTEM));
-    
-
-    // TODO: Driver buttons here!!!
-//     
-// 
-// 
-//  
-    // Right joystick intake button 1
-    // new JoystickButton(RIGHT_JOYSTICK, 1)
-    //   .whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(Constants.INTAKE_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
-    //   .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.intakeMotorSpeed(Constants.MOTOR_STOP), MAGAZINE_SUBSYSTEM));
-
     new JoystickButton(RIGHT_JOYSTICK, 1)
       .whileHeld(new IntakeCommand(MAGAZINE_SUBSYSTEM, Constants.INTAKE_MOTOR_SPEED))
       .whenReleased(new IntakeCommand(MAGAZINE_SUBSYSTEM, Constants.MOTOR_STOP));
@@ -194,10 +135,6 @@ public class RobotContainer {
     new JoystickButton(LEFT_JOYSTICK, 1)
       .whileHeld(new IntakeCommand(MAGAZINE_SUBSYSTEM, -Constants.OUTTAKE_MOTOR_SPEED))
       .whenReleased(new IntakeCommand(MAGAZINE_SUBSYSTEM, Constants.MOTOR_STOP));
-
-    // Auto drive button 1
-    // new JoystickButton(LEFT_JOYSTICK, 1)
-    //   .whileHeld(new AutoDriveCommand(DRIVE_SUBSYSTEM, SHOOTER_SUBSYSTEM));
     
     // Right joystick Arm Toggle button 2
     new JoystickButton(LEFT_JOYSTICK, 2)
@@ -248,7 +185,7 @@ public class RobotContainer {
     new POVButton(XBOX_CONTROLLER, 180).whileHeld(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptake(-Constants.MAGAZINE_DOWN_MOTOR_SPEED), MAGAZINE_SUBSYSTEM))
       .whenReleased(new RunCommand(() -> MAGAZINE_SUBSYSTEM.ballUptakeStop()));
 
-      /*
+    /*
     // Controller mouse droid left/right button 5 // TODO: change to left or right
     // new JoystickButton(XBOX_CONTROLLER, 5)
     //   .whenHeld(new RunCommand(() -> CLIMBER_SUBSYSTEM.mouseDroidManual(Constants.MOUSE_DROID_SPEED), CLIMBER_SUBSYSTEM))
@@ -268,22 +205,7 @@ public class RobotContainer {
     // Controller turret right, trigger right
     new Trigger(() -> (XBOX_CONTROLLER.getTriggerAxis(Hand.kRight) > Constants.DEADBAND))
       .whenActive(new MoveTurretManualCommand(SHOOTER_SUBSYSTEM, () -> XBOX_CONTROLLER.getTriggerAxis(Hand.kRight) * 25));
-
-    // new POVButton(XBOX_CONTROLLER, 90).whileHeld(new HoodCommand(SHOOTER_SUBSYSTEM, -0.3))
-    //   .whenReleased(new HoodCommand(SHOOTER_SUBSYSTEM, Constants.MOTOR_STOP));
-
-    // new POVButton(XBOX_CONTROLLER, 270).whileHeld(new HoodCommand(SHOOTER_SUBSYSTEM, 0.3))
-    //   .whenReleased(new HoodCommand(SHOOTER_SUBSYSTEM, Constants.MOTOR_STOP));
-
-    // Controller Lift right stick
-    // new Trigger(() -> (Math.abs(XBOX_CONTROLLER.getY(Hand.kRight)) > Constants.DEADBAND))
-    //   .whenActive(new WinchCommand(CLIMBER_SUBSYSTEM, () -> -Math.abs(XBOX_CONTROLLER.getY(Hand.kRight))))
-    //   .whenInactive(new WinchCommand(CLIMBER_SUBSYSTEM, () -> Constants.MOTOR_STOP));
-
-      // Controller Hook left stick
-    // new Trigger(() -> (Math.abs(XBOX_CONTROLLER.getY(Hand.kLeft)) > Constants.DEADBAND))
-    //   .whenActive(new HookCommand(CLIMBER_SUBSYSTEM, () -> XBOX_CONTROLLER.getY(Hand.kLeft)))
-    //   .whenInactive(new HookCommand(CLIMBER_SUBSYSTEM, () -> Constants.MOTOR_STOP));
+      
   }
 
 

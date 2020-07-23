@@ -23,7 +23,6 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableValue;
 import edu.wpi.first.networktables.TableEntryListener;
 import frc.robot.Constants;
-//import frc.robot.RobotContainer;
 import frc.robot.TalonPIDConfig;
 import frc.robot.VisionData;
 
@@ -31,6 +30,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final String SUBSYSTEM_NAME = "Shooter Subsystem";
 
+  // Config values and create motor objects for the flywheel
   private static class Flywheel {
     private static double MAX_kF = 0.95;
     private static double MAX_SPEED_RPM = 5400;
@@ -48,6 +48,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   }
 
+  // Config values and create motor object for the hood
   private static class Hood {
     private static boolean needsReset = true;
     private static int topPosition = Constants.HOOD_TOP_POSITION;
@@ -57,7 +58,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final WPI_TalonSRX MOTOR = new WPI_TalonSRX(Constants.HOOD_MOTOR_PORT);
     private static TalonPIDConfig config;
   }
-
+// Config values and create motor object for the turret
   private static class Turret {
     private static boolean needsReset = true;
     private static int leftPosition = Constants.TURRET_FRONT_LIMIT_POSITION;

@@ -28,6 +28,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public ClimberSubsystem() {
 
+    // Display the climber's motor values on a Shuffleboard tab for debugging
     if (Constants.CLIMBER_DEBUG) {
       ShuffleboardTab tab = Shuffleboard.getTab(this.SUBSYSTEM_NAME);
       tab.addNumber("Hook Percent Output", () -> CLIMBER_HOOK_MOTOR.getMotorOutputPercent());
@@ -93,12 +94,6 @@ public class ClimberSubsystem extends SubsystemBase {
     }
     if (Math.abs(RobotContainer.XBOX_CONTROLLER.getY(Hand.kRight)) > Constants.DEADBAND) {
       CLIMBER_LIFT_MOTOR.set(RobotContainer.XBOX_CONTROLLER.getY(Hand.kRight));
-
-    // if (RobotContainer.XBOX_CONTROLLER.getPOV() == 90) {
-    //   CLIMBER_BALANCE_MOTOR.set(1);
-    // } else if (RobotContainer.XBOX_CONTROLLER.getPOV() == 270) {
-    //   CLIMBER_BALANCE_MOTOR.set(-1);
-    // } else CLIMBER_BALANCE_MOTOR.set(0);
     
     }
   }

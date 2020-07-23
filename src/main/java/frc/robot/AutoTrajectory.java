@@ -54,7 +54,7 @@ public class AutoTrajectory {
    */
 
 
-   //Contructor used to generate Trajectories from Pathweaver files instead of from a list of waypoints.
+   // Contructor used to generate Trajectories from Pathweaver files instead of from a list of waypoints.
    // The AutoMotorsReversed class will need to be called in a CommandGroup in each auto mode in order for any motors to reverse
   public AutoTrajectory(DriveSubsystem subsystem, String trajectoryJSON){
     this.subsystem = subsystem;

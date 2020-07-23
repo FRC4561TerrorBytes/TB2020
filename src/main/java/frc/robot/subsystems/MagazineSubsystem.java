@@ -54,6 +54,7 @@ public class MagazineSubsystem extends SubsystemBase {
     ARM_MOTOR.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.NormallyOpen);
 
     if (Constants.MAGAZINE_DEBUG) {
+      // Display the magazine's motor and sensor values on a Shuffleboard tab for debugging
       ShuffleboardTab tab = Shuffleboard.getTab(this.SUBSYSTEM_NAME);
       tab.addNumber("Arm Motor Output", () -> ARM_MOTOR.getMotorOutputPercent());
       tab.addNumber("Arm Motor Position", () -> ARM_MOTOR.getSelectedSensorPosition());
