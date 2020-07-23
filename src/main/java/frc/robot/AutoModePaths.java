@@ -52,10 +52,27 @@ public class AutoModePaths {
         }
     };
 
-    public static List<Pose2d> RedShootinRocket_Middle = new ArrayList<Pose2d>() {
+    //UNTESTED
+    public static List<Pose2d> Shoot_Middle = new ArrayList<Pose2d>() {
         {
             add(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
             add(new Pose2d(5, -2, Rotation2d.fromDegrees(30)));
+        }
+    };
+
+    //UNTESTED
+    public static List<Pose2d> RedShoot_LoadingZone = new ArrayList<Pose2d>() {
+        {
+            add(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
+            add(new Pose2d(5, -4, Rotation2d.fromDegrees(60)));
+        }
+    };
+
+    //UNTESTED
+    public static List<Pose2d> BlueShoot_LoadingZone = new ArrayList<Pose2d>() {
+        {
+            add(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
+            add(new Pose2d(5, -4, Rotation2d.fromDegrees(60)));
         }
     };
 }
