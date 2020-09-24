@@ -42,10 +42,15 @@ public class DriveSubsystem extends PIDSubsystem {
   private final WPI_TalonFX RIGHT_REAR_SLAVE = new WPI_TalonFX(Constants.REAR_RIGHT_MOTOR_PORT);
 
   private final double WHEEL_DIAMETER_METERS = 0.1524;
+  private final double MOTOR_MAX_RPM = 6380;
   private final double TICKS_PER_ROTATION = 2048;
   private final double GEAR_RATIO = 120 / 11;
   private final double TICKS_PER_METER = TICKS_PER_ROTATION * GEAR_RATIO * (1 / Math.PI * WHEEL_DIAMETER_METERS);
   private final double METERS_PER_TICK = 1 / TICKS_PER_METER;
+  private final double METERS_PER_ROTATION = METERS_PER_TICK * TICKS_PER_ROTATION;
+  private final double MAX_LINEAR_SPEED = (MOTOR_MAX_RPM / 60) * METERS_PER_ROTATION;
+  private final double MAX_LINEAR_WHEEL_SLIP = 0.1;
+  private final double MAX_PERCENT_WHEEL_SLIP = 0.05;
 
   private final double MIN_TOLERANCE = 1.0;
 
@@ -95,13 +100,6 @@ public class DriveSubsystem extends PIDSubsystem {
       RIGHT_REAR_SLAVE.set(ControlMode.Follower, RIGHT_MASTER_MOTOR.getDeviceID());
 
       // Wait for Robot init before finishing DriveSubsystem init
-      /* Could do this instead
-      try {
-        Thread.sleep(7000);
-      } catch (Exception e) {
-        System.out.println("Exception is: " + e.toString());
-        e.printStackTrace();
-      } */
       try { Thread.sleep(7000); }
       catch (Exception e) { e.printStackTrace(); }
 
@@ -174,8 +172,22 @@ public class DriveSubsystem extends PIDSubsystem {
     turn_request = Math.copySign(Math.pow(turn_request, power), turn_request);
 
     // Set drive speed if it is more than the deadband
-    if (Math.abs(speed) >= this.deadband) this.setSpeed(speed);
-    else this.stop();
+    if (Math.abs(speed) >= this.deadband) {
+
+      // Apply basic traction control when going straight
+      if (Math.abs(turn_request) < this.deadband) {
+        // Get average linear wheel speeds
+        DifferentialDriveWheelSpeeds wheelSpeeds = this.getWheelSpeeds();
+        double averageWheelSpeed = (wheelSpeeds.leftMetersPerSecond + wheelSpeeds.rightMetersPerSecond) / 2;
+        double inertialVelocity = this.getInertialVelocity();
+
+        // If difference between wheel speed and inertial speed is greater than slip limit, then wheel is slipping excessively
+        if (Math.abs(averageWheelSpeed - inertialVelocity) >= MAX_LINEAR_WHEEL_SLIP) {
+          // Set wheel speed proportionally to current inertial velocity plus a bit more to account for IMU noise
+          this.setSpeed(Math.copySign((inertialVelocity / MAX_LINEAR_SPEED), speed) + MAX_PERCENT_WHEEL_SLIP);
+        }
+      } else this.setSpeed(speed);
+    } else this.stop();
     
     // Start turning if input is greater than deadband
     if (Math.abs(turn_request) >= this.deadband) {
@@ -207,22 +219,17 @@ public class DriveSubsystem extends PIDSubsystem {
     //should be used for reversing the motors IN AUTOS ONLY
 
     //These reverse standard rotation of the motors, so in theory, they should move in reverse by swapping the negatives and positives of the master motor voltages
-    if(ReverseMotors == true){
+    if (ReverseMotors == true) {
       LEFT_MASTER_MOTOR.setVoltage(leftVolts);
       RIGHT_MASTER_MOTOR.setVoltage(-rightVolts);
       drivetrain.feed();
-    }
-
-    else{
+    } else {
       LEFT_MASTER_MOTOR.setVoltage(-leftVolts);
-    RIGHT_MASTER_MOTOR.setVoltage(rightVolts);
-    drivetrain.feed();
-    }
-
-    
+      RIGHT_MASTER_MOTOR.setVoltage(rightVolts);
+      drivetrain.feed();
+    }  
   }
   
-
   /**
    * Returns the current wheel speeds of the robot.
    * @return The current wheel speeds.
@@ -270,6 +277,14 @@ public class DriveSubsystem extends PIDSubsystem {
    */
   public double getTurnRate() {
     return NAVX.getRate() * -1;
+  }
+
+  /**
+   * Returns inertial velocity of the robot.
+   * @return Velocity of the robot as measured by the NAVX
+   */
+  public double getInertialVelocity() {
+    return Math.sqrt(Math.pow(NAVX.getVelocityX(), 2) + Math.pow(NAVX.getVelocityY(), 2));
   }
 
   /**
