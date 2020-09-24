@@ -134,7 +134,7 @@ public class DriveSubsystem extends PIDSubsystem {
   @Override
   public void useOutput(double output, double setpoint) {
     // Use the output here
-    this.drivetrain.arcadeDrive(this.speed, -output);
+    this.drivetrain.arcadeDrive(this.speed, -output, false);
   }
 
   @Override
