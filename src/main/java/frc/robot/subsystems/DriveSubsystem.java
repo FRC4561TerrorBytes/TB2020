@@ -132,6 +132,21 @@ public class DriveSubsystem extends PIDSubsystem {
   @Override
   public void useOutput(double output, double setpoint) {
     // Use the output here
+
+    // Apply basic traction control when going straight
+    if (Math.abs(output) < this.deadband) {
+      // Get average linear wheel speeds
+      DifferentialDriveWheelSpeeds wheelSpeeds = this.getWheelSpeeds();
+      double averageWheelSpeed = (wheelSpeeds.leftMetersPerSecond + wheelSpeeds.rightMetersPerSecond) / 2;
+      double inertialVelocity = this.getInertialVelocity();
+
+      // If difference between wheel speed and inertial speed is greater than slip limit, then wheel is slipping excessively
+      if ((Math.abs(averageWheelSpeed) - inertialVelocity) >= MAX_LINEAR_WHEEL_SLIP) {
+        // Set wheel speed proportionally to current inertial velocity plus a bit more to account for IMU noise
+        this.setSpeed(Math.copySign((inertialVelocity / MAX_LINEAR_SPEED), this.speed) + Math.copySign(MAX_PERCENT_WHEEL_SLIP, this.speed));
+      } 
+    }
+
     this.drivetrain.arcadeDrive(this.speed, -output, false);
   }
 
@@ -172,21 +187,8 @@ public class DriveSubsystem extends PIDSubsystem {
     turn_request = Math.copySign(Math.pow(turn_request, power), turn_request);
 
     // Set drive speed if it is more than the deadband
-    if (Math.abs(speed) >= this.deadband) {
-      // Apply basic traction control when going straight
-      if (Math.abs(turn_request) < this.deadband) {
-        // Get average linear wheel speeds
-        DifferentialDriveWheelSpeeds wheelSpeeds = this.getWheelSpeeds();
-        double averageWheelSpeed = (wheelSpeeds.leftMetersPerSecond + wheelSpeeds.rightMetersPerSecond) / 2;
-        double inertialVelocity = this.getInertialVelocity();
-
-        // If difference between wheel speed and inertial speed is greater than slip limit, then wheel is slipping excessively
-        if ((Math.abs(averageWheelSpeed) - inertialVelocity) >= MAX_LINEAR_WHEEL_SLIP) {
-          // Set wheel speed proportionally to current inertial velocity plus a bit more to account for IMU noise
-          this.setSpeed(Math.copySign((inertialVelocity / MAX_LINEAR_SPEED), speed) + MAX_PERCENT_WHEEL_SLIP);
-        } else this.setSpeed(speed);
-      } else this.setSpeed(speed);
-    } else this.stop();
+    if (Math.abs(speed) >= this.deadband) this.setSpeed(speed);
+    else this.stop();
     
     // Start turning if input is greater than deadband
     if (Math.abs(turn_request) >= this.deadband) {
