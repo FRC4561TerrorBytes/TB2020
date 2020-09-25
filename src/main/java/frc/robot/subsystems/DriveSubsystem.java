@@ -134,7 +134,7 @@ public class DriveSubsystem extends PIDSubsystem {
     // Use the output here
 
     // Apply basic traction control when going straight
-    if (Math.abs(output) < this.deadband) {
+    if (!this.was_turning) {
       // Get average linear wheel speeds
       DifferentialDriveWheelSpeeds wheelSpeeds = this.getWheelSpeeds();
       double averageWheelSpeed = (wheelSpeeds.leftMetersPerSecond + wheelSpeeds.rightMetersPerSecond) / 2;
