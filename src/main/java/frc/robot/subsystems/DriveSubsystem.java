@@ -236,8 +236,8 @@ public class DriveSubsystem extends PIDSubsystem {
    * @return The current wheel speeds.
    */
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(LEFT_MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity() * 100 * METERS_PER_TICK, 
-      RIGHT_MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity() * 100 * METERS_PER_TICK);
+    return new DifferentialDriveWheelSpeeds(LEFT_MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity() * 10 * METERS_PER_TICK, 
+      RIGHT_MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity() * 10 * METERS_PER_TICK);
   }
 
   /**
