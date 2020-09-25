@@ -173,7 +173,6 @@ public class DriveSubsystem extends PIDSubsystem {
 
     // Set drive speed if it is more than the deadband
     if (Math.abs(speed) >= this.deadband) {
-
       // Apply basic traction control when going straight
       if (Math.abs(turn_request) < this.deadband) {
         // Get average linear wheel speeds
@@ -182,10 +181,10 @@ public class DriveSubsystem extends PIDSubsystem {
         double inertialVelocity = this.getInertialVelocity();
 
         // If difference between wheel speed and inertial speed is greater than slip limit, then wheel is slipping excessively
-        if (Math.abs(averageWheelSpeed - inertialVelocity) >= MAX_LINEAR_WHEEL_SLIP) {
+        if ((Math.abs(averageWheelSpeed) - inertialVelocity) >= MAX_LINEAR_WHEEL_SLIP) {
           // Set wheel speed proportionally to current inertial velocity plus a bit more to account for IMU noise
           this.setSpeed(Math.copySign((inertialVelocity / MAX_LINEAR_SPEED), speed) + MAX_PERCENT_WHEEL_SLIP);
-        }
+        } else this.setSpeed(speed);
       } else this.setSpeed(speed);
     } else this.stop();
     
@@ -235,7 +234,8 @@ public class DriveSubsystem extends PIDSubsystem {
    * @return The current wheel speeds.
    */
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(LEFT_MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity(), RIGHT_MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity());
+    return new DifferentialDriveWheelSpeeds(LEFT_MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity() * 100 * METERS_PER_TICK, 
+      RIGHT_MASTER_MOTOR.getSensorCollection().getIntegratedSensorVelocity() * 100 * METERS_PER_TICK);
   }
 
   /**
