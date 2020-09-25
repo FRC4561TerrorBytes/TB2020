@@ -49,8 +49,8 @@ public class DriveSubsystem extends PIDSubsystem {
   private final double METERS_PER_TICK = 1 / TICKS_PER_METER;
   private final double METERS_PER_ROTATION = METERS_PER_TICK * TICKS_PER_ROTATION;
   private final double MAX_LINEAR_SPEED = (MOTOR_MAX_RPM / 60) * METERS_PER_ROTATION;
-  private final double MAX_LINEAR_WHEEL_SLIP = 0.1;
-  private final double MAX_PERCENT_WHEEL_SLIP = 0.05;
+  private final double MAX_LINEAR_WHEEL_SLIP = 0.05;
+  private final double MAX_PERCENT_WHEEL_SLIP = 0.02;
 
   private final double MIN_TOLERANCE = 1.0;
 
