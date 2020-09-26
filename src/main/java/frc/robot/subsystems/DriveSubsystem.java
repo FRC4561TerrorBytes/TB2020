@@ -193,7 +193,7 @@ public class DriveSubsystem extends PIDSubsystem {
     // Start turning if input is greater than deadband
     if (Math.abs(turn_request) >= this.deadband) {
       // Add delta to setpoint scaled by factor
-      this.setSetpoint(this.getController().getSetpoint() + (turn_request * this.turn_scalar));
+      this.setSetpoint(this.getAngle() + (turn_request * this.turn_scalar));
       this.was_turning = true;
     } else { 
       // When turning is complete, set setpoint to current angle
