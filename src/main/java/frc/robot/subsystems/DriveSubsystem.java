@@ -49,8 +49,7 @@ public class DriveSubsystem extends PIDSubsystem {
   private final double METERS_PER_TICK = 1 / TICKS_PER_METER;
   private final double METERS_PER_ROTATION = METERS_PER_TICK * TICKS_PER_ROTATION;
   private final double MAX_LINEAR_SPEED = (MOTOR_MAX_RPM / 60) * METERS_PER_ROTATION;
-  private final double MAX_LINEAR_WHEEL_SLIP = 0.05;
-  private final double MAX_PERCENT_WHEEL_SLIP = 0.02;
+  private final double OPTIMAL_SLIP_RATIO = 0.05;
 
   private final double MIN_TOLERANCE = 1.0;
 
@@ -137,13 +136,14 @@ public class DriveSubsystem extends PIDSubsystem {
     if (!this.was_turning) {
       // Get average linear wheel speeds
       DifferentialDriveWheelSpeeds wheelSpeeds = this.getWheelSpeeds();
-      double averageWheelSpeed = (wheelSpeeds.leftMetersPerSecond + wheelSpeeds.rightMetersPerSecond) / 2;
+      double averageWheelSpeed = Math.abs((wheelSpeeds.leftMetersPerSecond + wheelSpeeds.rightMetersPerSecond) / 2);
       double inertialVelocity = this.getInertialVelocity();
+      double currentSlipRatio = (averageWheelSpeed - inertialVelocity) / inertialVelocity;
 
       // If difference between wheel speed and inertial speed is greater than slip limit, then wheel is slipping excessively
-      if ((Math.abs(averageWheelSpeed) - inertialVelocity) >= MAX_LINEAR_WHEEL_SLIP) {
+      if (currentSlipRatio >= OPTIMAL_SLIP_RATIO) {
         // Set wheel speed proportionally to current inertial velocity plus a bit more to account for IMU noise
-        this.setSpeed(Math.copySign((inertialVelocity / MAX_LINEAR_SPEED), this.speed) + Math.copySign(MAX_PERCENT_WHEEL_SLIP, this.speed));
+        this.setSpeed(Math.copySign(((OPTIMAL_SLIP_RATIO * inertialVelocity) + inertialVelocity) / MAX_LINEAR_SPEED, this.speed));
       } 
     }
 
