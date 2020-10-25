@@ -51,7 +51,7 @@ public class DriveSubsystem extends PIDSubsystem {
   private final double MAX_LINEAR_SPEED = (MOTOR_MAX_RPM / 60) * METERS_PER_ROTATION;
   private final double OPTIMAL_SLIP_RATIO = 0.05;
 
-  private final double MIN_TOLERANCE = 1.0;
+  private final double MIN_TOLERANCE = 0.125;
 
   private final AHRS NAVX = new AHRS(SPI.Port.kMXP);
 
@@ -140,7 +140,7 @@ public class DriveSubsystem extends PIDSubsystem {
       double inertialVelocity = this.getInertialVelocity();
       double currentSlipRatio = (averageWheelSpeed - inertialVelocity) / inertialVelocity;
 
-      // If difference between wheel speed and inertial speed is greater than slip limit, then wheel is slipping excessively
+      // If current slip ratio is greater than optimal then wheel is slipping excessively
       if (currentSlipRatio >= OPTIMAL_SLIP_RATIO) {
         // Set wheel speed proportionally to current inertial velocity plus a bit more to account for IMU noise
         this.setSpeed(Math.copySign(((OPTIMAL_SLIP_RATIO * inertialVelocity) + inertialVelocity) / MAX_LINEAR_SPEED, this.speed));
